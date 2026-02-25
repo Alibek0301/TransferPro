@@ -5,7 +5,8 @@
 ## Что уже реализовано в проекте
 
 - Добавлен workflow для деплоя: `.github/workflows/deploy-pages.yml`.
-- В `vite.config.js` настроен `base: '/TransferPro/'` для production, чтобы ассеты корректно грузились на GitHub Pages даже если открыть URL без завершающего `/`.
+- В `vite.config.js` production `base` берется из `VITE_BASE_PATH` (с fallback на `/TransferPro/`), поэтому форки/переименованные репозитории деплоятся без ручной правки кода.
+- В workflow `VITE_BASE_PATH` автоматически задается как `/${{ github.event.repository.name }}/`.
 - Добавлен `package-lock.json`, поэтому в CI используется `npm ci`.
 
 ## Как запустить деплой
@@ -26,9 +27,15 @@ npm ci
 npm run build
 ```
 
+Если хотите проверить production-base для другого репозитория локально:
+
+```bash
+VITE_BASE_PATH=/my-repo/ npm run build
+```
+
 ## Частые проблемы
 
-- **404 / белая страница**: проверьте, что `base` в `vite.config.js` совпадает с именем репозитория (`/TransferPro/`).
+- **404 / белая страница**: проверьте, что `VITE_BASE_PATH` совпадает с именем репозитория (`/<repo>/`).
 - **Ошибка `npm ci`**: проверьте, что `package-lock.json` закоммичен и актуален.
 - **Workflow не запускается**: убедитесь, что push идет в ветку, указанную в `on.push.branches`.
 - **Ошибка прав доступа при деплое**: проверьте permissions в workflow (`pages: write`, `id-token: write`).

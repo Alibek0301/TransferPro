@@ -1,11 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const repoName = 'TransferPro'
+const normalizeBase = (value) => {
+  if (!value) return '/'
+  const withLeadingSlash = value.startsWith('/') ? value : `/${value}`
+  return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`
+}
 
-export default defineConfig(({ mode }) => ({
-  plugins: [react()],
-  // GitHub Pages project site is served from /<repo>/.
-  // Using an explicit base avoids 404 on assets when URL is opened without trailing slash.
-  base: mode === 'production' ? `/${repoName}/` : '/',
-}))
+const defaultRepoBase = '/TransferPro/'
+
+export default defineConfig(({ mode }) => {
+  const configuredBase = process.env.VITE_BASE_PATH || defaultRepoBase
+
+  return {
+    plugins: [react()],
+    // GitHub Pages project sites are served from /<repo>/.
+    // VITE_BASE_PATH lets CI/forks inject the right repository path.
+    base: mode === 'production' ? normalizeBase(configuredBase) : '/',
+  }
+})
