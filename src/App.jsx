@@ -16,6 +16,7 @@ const services = [
 const standards = [
   { title: 'Премиальная вода', icon: Droplets },
   { title: 'Профессиональный этикет', icon: Crown },
+  { title: 'Опытные водители', icon: UserCheck },
   { title: 'Безопасность и детские кресла', icon: ShieldCheck },
 ]
 
