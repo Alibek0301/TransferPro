@@ -145,10 +145,33 @@ function App() {
       <div className="md:hidden h-screen w-full flex flex-col bg-gradient-to-b from-black to-black/90">
         <div className="flex-1 flex flex-col justify-center items-start px-4">
           {mobileTab === 'home' && (
-            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <p className="mb-1 text-accent text-xs">Астана · Premium Transport Service</p>
-              <h1 className="font-serif text-2xl leading-tight">Ваш персональный автопарк в столице</h1>
-              <p className="mt-2 text-white/80 text-xs">Безопасность, пунктуальность и безупречный статус в каждой поездке.</p>
+            <motion.div className="w-full space-y-4" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <div className="border-l-2 border-accent pl-3">
+                <p className="text-accent text-xs font-semibold">Астана · Premium Transport Service</p>
+              </div>
+              
+              <h1 className="font-serif text-2xl leading-tight text-white">Ваш персональный автопарк в столице</h1>
+              
+              <div className="space-y-3 text-white/75 text-sm leading-relaxed">
+                <p>
+                  Мы не просто предоставляем автомобиль с водителем — мы берем на себя <span className="text-accent font-semibold">полную ответственность</span> за ваш комфорт на дорогах столицы.
+                </p>
+                
+                <p>
+                  <span className="text-accent font-semibold">Transfer Pro</span> — это синергия профессионального этикета, пунктуальности и глубокого понимания потребностей VIP-клиентов.
+                </p>
+                
+                <p>
+                  Мы работаем для того, чтобы вы могли сосредоточиться на своих делах, пока мы обеспечиваем идеальный маршрут.
+                </p>
+              </div>
+              
+              <button
+                onClick={() => setMobileTab('booking')}
+                className="w-full mt-4 py-3 rounded-lg bg-accent text-black font-semibold text-sm hover:bg-accent/90 transition"
+              >
+                Начать заказ
+              </button>
             </motion.div>
           )}
 
