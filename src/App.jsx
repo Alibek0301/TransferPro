@@ -199,7 +199,7 @@ function App() {
             <form className="mt-6 grid gap-4">
               <div>
                 <label htmlFor="name" className="text-xs text-white/60">Ваше имя *</label>
-                <input id="name" name="name" required placeholder="Иван Петров" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
+                <input id="name" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
               </div>
               <div>
                 <label htmlFor="phone" className="text-xs text-white/60">Телефон *</label>
