@@ -116,113 +116,110 @@ function App() {
       </header>
 
       <main id="top">
-        <section className="relative min-h-[85vh] overflow-hidden bg-gradient-to-b from-black to-black/90 flex items-center">
+        <section className="relative min-h-screen md:min-h-[85vh] overflow-hidden bg-gradient-to-b from-black to-black/90 flex items-center">
           <motion.div
-            className="relative mx-auto flex min-h-[85vh] max-w-6xl flex-col justify-center px-4 py-12 md:py-24 md:px-8 w-full"
+            className="relative mx-auto flex min-h-screen md:min-h-[85vh] max-w-6xl flex-col justify-center px-3 py-8 md:py-24 md:px-8 w-full"
             variants={fadeUp}
             initial="hidden"
             animate="show"
             transition={{ duration: 0.7 }}
           >
-            <p className="mb-4 text-accent text-sm md:text-base">Астана · Premium Transport Service</p>
-            <h1 className="max-w-3xl font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
+            <p className="mb-2 text-accent text-xs md:text-base">Астана · Premium Transport Service</p>
+            <h1 className="max-w-3xl font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-tight">
               Ваш персональный автопарк в столице
             </h1>
-            <p className="mt-5 max-w-2xl text-white/80 text-sm md:text-base lg:text-lg leading-relaxed">
+            <p className="mt-3 md:mt-5 max-w-2xl text-white/80 text-xs md:text-base lg:text-lg leading-relaxed">
               Безопасность, пунктуальность и безупречный статус в каждой поездке. От деловых маршрутов до персонального сопровождения семьи.
             </p>
             <a
               href="#booking"
-              className="mt-8 w-fit rounded-full border border-accent bg-accent px-6 py-3 font-semibold text-black transition hover:scale-105 hover:shadow-glow"
+              className="mt-4 md:mt-8 w-fit rounded-full border border-accent bg-accent px-4 md:px-6 py-2 md:py-3 text-xs md:text-base font-semibold text-black transition hover:scale-105 hover:shadow-glow"
             >
               Забронировать поездку
             </a>
           </motion.div>
         </section>
 
-        <section id="services" className="mx-auto max-w-6xl px-4 py-12 md:py-16 md:px-8">
-          <h2 className="section-title text-2xl md:text-3xl lg:text-4xl">Услуги</h2>
-          <div id="price" className="mt-8 grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <section id="services" className="mx-auto max-w-6xl px-3 py-6 md:py-16 md:px-8">
+          <h2 className="section-title text-lg md:text-3xl lg:text-4xl">Услуги</h2>
+          <div id="price" className="mt-4 md:mt-8 grid gap-2 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
             {services.map((service, idx) => {
               const Icon = service.icon
               return (
                 <motion.article
                   key={service.title}
-                  className="card"
+                  className="rounded-xl border border-white/10 bg-white/5 p-3 md:p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1"
                   variants={fadeUp}
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.45, delay: idx * 0.05 }}
                 >
-                  <Icon className="mb-4 text-accent" />
-                  <h3 className="text-xl font-semibold">{service.title}</h3>
-                  <p className="mt-2 text-accent">{service.price}</p>
+                  <Icon className="mb-2 md:mb-4 text-accent text-sm md:text-base" />
+                  <h3 className="text-xs md:text-xl font-semibold">{service.title}</h3>
+                  <p className="mt-1 md:mt-2 text-accent text-xs md:text-base">{service.price}</p>
                 </motion.article>
               )
             })}
           </div>
         </section>
 
-        <section id="standards" className="mx-auto max-w-6xl px-4 py-12 md:py-16 md:px-8">
-          <h2 className="section-title text-2xl md:text-3xl lg:text-4xl">Standard of Excellence</h2>
-          <div className="mt-8 grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <section id="standards" className="mx-auto max-w-6xl px-3 py-6 md:py-16 md:px-8">
+          <h2 className="section-title text-lg md:text-3xl lg:text-4xl">Standard of Excellence</h2>
+          <div className="mt-4 md:mt-8 grid gap-2 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
             {standards.map((item, idx) => {
               const Icon = item.icon
               return (
                 <motion.div
                   key={item.title}
-                  className="card text-center"
+                  className="rounded-xl border border-white/10 bg-white/5 p-3 md:p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1 text-center"
                   variants={fadeUp}
                   initial="hidden"
                   whileInView="show"
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.4, delay: idx * 0.06 }}
                 >
-                  <Icon className="mx-auto mb-3 text-accent" />
-                  <p>{item.title}</p>
+                  <Icon className="mx-auto mb-2 md:mb-3 text-accent text-sm md:text-base" />
+                  <p className="text-xs md:text-base">{item.title}</p>
                 </motion.div>
               )
             })}
           </div>
         </section>
 
-        <section id="booking" className="mx-auto max-w-3xl px-4 py-12 md:py-16 md:px-8 w-full">
+        <section id="booking" className="mx-auto max-w-3xl px-3 py-6 md:py-16 md:px-8 w-full">
           <motion.div
-            className="rounded-2xl border border-accent/35 bg-white/5 p-6"
+            className="rounded-2xl border border-accent/35 bg-white/5 p-4 md:p-6"
             variants={fadeUp}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <h2 className="section-title">Оформить заказ</h2>
-            <form className="mt-6 grid gap-4">
+            <h2 className="section-title text-lg md:text-3xl">Заказ</h2>
+            <form className="mt-3 md:mt-6 grid gap-2 md:gap-4">
               <div>
-                <label htmlFor="name" className="text-xs text-white/60">Ваше имя *</label>
-                <input id="name" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
+                <label htmlFor="name" className="text-xs text-white/60">Имя *</label>
+                <input id="name" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition focus:border-accent" />
               </div>
               <div>
                 <label htmlFor="phone" className="text-xs text-white/60">Телефон *</label>
-                <input id="phone" name="phone" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-xl border bg-black/50 px-4 py-3 outline-none transition ${
+                <input id="phone" name="phone" required placeholder="+7" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition ${
                   formData.phone.length > 2 && !isValidPhone(formData.phone)
                     ? 'border-red-500/50 focus:border-red-500'
                     : 'border-white/20 focus:border-accent'
                 }`} />
-                {formData.phone.length > 2 && !isValidPhone(formData.phone) && (
-                  <p className="mt-1 text-xs text-red-500">Введите корректный номер (+7XXXXXXXXXX)</p>
-                )}
               </div>
               <div>
                 <label htmlFor="service" className="text-xs text-white/60">Услуга *</label>
-                <select id="service" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent">
+                <select id="service" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition focus:border-accent">
                   {services.map((service) => (
-                    <option key={service.title} value={service.title}>{service.title}</option>
+                    <option key={service.title} value={service.title} className="text-black">{service.title}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label htmlFor="date" className="text-xs text-white/60">Дата поездки *</label>
-                <input id="date" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
+                <label htmlFor="date" className="text-xs text-white/60">Дата *</label>
+                <input id="date" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition focus:border-accent" />
               </div>
 
               <button
@@ -233,13 +230,13 @@ function App() {
                   }
                 }}
                 disabled={!canSubmit}
-                className={`mt-2 rounded-xl px-4 py-3 font-semibold transition ${
+                className={`mt-2 rounded-lg px-3 py-2 text-xs md:text-base font-semibold transition ${
                   canSubmit
                     ? 'bg-accent text-black hover:scale-[1.02] hover:shadow-glow cursor-pointer'
                     : 'bg-accent/40 text-black/60 cursor-not-allowed'
                 }`}
               >
-                Отправить в WhatsApp
+                WhatsApp
               </button>
             </form>
           </motion.div>
@@ -248,7 +245,7 @@ function App() {
 
       <a
         href="#booking"
-        className="fixed bottom-6 left-1/2 z-40 w-[calc(100%-2rem)] -translate-x-1/2 rounded-full bg-accent px-4 py-3 text-center font-semibold text-black shadow-glow transition hover:scale-[1.02] md:hidden text-sm md:text-base block"
+        className="fixed bottom-2 left-1/2 z-40 w-[calc(100%-1rem)] -translate-x-1/2 rounded-lg bg-accent px-3 py-2 text-center font-semibold text-black shadow-glow transition hover:scale-[1.02] md:hidden text-xs"
       >
         Заказать
       </a>
