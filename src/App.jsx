@@ -34,15 +34,30 @@ function App() {
   })
 
   const whatsappHref = useMemo(() => {
-    const message = `Заявка TransferPro:%0AИмя: ${formData.name || '-'}%0AТелефон: ${formData.phone || '-'}%0AУслуга: ${formData.service || '-'}%0AДата: ${formData.date || '-'}`
-    return `https://wa.me/${whatsappNumber}?text=${message}`
+    const message = [
+      'Заявка TransferPro:',
+      `Имя: ${formData.name || '-'}`,
+      `Телефон: ${formData.phone || '-'}`,
+      `Услуга: ${formData.service || '-'}`,
+      `Дата: ${formData.date || '-'}`,
+    ].join('\n')
+
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
   }, [formData])
 
   const updateField = (event) => {
     const { name, value } = event.target
     if (name === 'phone') {
       const digits = value.replace(/\D/g, '').slice(0, 11)
-      const formatted = digits.startsWith('7') ? `+${digits}` : `+7${digits.slice(1)}`
+
+      let normalized = digits
+      if (digits.startsWith('8')) {
+        normalized = `7${digits.slice(1)}`
+      } else if (!digits.startsWith('7')) {
+        normalized = `7${digits}`.slice(0, 11)
+      }
+
+      const formatted = `+${normalized}`
       setFormData((prev) => ({ ...prev, phone: formatted }))
       return
     }
