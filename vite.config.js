@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+const repoName = 'TransferPro'
+
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
-  // Relative assets path makes static deploy work even from a nested URL/path.
-  base: './',
-})
+  // GitHub Pages project site is served from /<repo>/.
+  // Using an explicit base avoids 404 on assets when URL is opened without trailing slash.
+  base: mode === 'production' ? `/${repoName}/` : '/',
+}))
