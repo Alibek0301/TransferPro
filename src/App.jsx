@@ -14,7 +14,6 @@ const services = [
 ]
 
 const standards = [
-  { title: 'Wi‑Fi в дороге', icon: Wifi },
   { title: 'Премиальная вода', icon: Droplets },
   { title: 'Профессиональный этикет', icon: Crown },
   { title: 'Безопасность и детские кресла', icon: ShieldCheck },
@@ -96,8 +95,8 @@ function App() {
       <main id="top">
         <section className="relative min-h-[85vh] overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1800&q=80"
-            alt="Премиальный автомобиль"
+            src="https://images.unsplash.com/photo-1606611013016-969c19d4eeee?auto=format&fit=crop&w=1800&q=80"
+            alt="Hongqi EQ-M5 - Премиальный электромобиль"
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-black/70" />
