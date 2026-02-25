@@ -93,6 +93,8 @@ function App() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden flex flex-col gap-1.5"
             aria-label="Menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <div className="w-6 h-0.5 bg-white"></div>
             <div className="w-6 h-0.5 bg-white"></div>
@@ -103,15 +105,37 @@ function App() {
           </a>
         </div>
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-black/95">
-            <nav className="flex flex-col gap-0 px-4 py-4 text-sm">
-              <a href="#services" className="py-2 hover:text-accent transition" onClick={() => setMobileMenuOpen(false)}>Услуги</a>
-              <a href="#standards" className="py-2 hover:text-accent transition" onClick={() => setMobileMenuOpen(false)}>Стандарты</a>
-              <a href="#price" className="py-2 hover:text-accent transition" onClick={() => setMobileMenuOpen(false)}>Прайс</a>
-              <a href="#booking" className="py-2 hover:text-accent transition" onClick={() => setMobileMenuOpen(false)}>Заказать</a>
-              <a href={whatsappHref} target="_blank" rel="noreferrer" className="mt-4 rounded-lg bg-accent px-4 py-2 text-center font-semibold text-black transition hover:scale-105 block">
-                WhatsApp
-              </a>
+          <div id="mobile-menu" className="md:hidden border-t border-white/10 bg-black/95">
+            <nav className="flex flex-col gap-2 px-4 py-4 text-sm">
+              <button
+                onClick={() => { setMobileMenuOpen(false); setMobileTab('services') }}
+                className="w-full text-left py-3 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition"
+                aria-label="Открыть раздел услуги"
+              >
+                Услуги
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setMobileTab('standards') }}
+                className="w-full text-left py-3 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition"
+                aria-label="Открыть раздел стандарты"
+              >
+                Стандарты
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setMobileTab('home') }}
+                className="w-full text-left py-3 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition"
+                aria-label="Перейти на главную"
+              >
+                Главная
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setMobileTab('booking') }}
+                className="w-full text-left py-3 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition"
+                aria-label="Открыть форму заказа"
+              >
+                Заказать
+              </button>
+              <a href={whatsappHref} target="_blank" rel="noreferrer" className="mt-2 w-full block py-3 text-center rounded-lg bg-accent text-black font-semibold">WhatsApp</a>
             </nav>
           </div>
         )}
@@ -135,10 +159,15 @@ function App() {
                 {services.map((s) => {
                   const Icon = s.icon
                   return (
-                    <div key={s.title} className="flex flex-col items-center text-center text-xs">
+                    <button
+                      key={s.title}
+                      onClick={() => { setFormData(prev => ({ ...prev, service: s.title })); setMobileTab('booking') }}
+                      className="flex flex-col items-center text-center text-xs py-2 px-1 rounded-lg bg-white/3 hover:bg-white/5"
+                      aria-label={`Выбрать услугу ${s.title}`}
+                    >
                       <Icon className="text-accent" />
-                      <span className="mt-1">{s.title.split(' ')[0]}</span>
-                    </div>
+                      <span className="mt-1 text-[10px]">{s.title}</span>
+                    </button>
                   )
                 })}
               </div>
