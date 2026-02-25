@@ -174,6 +174,23 @@ function App() {
             </motion.div>
           )}
 
+          {mobileTab === 'standards' && (
+            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-lg">Стандарты</h2>
+              <div className="mt-2 grid grid-cols-2 gap-2 w-full">
+                {standards.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <button key={item.title} className="flex items-center gap-2 text-left p-2 rounded-lg bg-white/3 hover:bg-white/5 text-xs" aria-label={item.title} onClick={() => { setMobileTab('booking') }}>
+                      <Icon className="text-accent" />
+                      <span className="truncate">{item.title}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+
           {mobileTab === 'booking' && (
             <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <h2 className="section-title text-lg">Заказ</h2>
@@ -195,11 +212,12 @@ function App() {
 
         <div className="border-t border-white/10 p-2 bg-black/95">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex gap-2">
-              <button onClick={() => setMobileTab('home')} className={`px-3 py-2 rounded-lg text-xs ${mobileTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`}>Главная</button>
-              <button onClick={() => setMobileTab('services')} className={`px-3 py-2 rounded-lg text-xs ${mobileTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`}>Услуги</button>
-              <button onClick={() => setMobileTab('booking')} className={`px-3 py-2 rounded-lg text-xs ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`}>Заказ</button>
-            </div>
+            <div className="flex gap-2 w-full">
+                <button onClick={() => setMobileTab('home')} className={`flex-1 text-center px-3 py-2 rounded-lg text-xs ${mobileTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Главная">Главная</button>
+                <button onClick={() => setMobileTab('services')} className={`flex-1 text-center px-3 py-2 rounded-lg text-xs ${mobileTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Услуги">Услуги</button>
+                <button onClick={() => setMobileTab('standards')} className={`flex-1 text-center px-3 py-2 rounded-lg text-xs ${mobileTab === 'standards' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Стандарты">Стандарты</button>
+                <button onClick={() => setMobileTab('booking')} className={`flex-1 text-center px-3 py-2 rounded-lg text-xs ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Заказ">Заказ</button>
+              </div>
             <div className="flex gap-2">
               <a href={whatsappHref} target="_blank" rel="noreferrer" className="px-3 py-2 rounded-lg bg-accent text-black text-xs">WhatsApp</a>
             </div>
