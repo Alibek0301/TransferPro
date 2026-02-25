@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Road, UserCheck } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck } from 'lucide-react'
 
 const whatsappNumber = '77000000000'
 
@@ -9,7 +9,7 @@ const services = [
   { title: 'Развозка Smart Parents', price: 'от 300 000 ₸ / мес', icon: Baby },
   { title: 'Бизнес-сопровождение', price: 'от 10 000 ₸ / час', icon: BriefcaseBusiness },
   { title: 'Корпоративный B2B', price: 'Индивидуальный тариф', icon: Building2 },
-  { title: 'Премиальный Межгород', price: 'По запросу', icon: Road },
+  { title: 'Премиальный Межгород', price: 'По запросу', icon: Car },
   { title: 'Трезвый водитель', price: 'от 15 000 ₸', icon: UserCheck },
 ]
 
