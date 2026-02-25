@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-base text-white font-sans antialiased;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-serif text-accent;
+}
+
+.card {
+  @apply rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1;
+}
