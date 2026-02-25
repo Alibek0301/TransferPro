@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck } from 'lucide-react'
 
-const whatsappNumber = '77000000000'
+const whatsappNumber = '77781556699'
 
 const services = [
   { title: 'VIP Трансфер Аэропорт', price: 'от 15 000 ₸', icon: Plane },
@@ -32,6 +32,18 @@ function App() {
     service: services[0].title,
     date: '',
   })
+
+  const getTodayDate = () => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
+
+  const isValidPhone = (phone) => {
+    const digitsOnly = phone.replace(/\D/g, '')
+    return digitsOnly.length === 11 && digitsOnly.startsWith('7')
+  }
+
+  const canSubmit = formData.name.trim() && isValidPhone(formData.phone) && formData.date
 
   const whatsappHref = useMemo(() => {
     const message = [
@@ -168,19 +180,51 @@ function App() {
             viewport={{ once: true, amount: 0.3 }}
           >
             <h2 className="section-title">Оформить заказ</h2>
-            <form className="mt-6 grid gap-4" onSubmit={(event) => event.preventDefault()}>
-              <input name="name" required placeholder="Ваше имя" value={formData.name} onChange={updateField} className="rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
-              <input name="phone" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className="rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
-              <select name="service" value={formData.service} onChange={updateField} className="rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent">
-                {services.map((service) => (
-                  <option key={service.title} value={service.title}>{service.title}</option>
-                ))}
-              </select>
-              <input name="date" type="date" value={formData.date} onChange={updateField} className="rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
+            <form className="mt-6 grid gap-4">
+              <div>
+                <label htmlFor="name" className="text-xs text-white/60">Ваше имя *</label>
+                <input id="name" name="name" required placeholder="Иван Петров" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
+              </div>
+              <div>
+                <label htmlFor="phone" className="text-xs text-white/60">Телефон *</label>
+                <input id="phone" name="phone" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-xl border bg-black/50 px-4 py-3 outline-none transition ${
+                  formData.phone.length > 2 && !isValidPhone(formData.phone)
+                    ? 'border-red-500/50 focus:border-red-500'
+                    : 'border-white/20 focus:border-accent'
+                }`} />
+                {formData.phone.length > 2 && !isValidPhone(formData.phone) && (
+                  <p className="mt-1 text-xs text-red-500">Введите корректный номер (+7XXXXXXXXXX)</p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="service" className="text-xs text-white/60">Услуга *</label>
+                <select id="service" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent">
+                  {services.map((service) => (
+                    <option key={service.title} value={service.title}>{service.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="date" className="text-xs text-white/60">Дата поездки *</label>
+                <input id="date" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-xl border border-white/20 bg-black/50 px-4 py-3 outline-none transition focus:border-accent" />
+              </div>
 
-              <a href={whatsappHref} target="_blank" rel="noreferrer" className="mt-2 rounded-xl bg-accent px-4 py-3 text-center font-semibold text-black transition hover:scale-[1.02] hover:shadow-glow">
+              <button
+                type="button"
+                onClick={() => {
+                  if (canSubmit) {
+                    window.open(whatsappHref, '_blank')
+                  }
+                }}
+                disabled={!canSubmit}
+                className={`mt-2 rounded-xl px-4 py-3 font-semibold transition ${
+                  canSubmit
+                    ? 'bg-accent text-black hover:scale-[1.02] hover:shadow-glow cursor-pointer'
+                    : 'bg-accent/40 text-black/60 cursor-not-allowed'
+                }`}
+              >
                 Отправить в WhatsApp
-              </a>
+              </button>
             </form>
           </motion.div>
         </section>
