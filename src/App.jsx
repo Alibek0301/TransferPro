@@ -27,6 +27,7 @@ const fadeUp = {
 
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileTab, setMobileTab] = useState('home')
   const [formData, setFormData] = useState({
     name: '',
     phone: '+7',
@@ -116,30 +117,68 @@ function App() {
         )}
       </header>
 
-      <main id="top">
-        <section className="relative min-h-screen md:min-h-[85vh] overflow-hidden bg-gradient-to-b from-black to-black/90 flex items-center">
-          <motion.div
-            className="relative mx-auto flex min-h-screen md:min-h-[85vh] max-w-6xl flex-col justify-center px-3 py-8 md:py-24 md:px-8 w-full"
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            transition={{ duration: 0.7 }}
-          >
-            <p className="mb-2 text-accent text-xs md:text-base">Астана · Premium Transport Service</p>
-            <h1 className="max-w-3xl font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-tight">
-              Ваш персональный автопарк в столице
-            </h1>
-            <p className="mt-3 md:mt-5 max-w-2xl text-white/80 text-xs md:text-base lg:text-lg leading-relaxed">
-              Безопасность, пунктуальность и безупречный статус в каждой поездке. От деловых маршрутов до персонального сопровождения семьи.
-            </p>
-            <a
-              href="#booking"
-              className="mt-4 md:mt-8 w-fit rounded-full border border-accent bg-accent px-4 md:px-6 py-2 md:py-3 text-xs md:text-base font-semibold text-black transition hover:scale-105 hover:shadow-glow"
-            >
-              Забронировать поездку
-            </a>
-          </motion.div>
-        </section>
+      {/* Mobile single-screen tabbed view */}
+      <div className="md:hidden h-screen w-full flex flex-col bg-gradient-to-b from-black to-black/90">
+        <div className="flex-1 flex flex-col justify-center items-start px-4">
+          {mobileTab === 'home' && (
+            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <p className="mb-1 text-accent text-xs">Астана · Premium Transport Service</p>
+              <h1 className="font-serif text-2xl leading-tight">Ваш персональный автопарк в столице</h1>
+              <p className="mt-2 text-white/80 text-xs">Безопасность, пунктуальность и безупречный статус в каждой поездке.</p>
+            </motion.div>
+          )}
+
+          {mobileTab === 'services' && (
+            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-lg">Услуги</h2>
+              <div className="mt-2 grid grid-cols-3 gap-2 w-full">
+                {services.map((s) => {
+                  const Icon = s.icon
+                  return (
+                    <div key={s.title} className="flex flex-col items-center text-center text-xs">
+                      <Icon className="text-accent" />
+                      <span className="mt-1">{s.title.split(' ')[0]}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {mobileTab === 'booking' && (
+            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-lg">Заказ</h2>
+              <div className="mt-2 w-full">
+                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs outline-none mb-2" />
+                <input id="phone_mobile" name="phone" placeholder="+7" value={formData.phone} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs outline-none mb-2" />
+                <div className="flex gap-2">
+                  <select name="service" value={formData.service} onChange={updateField} className="flex-1 rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs outline-none">
+                    {services.map((service) => (
+                      <option key={service.title} value={service.title}>{service.title}</option>
+                    ))}
+                  </select>
+                  <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} className="w-32 rounded-lg border border-white/20 bg-black/50 px-2 py-2 text-xs outline-none" />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        <div className="border-t border-white/10 p-2 bg-black/95">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex gap-2">
+              <button onClick={() => setMobileTab('home')} className={`px-3 py-2 rounded-lg text-xs ${mobileTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`}>Главная</button>
+              <button onClick={() => setMobileTab('services')} className={`px-3 py-2 rounded-lg text-xs ${mobileTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`}>Услуги</button>
+              <button onClick={() => setMobileTab('booking')} className={`px-3 py-2 rounded-lg text-xs ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`}>Заказ</button>
+            </div>
+            <div className="flex gap-2">
+              <a href={whatsappHref} target="_blank" rel="noreferrer" className="px-3 py-2 rounded-lg bg-accent text-black text-xs">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main id="top" className="hidden md:block">
 
         <section id="services" className="mx-auto max-w-6xl px-3 py-6 md:py-16 md:px-8">
           <h2 className="section-title text-lg md:text-3xl lg:text-4xl">Услуги</h2>
