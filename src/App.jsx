@@ -35,6 +35,7 @@ function App() {
     phone: '+7',
     service: services[0].title,
     date: '',
+    comment: '',
   })
 
   const getTodayDate = () => {
@@ -252,20 +253,40 @@ function App() {
           )}
 
           {mobileTab === 'booking' && (
-            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <h2 className="section-title text-lg">Заказ</h2>
-              <div className="mt-2 w-full">
-                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs outline-none mb-2" />
-                <input id="phone_mobile" name="phone" placeholder="+7" value={formData.phone} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs outline-none mb-2" />
-                <div className="flex gap-2">
-                  <select name="service" value={formData.service} onChange={updateField} className="flex-1 rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs outline-none">
-                    {services.map((service) => (
-                      <option key={service.title} value={service.title}>{service.title}</option>
-                    ))}
-                  </select>
-                  <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} className="w-32 rounded-lg border border-white/20 bg-black/50 px-2 py-2 text-xs outline-none" />
-                </div>
+            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <div>
+                <h2 className="section-title text-lg">Готовы оценить новый уровень комфорта?</h2>
+                <p className="mt-2 text-white/70 text-xs leading-relaxed">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.</p>
               </div>
+
+              <div className="space-y-2 text-xs">
+                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
+                <input id="phone_mobile" name="phone" placeholder="+7" value={formData.phone} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
+                <select name="service" value={formData.service} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition">
+                  {services.map((service) => (
+                    <option key={service.title} value={service.title}>{service.title}</option>
+                  ))}
+                </select>
+                <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
+                <textarea name="comment" placeholder="Дополнительные пожелания и комментарии..." value={formData.comment} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition resize-none" rows="3" />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (canSubmit) {
+                    window.open(whatsappHref, '_blank')
+                  }
+                }}
+                disabled={!canSubmit}
+                className={`w-full rounded-lg px-4 py-3 font-semibold text-sm transition ${
+                  canSubmit
+                    ? 'bg-accent text-black hover:bg-accent/90 cursor-pointer'
+                    : 'bg-accent/40 text-black/60 cursor-not-allowed'
+                }`}
+              >
+                Заказать сейчас
+              </button>
             </motion.div>
           )}
         </div>
@@ -393,6 +414,7 @@ function App() {
       <a
         href="#booking"
         className="fixed bottom-2 left-1/2 z-40 w-[calc(100%-1rem)] -translate-x-1/2 rounded-lg bg-accent px-3 py-2 text-center font-semibold text-black shadow-glow transition hover:scale-[1.02] md:hidden text-xs"
+        onClick={(e) => { e.preventDefault(); setMobileTab('booking') }}
       >
         Заказать
       </a>
