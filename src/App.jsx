@@ -92,6 +92,7 @@ function App() {
             <a href="#standards" className="hover:text-accent transition">Стандарты</a>
             <a href="#price" className="hover:text-accent transition">Прайс</a>
             <a href="#booking" className="hover:text-accent transition">Заказать</a>
+            <a href="#contacts" className="hover:text-accent transition">Контакты</a>
           </nav>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -103,12 +104,18 @@ function App() {
             <div className="w-6 h-0.5 bg-white"></div>
             <div className="w-6 h-0.5 bg-white"></div>
             <div className="w-6 h-0.5 bg-white"></div>
-          </button>
-          <a href={whatsappHref} target="_blank" rel="noreferrer" className="hidden md:block rounded-full bg-accent px-4 py-2 text-xs font-semibold text-black transition hover:scale-105 hover:shadow-glow md:text-sm">
-            WhatsApp
-          </a>
-        </div>
-        {mobileMenuOpen && (
+            <button
+              className="flex-1 rounded-md px-3 py-2 text-sm font-medium"
+              onClick={() => setMobileTab('order')}
+            >
+              Заказать
+            </button>
+            <button
+              className="flex-1 rounded-md px-3 py-2 text-sm font-medium"
+              onClick={() => setMobileTab('contacts')}
+            >
+              Контакты
+            </button>
           <div id="mobile-menu" className="md:hidden border-t border-white/10 bg-black/95">
             <nav className="flex flex-col gap-2 px-4 py-4 text-sm">
               <button
@@ -131,6 +138,13 @@ function App() {
                 aria-label="Перейти на главную"
               >
                 Главная
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setMobileTab('contacts') }}
+                className="w-full text-left py-3 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition"
+                aria-label="Контакты"
+              >
+                Контакты
               </button>
               <button
                 onClick={() => { setMobileMenuOpen(false); setMobileTab('booking') }}
@@ -253,6 +267,17 @@ function App() {
             </motion.div>
           )}
 
+          {mobileTab === 'contacts' && (
+            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-lg">Контакты</h2>
+              <div className="space-y-2 text-white/90 text-sm">
+                <a href="tel:+77781556699" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 778 155 6699</a>
+                <a href="tel:+77089389145" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 708 938 9145</a>
+                <a href="tel:+77771351387" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 777 135 1387</a>
+              </div>
+            </motion.div>
+          )}
+
           {mobileTab === 'booking' && (
             <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <div>
@@ -308,6 +333,15 @@ function App() {
       </div>
 
       <main id="top" className="hidden md:block">
+
+        <section id="contacts" className="mx-auto max-w-6xl px-4 py-12 md:px-8">
+          <h2 className="section-title">Контакты</h2>
+          <div className="mt-4 flex gap-4">
+            <a href="tel:+77781556699" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">+7 778 155 6699</a>
+            <a href="tel:+77089389145" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">+7 708 938 9145</a>
+            <a href="tel:+77771351387" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">+7 777 135 1387</a>
+          </div>
+        </section>
 
         <section id="services" className="mx-auto max-w-6xl px-3 py-6 md:py-16 md:px-8">
           <h2 className="section-title text-lg md:text-3xl lg:text-4xl">Услуги</h2>
