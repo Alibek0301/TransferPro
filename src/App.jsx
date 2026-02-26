@@ -153,16 +153,16 @@ function App() {
 
       {/* Mobile single-screen tabbed view */}
       <div onPointerDown={closeMobileMenu} className="md:hidden h-screen w-full flex flex-col bg-gradient-to-b from-black to-black/90">
-        <div className="flex-1 flex flex-col justify-center items-start px-4">
+        <div className="flex-1 flex flex-col justify-center items-start px-3 sm:px-4 md:px-6">
           {mobileTab === 'home' && (
-            <motion.div className="w-full space-y-4 bg-gradient-to-b from-black via-amber-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3 sm:space-y-4 bg-gradient-to-b from-black via-amber-950/20 to-black rounded-xl p-4 sm:p-5 md:p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <div className="border-l-2 border-accent pl-3">
-                <p className="text-accent text-xs font-semibold">Астана · Premium Transport Service</p>
+                <p className="text-accent text-xs sm:text-sm font-semibold">Астана · Premium Transport Service</p>
               </div>
               
-              <h1 className="font-serif text-2xl leading-tight text-white">Ваш персональный автопарк в столице</h1>
+              <h1 className="font-serif text-xl sm:text-2xl md:text-3xl leading-tight text-white">Ваш персональный автопарк в столице</h1>
               
-              <div className="space-y-3 text-white/75 text-sm leading-relaxed">
+              <div className="space-y-2 sm:space-y-3 text-white text-xs sm:text-sm md:text-base leading-relaxed">
                 <p>
                   Мы не просто предоставляем автомобиль с водителем — мы берем на себя <span className="text-accent font-semibold">полную ответственность</span> за ваш комфорт на дорогах столицы.
                 </p>
@@ -178,7 +178,7 @@ function App() {
               
               <button
                 onClick={() => setMobileTab('booking')}
-                className="w-full mt-4 py-3 rounded-lg bg-accent text-black font-semibold text-sm hover:bg-accent/90 transition"
+                className="w-full mt-3 sm:mt-4 py-2 sm:py-3 rounded-lg bg-accent text-black font-semibold text-xs sm:text-sm md:text-base hover:bg-accent/90 transition"
               >
                 Начать заказ
               </button>
@@ -186,10 +186,10 @@ function App() {
           )}
 
           {mobileTab === 'services' && (
-            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-blue-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <h2 className="section-title text-lg">Услуги</h2>
+            <motion.div className="w-full space-y-2 sm:space-y-3 bg-gradient-to-b from-black via-blue-950/20 to-black rounded-xl p-4 sm:p-5 md:p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-base sm:text-lg md:text-xl">Услуги</h2>
               
-              <div className="space-y-3 text-white/75 text-xs leading-relaxed">
+              <div className="space-y-2 sm:space-y-3 text-white/75 text-xs sm:text-sm leading-relaxed">
                 <button
                   onClick={() => { setFormData(prev => ({ ...prev, service: services[0].title })); setMobileTab('booking') }}
                   className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent"
@@ -234,17 +234,17 @@ function App() {
           )}
 
           {mobileTab === 'standards' && (
-            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-purple-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <h2 className="section-title text-lg">Стандарты</h2>
+            <motion.div className="w-full space-y-2 sm:space-y-3 bg-gradient-to-b from-black via-purple-950/20 to-black rounded-xl p-4 sm:p-5 md:p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-base sm:text-lg md:text-xl">Стандарты</h2>
               
-              <div className="space-y-3 text-white/75 text-xs leading-relaxed">
+              <div className="space-y-2 sm:space-y-3 text-white/75 text-xs sm:text-sm leading-relaxed">
                 {standards.map((item) => {
                   const Icon = item.icon
                   return (
                     <button
                       key={item.title}
                       onClick={() => { setMobileTab('booking') }}
-                      className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent flex items-start gap-3"
+                      className="w-full text-left p-2 sm:p-3 md:p-4 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent flex items-start gap-2 sm:gap-3"
                       aria-label={item.title}
                     >
                       <Icon className="text-accent flex-shrink-0 mt-0.5" size={20} />
@@ -260,33 +260,33 @@ function App() {
           )}
 
           {mobileTab === 'contacts' && (
-            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-emerald-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <h2 className="section-title text-lg">Контакты</h2>
-              <div className="space-y-2 text-white/90 text-sm">
-                <a href="tel:+77781556699" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 778 155 6699</a>
-                <a href="tel:+77089389145" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 708 938 9145</a>
-                <a href="tel:+77771351387" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 777 135 1387</a>
+            <motion.div className="w-full space-y-2 sm:space-y-3 bg-gradient-to-b from-black via-emerald-950/20 to-black rounded-xl p-4 sm:p-5 md:p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="section-title text-base sm:text-lg md:text-xl">Контакты</h2>
+              <div className="space-y-2 text-white/90 text-xs sm:text-sm md:text-base">
+                <a href="tel:+77781556699" className="block w-full p-2 sm:p-3 rounded-lg bg-white/5 hover:bg-white/8 transition text-xs sm:text-sm md:text-base">+7 778 155 6699</a>
+                <a href="tel:+77089389145" className="block w-full p-2 sm:p-3 rounded-lg bg-white/5 hover:bg-white/8 transition text-xs sm:text-sm md:text-base">+7 708 938 9145</a>
+                <a href="tel:+77771351387" className="block w-full p-2 sm:p-3 rounded-lg bg-white/5 hover:bg-white/8 transition text-xs sm:text-sm md:text-base">+7 777 135 1387</a>
               </div>
             </motion.div>
           )}
 
           {mobileTab === 'booking' && (
-            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-rose-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-2 sm:space-y-3 bg-gradient-to-b from-black via-rose-950/20 to-black rounded-xl p-4 sm:p-5 md:p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <div>
-                <h2 className="section-title text-lg">Готовы оценить новый уровень комфорта?</h2>
-                <p className="mt-2 text-white/70 text-xs leading-relaxed">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.</p>
+                <h2 className="section-title text-base sm:text-lg md:text-xl">Готовы оценить новый уровень комфорта?</h2>
+                <p className="mt-2 text-white/70 text-xs sm:text-sm leading-relaxed">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.</p>
               </div>
 
-              <div className="space-y-2 text-xs">
-                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
-                <input id="phone_mobile" name="phone" type="tel" inputMode="tel" pattern="\\+7[0-9]{10}" placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
-                <select name="service" value={formData.service} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition">
+              <div className="space-y-2 text-xs sm:text-sm md:text-base">
+                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm outline-none focus:border-accent transition" />
+                <input id="phone_mobile" name="phone" type="tel" inputMode="tel" pattern="\\+7[0-9]{10}" placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm outline-none focus:border-accent transition" />
+                <select name="service" value={formData.service} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm outline-none focus:border-accent transition">
                   {services.map((service) => (
                     <option key={service.title} value={service.title}>{service.title}</option>
                   ))}
                 </select>
-                <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
-                <textarea name="comment" placeholder="Дополнительные пожелания и комментарии..." value={formData.comment} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition resize-none" rows="3" />
+                <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm outline-none focus:border-accent transition" />
+                <textarea name="comment" placeholder="Дополнительные пожелания и комментарии..." value={formData.comment} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm outline-none focus:border-accent transition resize-none" rows="3" />
               </div>
 
               <button
@@ -297,11 +297,11 @@ function App() {
                   }
                 }}
                 disabled={!canSubmit}
-                className={`w-full rounded-lg px-4 py-3 font-semibold text-sm transition ${
+                className={`w-full rounded-lg px-3 sm:px-4 py-2 sm:py-3 font-semibold text-xs sm:text-sm transition ${
                   canSubmit
                     ? 'bg-accent text-black hover:bg-accent/90 cursor-pointer'
                     : 'bg-accent/40 text-black/60 cursor-not-allowed'
-                }`}
+                }`}}
               >
                 Заказать сейчас
               </button>
@@ -309,17 +309,17 @@ function App() {
           )}
         </div>
 
-        <div className="border-t border-white/10 p-2 bg-black/95">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex gap-2 w-full overflow-x-auto">
-                <button onClick={() => setMobileTab('home')} className={`flex-1 text-center px-2 py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Главная">Главная</button>
-                <button onClick={() => setMobileTab('services')} className={`flex-1 text-center px-2 py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Услуги">Услуги</button>
-                <button onClick={() => setMobileTab('standards')} className={`flex-1 text-center px-2 py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'standards' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Стандарты">Стандарты</button>
-                <button onClick={() => setMobileTab('contacts')} className={`flex-1 text-center px-2 py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'contacts' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Контакты">Контакты</button>
-                <button onClick={() => setMobileTab('booking')} className={`flex-1 text-center px-2 py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Заказ">Заказ</button>
+        <div className="border-t border-white/10 p-1 sm:p-2 bg-black/95">
+          <div className="flex items-center justify-between gap-1 sm:gap-2">
+            <div className="flex gap-1 sm:gap-2 w-full overflow-x-auto">
+                <button onClick={() => setMobileTab('home')} className={`flex-1 text-center px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Главная">Главная</button>
+                <button onClick={() => setMobileTab('services')} className={`flex-1 text-center px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Услуги">Услуги</button>
+                <button onClick={() => setMobileTab('standards')} className={`flex-1 text-center px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'standards' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Стандарты">Стандарты</button>
+                <button onClick={() => setMobileTab('contacts')} className={`flex-1 text-center px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'contacts' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Контакты">Контакты</button>
+                <button onClick={() => setMobileTab('booking')} className={`flex-1 text-center px-1 sm:px-2 py-1.5 sm:py-2 rounded-lg text-xs whitespace-nowrap ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80'}`} aria-label="Заказ">Заказ</button>
               </div>
-            <div className="flex gap-2">
-              <a href={whatsappHref} target="_blank" rel="noreferrer" className="px-3 py-2 rounded-lg bg-accent text-black text-xs">WA</a>
+            <div className="flex gap-1 sm:gap-2">
+              <a href={whatsappHref} target="_blank" rel="noreferrer" className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-accent text-black text-xs whitespace-nowrap">WA</a>
             </div>
           </div>
         </div>
