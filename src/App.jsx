@@ -155,7 +155,7 @@ function App() {
       <div onPointerDown={closeMobileMenu} className="md:hidden h-screen w-full flex flex-col bg-gradient-to-b from-black to-black/90">
         <div className="flex-1 flex flex-col justify-center items-start px-4">
           {mobileTab === 'home' && (
-            <motion.div className="w-full space-y-4" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-4 bg-gradient-to-b from-black via-amber-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <div className="border-l-2 border-accent pl-3">
                 <p className="text-accent text-xs font-semibold">Астана · Premium Transport Service</p>
               </div>
@@ -186,7 +186,7 @@ function App() {
           )}
 
           {mobileTab === 'services' && (
-            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-blue-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <h2 className="section-title text-lg">Услуги</h2>
               
               <div className="space-y-3 text-white/75 text-xs leading-relaxed">
@@ -234,7 +234,7 @@ function App() {
           )}
 
           {mobileTab === 'standards' && (
-            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-purple-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <h2 className="section-title text-lg">Стандарты</h2>
               
               <div className="space-y-3 text-white/75 text-xs leading-relaxed">
@@ -260,7 +260,7 @@ function App() {
           )}
 
           {mobileTab === 'contacts' && (
-            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-emerald-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <h2 className="section-title text-lg">Контакты</h2>
               <div className="space-y-2 text-white/90 text-sm">
                 <a href="tel:+77781556699" className="block w-full p-3 rounded-lg bg-white/5 hover:bg-white/8 transition">+7 778 155 6699</a>
@@ -271,7 +271,7 @@ function App() {
           )}
 
           {mobileTab === 'booking' && (
-            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-rose-950/20 to-black rounded-xl p-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <div>
                 <h2 className="section-title text-lg">Готовы оценить новый уровень комфорта?</h2>
                 <p className="mt-2 text-white/70 text-xs leading-relaxed">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.</p>
@@ -341,7 +341,7 @@ function App() {
         <div className="flex-1 flex items-center justify-center px-8 py-12">
           <div className="w-full max-w-6xl">
             {desktopTab === 'home' && (
-              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black via-amber-950/30 to-black rounded-2xl p-12" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
                 <div className="border-l-4 border-accent pl-6">
                   <p className="text-accent text-sm font-semibold">Астана · Premium Transport Service</p>
                 </div>
@@ -372,7 +372,7 @@ function App() {
             )}
 
             {desktopTab === 'services' && (
-              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black via-blue-950/30 to-black rounded-2xl p-12" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
                 <h2 className="section-title text-4xl text-accent">Услуги</h2>
                 
                 <div className="grid gap-4 grid-cols-3">
@@ -399,7 +399,7 @@ function App() {
             )}
 
             {desktopTab === 'standards' && (
-              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black via-purple-950/30 to-black rounded-2xl p-12" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
                 <h2 className="section-title text-4xl text-accent">Standard of Excellence</h2>
                 
                 <div className="grid gap-4 grid-cols-3">
@@ -426,7 +426,7 @@ function App() {
             )}
 
             {desktopTab === 'contacts' && (
-              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black via-emerald-950/30 to-black rounded-2xl p-12" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
                 <h2 className="section-title text-4xl text-accent">Контакты</h2>
                 <p className="text-white text-base mb-6">Позвоните или напишите в WhatsApp — мы на связи 24/7</p>
                 <div className="flex gap-4 flex-wrap">
@@ -439,7 +439,7 @@ function App() {
 
             {desktopTab === 'booking' && (
               <motion.div
-                className="rounded-2xl border border-accent/35 bg-white/5 p-8 max-w-2xl"
+                className="rounded-2xl border border-accent/35 bg-gradient-to-br from-rose-950/20 via-black to-black p-8 max-w-2xl"
                 variants={fadeUp}
                 initial="hidden"
                 whileInView="show"
