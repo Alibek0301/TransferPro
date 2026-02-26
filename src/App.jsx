@@ -389,7 +389,7 @@ function App() {
                         transition={{ duration: 0.45, delay: idx * 0.05 }}
                       >
                         <Icon className="mb-4 text-accent text-base" />
-                        <h3 className="text-xl font-semibold">{service.title}</h3>
+                        <h3 className="text-xl font-semibold text-white">{service.title}</h3>
                         <p className="mt-2 text-accent text-base">{service.price}</p>
                       </motion.article>
                     )
@@ -416,7 +416,7 @@ function App() {
                         transition={{ duration: 0.4, delay: idx * 0.06 }}
                       >
                         <Icon className="mx-auto mb-3 text-accent text-base" />
-                        <p className="text-base text-center mb-3">{item.title}</p>
+                        <p className="text-base text-center mb-3 text-white">{item.title}</p>
                         <p className="text-white/70 text-sm text-center">{item.desc}</p>
                       </motion.div>
                     )
@@ -451,11 +451,11 @@ function App() {
                 <form className="space-y-4">
                   <div>
                     <label htmlFor="name_desktop" className="text-sm text-white/60">Имя *</label>
-                    <input id="name_desktop" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent" />
+                    <input id="name_desktop" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white placeholder-white/40 outline-none transition focus:border-accent" />
                   </div>
                   <div>
                     <label htmlFor="phone_desktop" className="text-sm text-white/60">Телефон *</label>
-                    <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border bg-black/50 px-4 py-2 text-base outline-none transition ${
+                    <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border bg-black/50 px-4 py-2 text-base text-white placeholder-white/40 outline-none transition ${
                       formData.phone.length > 2 && !isValidPhone(formData.phone)
                         ? 'border-red-500/50 focus:border-red-500'
                         : 'border-white/20 focus:border-accent'
@@ -463,7 +463,7 @@ function App() {
                   </div>
                   <div>
                     <label htmlFor="service_desktop" className="text-sm text-white/60">Услуга *</label>
-                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent">
+                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white outline-none transition focus:border-accent">
                       {services.map((service) => (
                         <option key={service.title} value={service.title} className="text-black">{service.title}</option>
                       ))}
@@ -471,11 +471,11 @@ function App() {
                   </div>
                   <div>
                     <label htmlFor="date_desktop" className="text-sm text-white/60">Дата *</label>
-                    <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent" />
+                    <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white outline-none transition focus:border-accent" />
                   </div>
                   <div>
                     <label htmlFor="comment_desktop" className="text-sm text-white/60">Комментарий</label>
-                    <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent resize-none" rows="3" />
+                    <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white placeholder-white/40 outline-none transition focus:border-accent resize-none" rows="3" />
                   </div>
 
                   <button
