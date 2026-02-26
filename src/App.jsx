@@ -1,8 +1,44 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Moon, Sun, Globe, Heart, Trash2 } from 'lucide-react'
 
 const whatsappNumber = '77781556699'
+
+const translations = {
+  ru: {
+    home: 'Главная',
+    services: 'Услуги',
+    standards: 'Стандарты',
+    contacts: 'Контакты',
+    booking: 'Заказ',
+    history: 'История',
+    favorites: 'Избранное',
+    saved: '✓ Сохранено',
+    calculator: '💰 Калькулятор',
+  },
+  kk: {
+    home: 'Басты бет',
+    services: 'Қызметтер',
+    standards: 'Стандарттар',
+    contacts: 'Байланыс',
+    booking: 'Тапсыс',
+    history: 'Тарихы',
+    favorites: 'Ұнайтқандар',
+    saved: '✓ Сақталды',
+    calculator: '💰 Калькулятор',
+  },
+  en: {
+    home: 'Home',
+    services: 'Services',
+    standards: 'Standards',
+    contacts: 'Contacts',
+    booking: 'Booking',
+    history: 'History',
+    favorites: 'Favorites',
+    saved: '✓ Saved',
+    calculator: '💰 Calculator',
+  },
+}
 
 const services = [
   {
@@ -103,14 +139,60 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true')
+  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ru')
+  const [savedSince, setSavedSince] = useState('')
+  const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
+  const [distance, setDistance] = useState('')
+  const [carClass, setCarClass] = useState('comfort')
+  
   const closeMobileMenu = () => setMobileMenuOpen(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '+7',
-    service: services[0].title,
-    date: '',
-    comment: '',
+  const t = translations[language]
+  
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('formData')
+    return saved ? JSON.parse(saved) : {
+      name: '',
+      phone: '+7',
+      service: services[0].title,
+      date: '',
+      comment: '',
+      address: '',
+    }
   })
+
+  // Сохранение темы
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode)
+    document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light'
+  }, [darkMode])
+
+  // Сохранение языка
+  useEffect(() => {
+    localStorage.setItem('language', language)
+  }, [language])
+
+  // Автосохранение формы
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData))
+    setSavedSince('just-now')
+    const timer = setTimeout(() => setSavedSince(''), 2000)
+    return () => clearTimeout(timer)
+  }, [formData])
+
+  // Калькулятор стоимости
+  const calculatePrice = () => {
+    if (!distance || isNaN(distance)) return 0
+    const distNum = parseFloat(distance)
+    const basePrice = { standard: 100, comfort: 150, business: 250, premium: 400 }
+    const pricePerKm = basePrice[carClass] || 100
+    return Math.round(distNum * pricePerKm)
+  }
+
+  const totalPrice = calculatePrice()
+  const commission = Math.round(totalPrice * 0.1)
+  const finalPrice = totalPrice + commission
 
   const getTodayDate = () => {
     const today = new Date()
@@ -124,6 +206,31 @@ function App() {
 
   const canSubmit = formData.name.trim() && isValidPhone(formData.phone) && formData.date
 
+  const addToHistory = () => {
+    const newOrder = { ...formData, id: Date.now(), createdAt: new Date().toLocaleString() }
+    setOrderHistory([newOrder, ...orderHistory.slice(0, 9)])
+    localStorage.setItem('orderHistory', JSON.stringify([newOrder, ...orderHistory.slice(0, 9)]))
+  }
+
+  const repeatOrder = (order) => {
+    setFormData({ name: order.name, phone: order.phone, service: order.service, date: getTodayDate(), comment: order.comment, address: order.address || '' })
+    setMobileTab('booking')
+  }
+
+  const addFavorite = () => {
+    if (formData.address && !favorites.find(f => f.address === formData.address)) {
+      const newFav = { address: formData.address, name: `Адрес ${favorites.length + 1}`, id: Date.now() }
+      setFavorites([...favorites, newFav])
+      localStorage.setItem('favorites', JSON.stringify([...favorites, newFav]))
+    }
+  }
+
+  const removeFavorite = (id) => {
+    const updated = favorites.filter(f => f.id !== id)
+    setFavorites(updated)
+    localStorage.setItem('favorites', JSON.stringify(updated))
+  }
+
   const whatsappHref = useMemo(() => {
     const message = [
       'Заявка TransferPro:',
@@ -132,7 +239,6 @@ function App() {
       `Услуга: ${formData.service || '-'}`,
       `Дата: ${formData.date || '-'}`,
     ].join('\n')
-
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
   }, [formData])
 
@@ -140,14 +246,12 @@ function App() {
     const { name, value } = event.target
     if (name === 'phone') {
       const digits = value.replace(/\D/g, '').slice(0, 11)
-
       let normalized = digits
       if (digits.startsWith('8')) {
         normalized = `7${digits.slice(1)}`
       } else if (!digits.startsWith('7')) {
         normalized = `7${digits}`.slice(0, 11)
       }
-
       const formatted = `+${normalized}`
       setFormData((prev) => ({ ...prev, phone: formatted }))
       return
@@ -156,17 +260,32 @@ function App() {
   }
 
   return (
-    <div className="bg-base">
+    <div className={`${darkMode ? 'dark' : ''}`}>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
           <a href="#top" className="font-serif text-lg tracking-[0.2em] text-accent">TRANSFER PRO</a>
-          <nav className="hidden gap-5 text-sm md:flex">
-            <a href="#services" className="hover:text-accent transition">Услуги</a>
-            <a href="#standards" className="hover:text-accent transition">Стандарты</a>
-            <a href="#price" className="hover:text-accent transition">Прайс</a>
-            <a href="#booking" className="hover:text-accent transition">Заказать</a>
-            <a href="#contacts" className="hover:text-accent transition">Контакты</a>
-          </nav>
+          
+          <div className="hidden md:flex gap-5 items-center text-sm">
+            <nav className="flex gap-5">
+              <a href="#services" className="hover:text-accent transition">{t.services}</a>
+              <a href="#standards" className="hover:text-accent transition">{t.standards}</a>
+              <a href="#price" className="hover:text-accent transition">Прайс</a>
+              <a href="#booking" className="hover:text-accent transition">{t.booking}</a>
+              <a href="#contacts" className="hover:text-accent transition">{t.contacts}</a>
+            </nav>
+            
+            <div className="flex gap-2 border-l border-white/20 pl-5">
+              <button onClick={() => setDarkMode(!darkMode)} className="p-2 hover:bg-white/10 rounded transition" title="Тема">
+                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <select value={language} onChange={(e) => setLanguage(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs cursor-pointer hover:border-accent transition">
+                <option value="ru">РУ</option>
+                <option value="kk">KK</option>
+                <option value="en">EN</option>
+              </select>
+            </div>
+          </div>
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden flex flex-col gap-1.5"
@@ -216,6 +335,23 @@ function App() {
                 aria-label="Открыть форму заказа"
               >
                 Заказать
+              </button>
+              <div className="border-t border-white/10 my-2 pt-2">
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setMobileTab('history') }}
+                  className="w-full text-left py-2 px-3 rounded-lg bg-cyan-950/20 hover:bg-cyan-950/30 transition text-xs"
+                >
+                  📋 История ({orderHistory.length})
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setMobileTab('favorites') }}
+                  className="w-full text-left py-2 px-3 rounded-lg bg-pink-950/20 hover:bg-pink-950/30 transition text-xs mt-2"
+                >
+                  ❤️ Избранное ({favorites.length})
+                </button>
+              </div>
+              <button onClick={() => setDarkMode(!darkMode)} className="w-full text-left py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-xs mt-2">
+                {darkMode ? '☀️ Светлая тема' : '🌙 Темная тема'}
               </button>
               <a href={whatsappHref} target="_blank" rel="noreferrer" className="mt-2 w-full block py-3 text-center rounded-lg bg-accent text-black font-semibold">WhatsApp</a>
             </nav>
@@ -335,9 +471,12 @@ function App() {
 
           {mobileTab === 'booking' && (
             <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black via-rose-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">Готовы оценить новый уровень комфорта?</h2>
-                <p className="mt-3 text-white/70 text-sm sm:text-base leading-relaxed">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.</p>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">Готовы оценить новый уровень комфорта?</h2>
+                  <p className="mt-3 text-white/70 text-sm sm:text-base leading-relaxed">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.</p>
+                </div>
+                {savedSince && <span className="text-xs text-green-400 font-semibold whitespace-nowrap mt-1">✓ Сохранено</span>}
               </div>
 
               <div className="space-y-3.5 sm:space-y-4">
@@ -426,6 +565,7 @@ function App() {
                 type="button"
                 onClick={() => {
                   if (canSubmit) {
+                    addToHistory()
                     window.open(whatsappHref, '_blank')
                   }
                 }}
@@ -438,6 +578,50 @@ function App() {
               >
                 {canSubmit ? 'Заказать сейчас' : 'Заполните форму'}
               </button>
+            </motion.div>
+          )}
+
+          {mobileTab === 'history' && (
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-cyan-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">📋 История заказов</h2>
+              {orderHistory.length === 0 ? (
+                <p className="text-white/60 text-center py-8">Нет заказов</p>
+              ) : (
+                <div className="space-y-2">
+                  {orderHistory.map((order) => (
+                    <div key={order.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent">
+                      <p className="text-sm text-white/80">{order.service}</p>
+                      <p className="text-xs text-white/60">{order.name} • {order.createdAt}</p>
+                      <button onClick={() => repeatOrder(order)} className="text-xs mt-2 px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
+                        Повторить
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {mobileTab === 'favorites' && (
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-pink-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+              <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">❤️ Избранное</h2>
+              {favorites.length === 0 ? (
+                <p className="text-white/60 text-center py-8">Нет избранных адресов</p>
+              ) : (
+                <div className="space-y-2">
+                  {favorites.map((fav) => (
+                    <div key={fav.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-accent">{fav.name}</p>
+                        <p className="text-xs text-white/60">{fav.address}</p>
+                      </div>
+                      <button onClick={() => removeFavorite(fav.id)} className="text-red-400 hover:text-red-500">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </div>
