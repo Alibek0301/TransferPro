@@ -1,16 +1,88 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck, Sparkles, Battery, Award } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin } from 'lucide-react'
 
 const whatsappNumber = '77781556699'
 
 const services = [
-  { title: 'VIP Трансфер Аэропорт', price: 'от 15 000 ₸', icon: Plane },
-  { title: 'Развозка Smart Parents', price: 'от 300 000 ₸ / мес', icon: Baby },
-  { title: 'Бизнес-сопровождение', price: 'от 10 000 ₸ / час', icon: BriefcaseBusiness },
-  { title: 'Корпоративный B2B', price: 'Индивидуальный тариф', icon: Building2 },
-  { title: 'Премиальный Межгород', price: 'По запросу', icon: Car },
-  { title: 'Трезвый водитель', price: 'от 15 000 ₸', icon: UserCheck },
+  {
+    title: 'VIP Meeting — Аэропорт-Город',
+    subtitle: 'Airport Transfer',
+    price: 'от 15 000 ₸',
+    icon: Plane,
+    details: [
+      'Встреча с именной табличкой у выхода зоны прилета',
+      'Полная помощь с багажом и транспортировкой',
+      'До 60 мин бесплатного ожидания при задержке рейса',
+      'Охлаждённая вода, влажные салфетки',
+      'Выбор музыки и температуры в салоне'
+    ]
+  },
+  {
+    title: 'Smart Parents — Развозка детей',
+    subtitle: 'School Transfer',
+    price: 'от 300 000 ₸ / мес',
+    icon: Baby,
+    details: [
+      'Контроль от двери до двери с передачей из рук в руки',
+      'Фотоотчёт родителю при посадке и высадке',
+      'Современные детские кресла или бустеры',
+      'Постоянный проверенный водитель',
+      'Замена водителя/машины по предварительному согласованию'
+    ]
+  },
+  {
+    title: 'Бизнес-сопровождение',
+    subtitle: 'Hourly Rental',
+    price: 'от 10 000 ₸ / час',
+    icon: BriefcaseBusiness,
+    details: [
+      'Любой класс автомобиля на выбор (седан, представительский, минивэн)',
+      'Безлимитное ожидание — водитель всегда в часе езды',
+      'Консьерж-функции: покупки, переговоры, записки',
+      'Дресс-код по запросу (строгий костюм или Smart Casual)',
+      'Плотный график встреч без суеты'
+    ]
+  },
+  {
+    title: 'Корпоративное обслуживание',
+    subtitle: 'B2B Fleet',
+    price: 'Индивидуальный тариф',
+    icon: Building2,
+    details: [
+      'Фиксированный тариф без учёта пробок и праздничных наценок',
+      'Полный электронный документооборот для бухгалтерии',
+      'Подменный автомобиль в течение часа',
+      'Персональный менеджер с круглосуточной поддержкой',
+      'Приоритетное бронирование для компаний и посольств'
+    ]
+  },
+  {
+    title: 'Премиальный Межгород',
+    subtitle: 'Travel Class',
+    price: 'По запросу',
+    icon: MapPin,
+    details: [
+      'Маршруты: Боровое, Щучинск, Караганда, Павлодар',
+      'Wi-Fi и климат-контроль на протяжении всего пути',
+      'Остановки по желанию на лучших локациях',
+      'Техническая проверка перед каждым выездом',
+      'Безопасность: соблюдение скоростного режима (110-120 км/ч)'
+    ]
+  },
+  {
+    title: 'Другое',
+    subtitle: 'Custom Services',
+    price: 'Уточняйте',
+    icon: HelpCircle,
+    details: [
+      'Вам нужен нестандартный сервис?',
+      'Специальные требования к маршруту?',
+      'Особые пожелания к авто или водителю?',
+      'Свяжитесь с нами напрямую в WhatsApp',
+      'Мы найдём идеальное решение для вас'
+    ]
+  },
 ]
 
 const standards = [
@@ -190,45 +262,36 @@ function App() {
               <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">Услуги</h2>
               
               <div className="space-y-3 sm:space-y-4 text-white/75">
-                <button
-                  onClick={() => { setFormData(prev => ({ ...prev, service: services[0].title })); setMobileTab('booking') }}
-                  className="w-full text-left p-4 sm:p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/3 hover:from-white/10 hover:to-white/5 active:scale-95 transition border-l-4 border-accent shadow-md"
-                >
-                  <p className="font-bold text-accent text-base sm:text-lg mb-2">VIP Трансфер (Аэропорт — Город)</p>
-                  <p className="text-sm sm:text-base leading-relaxed">Встреча в зоне прилета с именной табличкой, полная помощь с багажом и 60 минут бесплатного ожидания при задержке рейса.</p>
-                </button>
-
-                <button
-                  onClick={() => { setFormData(prev => ({ ...prev, service: services[1].title })); setMobileTab('booking') }}
-                  className="w-full text-left p-4 sm:p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/3 hover:from-white/10 hover:to-white/5 active:scale-95 transition border-l-4 border-accent shadow-md"
-                >
-                  <p className="font-bold text-accent text-base sm:text-lg mb-2">Smart Parents (Развозка детей)</p>
-                  <p className="text-sm sm:text-base leading-relaxed">Безопасный маршрут «Дом — Школа — Секция» с передачей ребенка из рук в руки представителю заведения и обязательным фотоотчетом родителям.</p>
-                </button>
-
-                <button
-                  onClick={() => { setFormData(prev => ({ ...prev, service: services[2].title })); setMobileTab('booking') }}
-                  className="w-full text-left p-4 sm:p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/3 hover:from-white/10 hover:to-white/5 active:scale-95 transition border-l-4 border-accent shadow-md"
-                >
-                  <p className="font-bold text-accent text-base sm:text-lg mb-2">Бизнес-сопровождение</p>
-                  <p className="text-sm sm:text-base leading-relaxed">Почасовая аренда автомобиля с водителем для плотного графика встреч. Водитель готов к выполнению консьерж-поручений, пока вы находитесь на переговорах.</p>
-                </button>
-
-                <button
-                  onClick={() => { setFormData(prev => ({ ...prev, service: services[3].title })); setMobileTab('booking') }}
-                  className="w-full text-left p-4 sm:p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/3 hover:from-white/10 hover:to-white/5 active:scale-95 transition border-l-4 border-accent shadow-md"
-                >
-                  <p className="font-bold text-accent text-base sm:text-lg mb-2">Корпоративный аутсорсинг</p>
-                  <p className="text-sm sm:text-base leading-relaxed">Комплексное транспортное обслуживание компаний, посольств и делегаций с полной бухгалтерской отчетностью (ЭДО).</p>
-                </button>
-
-                <button
-                  onClick={() => { setFormData(prev => ({ ...prev, service: services[5].title })); setMobileTab('booking') }}
-                  className="w-full text-left p-4 sm:p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/3 hover:from-white/10 hover:to-white/5 active:scale-95 transition border-l-4 border-accent shadow-md"
-                >
-                  <p className="font-bold text-accent text-base sm:text-lg mb-2">Трезвый водитель (VIP Service)</p>
-                  <p className="text-sm sm:text-base leading-relaxed">Безопасная доставка клиента на его собственном автомобиле. Мы гарантируем бережное управление техникой любого класса и полную конфиденциальность.</p>
-                </button>
+                {services.map((service, idx) => {
+                  const Icon = service.icon
+                  return (
+                    <button
+                      key={service.title}
+                      onClick={() => { setFormData(prev => ({ ...prev, service: service.title })); setMobileTab('booking') }}
+                      className="w-full text-left p-4 sm:p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/3 hover:from-white/10 hover:to-white/5 active:scale-95 transition border-l-4 border-accent shadow-md hover:shadow-lg"
+                    >
+                      <div className="flex items-start gap-3 mb-3">
+                        <Icon className="text-accent flex-shrink-0 mt-0.5 w-5 h-5 sm:w-6 sm:h-6" />
+                        <div className="flex-1">
+                          <p className="font-bold text-accent text-base sm:text-lg">{service.title}</p>
+                          <p className="text-xs sm:text-sm text-white/60 mt-0.5">{service.subtitle}</p>
+                        </div>
+                      </div>
+                      <p className="text-accent font-semibold mb-3 text-sm sm:text-base">{service.price}</p>
+                      <ul className="text-xs sm:text-sm space-y-1.5 text-white/70">
+                        {service.details.slice(0, 3).map((detail, i) => (
+                          <li key={i} className="flex gap-2">
+                            <span className="text-accent mt-0.5 flex-shrink-0">•</span>
+                            <span>{detail}</span>
+                          </li>
+                        ))}
+                        {service.details.length > 3 && (
+                          <li className="text-accent/80 italic pt-1">+ {service.details.length - 3} ещё...</li>
+                        )}
+                      </ul>
+                    </button>
+                  )
+                })}
               </div>
             </motion.div>
           )}
@@ -445,22 +508,42 @@ function App() {
               <motion.div className="space-y-6 bg-gradient-to-br from-black via-blue-950/30 to-black rounded-2xl p-12" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
                 <h2 className="section-title text-4xl text-accent">Услуги</h2>
                 
-                <div className="grid gap-4 grid-cols-3">
+                <div className="grid gap-6 grid-cols-2">
                   {services.map((service, idx) => {
                     const Icon = service.icon
                     return (
                       <motion.article
                         key={service.title}
-                        className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1"
+                        className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/8 to-white/3 p-6 backdrop-blur transition duration-300 hover:border-accent/60 hover:bg-white/12 hover:shadow-lg hover:-translate-y-2 cursor-pointer"
+                        onClick={() => { setFormData(prev => ({ ...prev, service: service.title })); setDesktopTab('booking') }}
                         variants={fadeUp}
                         initial="hidden"
                         whileInView="show"
                         viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.45, delay: idx * 0.05 }}
+                        transition={{ duration: 0.45, delay: idx * 0.08 }}
                       >
-                        <Icon className="mb-4 text-accent text-base" />
-                        <h3 className="text-xl font-bold text-white">{service.title}</h3>
-                        <p className="mt-2 text-white text-base font-semibold">{service.price}</p>
+                        <div className="flex items-start gap-4 mb-4">
+                          <Icon className="text-accent flex-shrink-0 w-8 h-8" />
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                            <p className="text-sm text-accent/80 font-semibold mt-1">{service.subtitle}</p>
+                          </div>
+                        </div>
+                        
+                        <p className="text-white/80 text-sm leading-relaxed mb-4">
+                          {service.details[0]}
+                        </p>
+                        
+                        <div className="space-y-2 mb-4 pb-4 border-b border-white/10">
+                          {service.details.slice(1).map((detail, i) => (
+                            <div key={i} className="flex items-start gap-2 text-sm text-white/70">
+                              <span className="text-accent mt-1 flex-shrink-0">✓</span>
+                              <span>{detail}</span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <p className="text-accent font-bold text-lg">{service.price}</p>
                       </motion.article>
                     )
                   })}
