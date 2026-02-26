@@ -348,7 +348,7 @@ function App() {
                 
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">Ваш персональный автопарк в столице</h1>
                 
-                <div className="space-y-4 text-white/75 text-base leading-relaxed max-w-3xl">
+                <div className="space-y-4 text-white text-base leading-relaxed max-w-3xl">
                   <p>
                     Мы не просто предоставляем автомобиль с водителем — мы берем на себя <span className="text-accent font-semibold">полную ответственность</span> за ваш комфорт на дорогах столицы.
                   </p>
@@ -373,7 +373,7 @@ function App() {
 
             {desktopTab === 'services' && (
               <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-                <h2 className="section-title text-4xl">Услуги</h2>
+                <h2 className="section-title text-4xl text-accent">Услуги</h2>
                 
                 <div className="grid gap-4 grid-cols-3">
                   {services.map((service, idx) => {
@@ -389,8 +389,8 @@ function App() {
                         transition={{ duration: 0.45, delay: idx * 0.05 }}
                       >
                         <Icon className="mb-4 text-accent text-base" />
-                        <h3 className="text-xl font-semibold text-white">{service.title}</h3>
-                        <p className="mt-2 text-accent text-base">{service.price}</p>
+                        <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                        <p className="mt-2 text-white text-base font-semibold">{service.price}</p>
                       </motion.article>
                     )
                   })}
@@ -400,7 +400,7 @@ function App() {
 
             {desktopTab === 'standards' && (
               <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-                <h2 className="section-title text-4xl">Standard of Excellence</h2>
+                <h2 className="section-title text-4xl text-accent">Standard of Excellence</h2>
                 
                 <div className="grid gap-4 grid-cols-3">
                   {standards.map((item, idx) => {
@@ -417,7 +417,7 @@ function App() {
                       >
                         <Icon className="mx-auto mb-3 text-accent text-base" />
                         <p className="text-base text-center mb-3 text-white">{item.title}</p>
-                        <p className="text-white/70 text-sm text-center">{item.desc}</p>
+                        <p className="text-white/90 text-sm text-center">{item.desc}</p>
                       </motion.div>
                     )
                   })}
@@ -427,8 +427,8 @@ function App() {
 
             {desktopTab === 'contacts' && (
               <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
-                <h2 className="section-title text-4xl">Контакты</h2>
-                <p className="text-white/75 text-base mb-6">Позвоните или напишите в WhatsApp — мы на связи 24/7</p>
+                <h2 className="section-title text-4xl text-accent">Контакты</h2>
+                <p className="text-white text-base mb-6">Позвоните или напишите в WhatsApp — мы на связи 24/7</p>
                 <div className="flex gap-4 flex-wrap">
                   <a href="tel:+77781556699" className="px-6 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition">+7 778 155 6699</a>
                   <a href="tel:+77089389145" className="px-6 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition">+7 708 938 9145</a>
@@ -445,37 +445,37 @@ function App() {
                 whileInView="show"
                 viewport={{ once: true, amount: 0.3 }}
               >
-                <h2 className="section-title text-4xl">Заказ</h2>
-                <p className="mt-3 text-white/70 text-base mb-6">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня.</p>
+                <h2 className="section-title text-4xl text-accent">Заказ</h2>
+                <p className="mt-3 text-white text-base mb-6">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня.</p>
                 
                 <form className="space-y-4">
                   <div>
-                    <label htmlFor="name_desktop" className="text-sm text-white/60">Имя *</label>
-                    <input id="name_desktop" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white placeholder-white/40 outline-none transition focus:border-accent" />
+                    <label htmlFor="name_desktop" className="text-sm font-semibold text-white">Имя *</label>
+                    <input id="name_desktop" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
                   </div>
                   <div>
-                    <label htmlFor="phone_desktop" className="text-sm text-white/60">Телефон *</label>
-                    <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border bg-black/50 px-4 py-2 text-base text-white placeholder-white/40 outline-none transition ${
+                    <label htmlFor="phone_desktop" className="text-sm font-semibold text-white">Телефон *</label>
+                    <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition ${
                       formData.phone.length > 2 && !isValidPhone(formData.phone)
-                        ? 'border-red-500/50 focus:border-red-500'
-                        : 'border-white/20 focus:border-accent'
+                        ? 'border-red-500/50 bg-red-500/10 focus:bg-red-500/15 focus:border-red-500'
+                        : 'border-white/30 bg-white/10 focus:border-accent focus:bg-white/15'
                     }`} />
                   </div>
                   <div>
-                    <label htmlFor="service_desktop" className="text-sm text-white/60">Услуга *</label>
-                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white outline-none transition focus:border-accent">
+                    <label htmlFor="service_desktop" className="text-sm font-semibold text-white">Услуга *</label>
+                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15">
                       {services.map((service) => (
                         <option key={service.title} value={service.title} className="text-black">{service.title}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="date_desktop" className="text-sm text-white/60">Дата *</label>
-                    <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white outline-none transition focus:border-accent" />
+                    <label htmlFor="date_desktop" className="text-sm font-semibold text-white">Дата *</label>
+                    <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
                   </div>
                   <div>
-                    <label htmlFor="comment_desktop" className="text-sm text-white/60">Комментарий</label>
-                    <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base text-white placeholder-white/40 outline-none transition focus:border-accent resize-none" rows="3" />
+                    <label htmlFor="comment_desktop" className="text-sm font-semibold text-white">Комментарий</label>
+                    <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15 resize-none" rows="3" />
                   </div>
 
                   <button

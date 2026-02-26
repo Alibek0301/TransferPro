@@ -17,3 +17,18 @@ body {
 .card {
   @apply rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1;
 }
+/* Fix select and input visibility */
+select {
+  color-scheme: dark;
+}
+
+option {
+  color: white;
+  background-color: #1a1a1a;
+}
+
+input[type="date"],
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color: white;
+  filter: invert(1);
+}
