@@ -301,7 +301,7 @@ function App() {
                   canSubmit
                     ? 'bg-accent text-black hover:bg-accent/90 cursor-pointer'
                     : 'bg-accent/40 text-black/60 cursor-not-allowed'
-                }`}}
+                }`}
               >
                 Заказать сейчас
               </button>
