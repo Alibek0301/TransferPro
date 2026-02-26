@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck, Sparkles, Battery, Award } from 'lucide-react'
 
 const whatsappNumber = '77781556699'
 
@@ -14,10 +14,12 @@ const services = [
 ]
 
 const standards = [
-  { title: 'Премиальная вода', icon: Droplets },
-  { title: 'Профессиональный этикет', icon: Crown },
-  { title: 'Опытные водители', icon: UserCheck },
-  { title: 'Безопасность и детские кресла', icon: ShieldCheck },
+  { title: 'Идеальная чистота', icon: Sparkles, desc: 'Автомобиль подается после комплексной мойки и химчистки салона.' },
+  { title: 'Дресс-код и этикет', icon: Crown, desc: 'Водители в строгих костюмах, соблюдение протокола тишины и профессиональная вежливость.' },
+  { title: 'Напитки на борту', icon: Droplets, desc: 'Свежая питьевая вода в каждой поездке.' },
+  { title: 'Энергия для гаджетов', icon: Battery, desc: 'Зарядные устройства для всех типов смартфонов (Type-C, Lightning).' },
+  { title: 'Опытные водители', icon: UserCheck, desc: 'Профессиональный и безаварийный многолетний стаж.' },
+  { title: 'Полная страховка', icon: Award, desc: 'Страховое покрытие пассажира, водителя и автомобиля.' },
 ]
 
 const fadeUp = {
@@ -224,15 +226,24 @@ function App() {
           )}
 
           {mobileTab === 'standards' && (
-            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <h2 className="section-title text-lg">Стандарты</h2>
-              <div className="mt-2 grid grid-cols-2 gap-2 w-full">
+              
+              <div className="space-y-3 text-white/75 text-xs leading-relaxed">
                 {standards.map((item) => {
                   const Icon = item.icon
                   return (
-                    <button key={item.title} className="flex items-center gap-2 text-left p-2 rounded-lg bg-white/3 hover:bg-white/5 text-xs" aria-label={item.title} onClick={() => { setMobileTab('booking') }}>
-                      <Icon className="text-accent" />
-                      <span className="truncate">{item.title}</span>
+                    <button
+                      key={item.title}
+                      onClick={() => { setMobileTab('booking') }}
+                      className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent flex items-start gap-3"
+                      aria-label={item.title}
+                    >
+                      <Icon className="text-accent flex-shrink-0 mt-0.5" size={20} />
+                      <div className="flex-1">
+                        <p className="font-semibold text-accent mb-1">{item.title}</p>
+                        <p>{item.desc}</p>
+                      </div>
                     </button>
                   )
                 })}
