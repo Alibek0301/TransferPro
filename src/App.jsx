@@ -30,6 +30,7 @@ const fadeUp = {
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileTab, setMobileTab] = useState('home')
+  const closeMobileMenu = () => setMobileMenuOpen(false)
   const [formData, setFormData] = useState({
     name: '',
     phone: '+7',
@@ -145,7 +146,7 @@ function App() {
       </header>
 
       {/* Mobile single-screen tabbed view */}
-      <div className="md:hidden h-screen w-full flex flex-col bg-gradient-to-b from-black to-black/90">
+      <div onPointerDown={closeMobileMenu} className="md:hidden h-screen w-full flex flex-col bg-gradient-to-b from-black to-black/90">
         <div className="flex-1 flex flex-col justify-center items-start px-4">
           {mobileTab === 'home' && (
             <motion.div className="w-full space-y-4" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
@@ -260,15 +261,15 @@ function App() {
               </div>
 
               <div className="space-y-2 text-xs">
-                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
-                <input id="phone_mobile" name="phone" placeholder="+7" value={formData.phone} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
-                <select name="service" value={formData.service} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition">
+                <input id="name_mobile" name="name" placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
+                <input id="phone_mobile" name="phone" type="tel" inputMode="tel" pattern="\\+7[0-9]{10}" placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
+                <select name="service" value={formData.service} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition">
                   {services.map((service) => (
                     <option key={service.title} value={service.title}>{service.title}</option>
                   ))}
                 </select>
-                <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
-                <textarea name="comment" placeholder="Дополнительные пожелания и комментарии..." value={formData.comment} onChange={updateField} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition resize-none" rows="3" />
+                <input name="date" type="date" min={getTodayDate()} value={formData.date} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition" />
+                <textarea name="comment" placeholder="Дополнительные пожелания и комментарии..." value={formData.comment} onChange={updateField} onFocus={closeMobileMenu} className="w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 outline-none focus:border-accent transition resize-none" rows="3" />
               </div>
 
               <button
@@ -371,7 +372,7 @@ function App() {
               </div>
               <div>
                 <label htmlFor="phone" className="text-xs text-white/60">Телефон *</label>
-                <input id="phone" name="phone" required placeholder="+7" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition ${
+                <input id="phone" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} onFocus={closeMobileMenu} className={`mt-1 w-full rounded-lg border bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition ${
                   formData.phone.length > 2 && !isValidPhone(formData.phone)
                     ? 'border-red-500/50 focus:border-red-500'
                     : 'border-white/20 focus:border-accent'
