@@ -176,23 +176,49 @@ function App() {
           )}
 
           {mobileTab === 'services' && (
-            <motion.div className="w-full" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+            <motion.div className="w-full space-y-3" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
               <h2 className="section-title text-lg">Услуги</h2>
-              <div className="mt-2 grid grid-cols-3 gap-2 w-full">
-                {services.map((s) => {
-                  const Icon = s.icon
-                  return (
-                    <button
-                      key={s.title}
-                      onClick={() => { setFormData(prev => ({ ...prev, service: s.title })); setMobileTab('booking') }}
-                      className="flex flex-col items-center text-center text-xs py-2 px-1 rounded-lg bg-white/3 hover:bg-white/5"
-                      aria-label={`Выбрать услугу ${s.title}`}
-                    >
-                      <Icon className="text-accent" />
-                      <span className="mt-1 text-[10px]">{s.title}</span>
-                    </button>
-                  )
-                })}
+              
+              <div className="space-y-3 text-white/75 text-xs leading-relaxed">
+                <button
+                  onClick={() => { setFormData(prev => ({ ...prev, service: services[0].title })); setMobileTab('booking') }}
+                  className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent"
+                >
+                  <p className="font-semibold text-accent mb-1">VIP Трансфер (Аэропорт — Город)</p>
+                  <p>Встреча в зоне прилета с именной табличкой, полная помощь с багажом и 60 минут бесплатного ожидания при задержке рейса.</p>
+                </button>
+
+                <button
+                  onClick={() => { setFormData(prev => ({ ...prev, service: services[1].title })); setMobileTab('booking') }}
+                  className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent"
+                >
+                  <p className="font-semibold text-accent mb-1">Smart Parents (Развозка детей)</p>
+                  <p>Безопасный маршрут «Дом — Школа — Секция» с передачей ребенка из рук в руки представителю заведения и обязательным фотоотчетом родителям.</p>
+                </button>
+
+                <button
+                  onClick={() => { setFormData(prev => ({ ...prev, service: services[2].title })); setMobileTab('booking') }}
+                  className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent"
+                >
+                  <p className="font-semibold text-accent mb-1">Бизнес-сопровождение</p>
+                  <p>Почасовая аренда автомобиля с водителем для плотного графика встреч. Водитель готов к выполнению консьерж-поручений, пока вы находитесь на переговорах.</p>
+                </button>
+
+                <button
+                  onClick={() => { setFormData(prev => ({ ...prev, service: services[3].title })); setMobileTab('booking') }}
+                  className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent"
+                >
+                  <p className="font-semibold text-accent mb-1">Корпоративный аутсорсинг</p>
+                  <p>Комплексное транспортное обслуживание компаний, посольств и делегаций с полной бухгалтерской отчетностью (ЭДО).</p>
+                </button>
+
+                <button
+                  onClick={() => { setFormData(prev => ({ ...prev, service: services[5].title })); setMobileTab('booking') }}
+                  className="w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/8 transition border-l-2 border-accent"
+                >
+                  <p className="font-semibold text-accent mb-1">Трезвый водитель (VIP Service)</p>
+                  <p>Безопасная доставка клиента на его собственном автомобиле. Мы гарантируем бережное управление техникой любого класса и полную конфиденциальность.</p>
+                </button>
               </div>
             </motion.div>
           )}
