@@ -30,6 +30,7 @@ const fadeUp = {
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileTab, setMobileTab] = useState('home')
+  const [desktopTab, setDesktopTab] = useState('home')
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -324,118 +325,180 @@ function App() {
         </div>
       </div>
 
-      <main id="top" className="hidden md:block">
-
-        <section id="contacts" className="mx-auto max-w-6xl px-4 py-12 md:px-8">
-          <h2 className="section-title">Контакты</h2>
-          <div className="mt-4 flex gap-4">
-            <a href="tel:+77781556699" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">+7 778 155 6699</a>
-            <a href="tel:+77089389145" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">+7 708 938 9145</a>
-            <a href="tel:+77771351387" className="rounded-lg bg-accent px-4 py-2 font-semibold text-black">+7 777 135 1387</a>
+      <main id="top" className="hidden md:flex md:flex-col md:min-h-screen">
+        {/* Desktop Tab Navigation */}
+        <div className="sticky top-[60px] z-40 border-b border-white/10 bg-black/70 backdrop-blur py-3 px-8">
+          <div className="mx-auto max-w-7xl flex gap-4">
+            <button onClick={() => setDesktopTab('home')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>Главная</button>
+            <button onClick={() => setDesktopTab('services')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>Услуги</button>
+            <button onClick={() => setDesktopTab('standards')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'standards' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>Стандарты</button>
+            <button onClick={() => setDesktopTab('contacts')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'contacts' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>Контакты</button>
+            <button onClick={() => setDesktopTab('booking')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>Заказ</button>
           </div>
-        </section>
+        </div>
 
-        <section id="services" className="mx-auto max-w-6xl px-3 py-6 md:py-16 md:px-8">
-          <h2 className="section-title text-lg md:text-3xl lg:text-4xl">Услуги</h2>
-          <div id="price" className="mt-4 md:mt-8 grid gap-2 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service, idx) => {
-              const Icon = service.icon
-              return (
-                <motion.article
-                  key={service.title}
-                  className="rounded-xl border border-white/10 bg-white/5 p-3 md:p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1"
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.45, delay: idx * 0.05 }}
+        {/* Desktop Content Area */}
+        <div className="flex-1 flex items-center justify-center px-8 py-12">
+          <div className="w-full max-w-6xl">
+            {desktopTab === 'home' && (
+              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+                <div className="border-l-4 border-accent pl-6">
+                  <p className="text-accent text-sm font-semibold">Астана · Premium Transport Service</p>
+                </div>
+                
+                <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">Ваш персональный автопарк в столице</h1>
+                
+                <div className="space-y-4 text-white/75 text-base leading-relaxed max-w-3xl">
+                  <p>
+                    Мы не просто предоставляем автомобиль с водителем — мы берем на себя <span className="text-accent font-semibold">полную ответственность</span> за ваш комфорт на дорогах столицы.
+                  </p>
+                  
+                  <p>
+                    <span className="text-accent font-semibold">Transfer Pro</span> — это синергия профессионального этикета, пунктуальности и глубокого понимания потребностей VIP-клиентов.
+                  </p>
+                  
+                  <p>
+                    Мы работаем для того, чтобы вы могли сосредоточиться на своих делах, пока мы обеспечиваем идеальный маршрут.
+                  </p>
+                </div>
+                
+                <button
+                  onClick={() => setDesktopTab('booking')}
+                  className="mt-6 px-8 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition"
                 >
-                  <Icon className="mb-2 md:mb-4 text-accent text-sm md:text-base" />
-                  <h3 className="text-xs md:text-xl font-semibold">{service.title}</h3>
-                  <p className="mt-1 md:mt-2 text-accent text-xs md:text-base">{service.price}</p>
-                </motion.article>
-              )
-            })}
-          </div>
-        </section>
+                  Начать заказ
+                </button>
+              </motion.div>
+            )}
 
-        <section id="standards" className="mx-auto max-w-6xl px-3 py-6 md:py-16 md:px-8">
-          <h2 className="section-title text-lg md:text-3xl lg:text-4xl">Standard of Excellence</h2>
-          <div className="mt-4 md:mt-8 grid gap-2 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-            {standards.map((item, idx) => {
-              const Icon = item.icon
-              return (
-                <motion.div
-                  key={item.title}
-                  className="rounded-xl border border-white/10 bg-white/5 p-3 md:p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1 text-center"
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.4, delay: idx * 0.06 }}
-                >
-                  <Icon className="mx-auto mb-2 md:mb-3 text-accent text-sm md:text-base" />
-                  <p className="text-xs md:text-base">{item.title}</p>
-                </motion.div>
-              )
-            })}
-          </div>
-        </section>
+            {desktopTab === 'services' && (
+              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+                <h2 className="section-title text-4xl">Услуги</h2>
+                
+                <div className="grid gap-4 grid-cols-3">
+                  {services.map((service, idx) => {
+                    const Icon = service.icon
+                    return (
+                      <motion.article
+                        key={service.title}
+                        className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1"
+                        variants={fadeUp}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.45, delay: idx * 0.05 }}
+                      >
+                        <Icon className="mb-4 text-accent text-base" />
+                        <h3 className="text-xl font-semibold">{service.title}</h3>
+                        <p className="mt-2 text-accent text-base">{service.price}</p>
+                      </motion.article>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
 
-        <section id="booking" className="mx-auto max-w-3xl px-3 py-6 md:py-16 md:px-8 w-full">
-          <motion.div
-            className="rounded-2xl border border-accent/35 bg-white/5 p-4 md:p-6"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            <h2 className="section-title text-lg md:text-3xl">Заказ</h2>
-            <form className="mt-3 md:mt-6 grid gap-2 md:gap-4">
-              <div>
-                <label htmlFor="name" className="text-xs text-white/60">Имя *</label>
-                <input id="name" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition focus:border-accent" />
-              </div>
-              <div>
-                <label htmlFor="phone" className="text-xs text-white/60">Телефон *</label>
-                <input id="phone" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} onFocus={closeMobileMenu} className={`mt-1 w-full rounded-lg border bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition ${
-                  formData.phone.length > 2 && !isValidPhone(formData.phone)
-                    ? 'border-red-500/50 focus:border-red-500'
-                    : 'border-white/20 focus:border-accent'
-                }`} />
-              </div>
-              <div>
-                <label htmlFor="service" className="text-xs text-white/60">Услуга *</label>
-                <select id="service" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition focus:border-accent">
-                  {services.map((service) => (
-                    <option key={service.title} value={service.title} className="text-black">{service.title}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="date" className="text-xs text-white/60">Дата *</label>
-                <input id="date" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs md:text-base outline-none transition focus:border-accent" />
-              </div>
+            {desktopTab === 'standards' && (
+              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+                <h2 className="section-title text-4xl">Standard of Excellence</h2>
+                
+                <div className="grid gap-4 grid-cols-3">
+                  {standards.map((item, idx) => {
+                    const Icon = item.icon
+                    return (
+                      <motion.div
+                        key={item.title}
+                        className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur transition duration-300 hover:border-accent/60 hover:-translate-y-1"
+                        variants={fadeUp}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.4, delay: idx * 0.06 }}
+                      >
+                        <Icon className="mx-auto mb-3 text-accent text-base" />
+                        <p className="text-base text-center mb-3">{item.title}</p>
+                        <p className="text-white/70 text-sm text-center">{item.desc}</p>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
 
-              <button
-                type="button"
-                onClick={() => {
-                  if (canSubmit) {
-                    window.open(whatsappHref, '_blank')
-                  }
-                }}
-                disabled={!canSubmit}
-                className={`mt-2 rounded-lg px-3 py-2 text-xs md:text-base font-semibold transition ${
-                  canSubmit
-                    ? 'bg-accent text-black hover:scale-[1.02] hover:shadow-glow cursor-pointer'
-                    : 'bg-accent/40 text-black/60 cursor-not-allowed'
-                }`}
+            {desktopTab === 'contacts' && (
+              <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="show" transition={{ duration: 0.6 }}>
+                <h2 className="section-title text-4xl">Контакты</h2>
+                <p className="text-white/75 text-base mb-6">Позвоните или напишите в WhatsApp — мы на связи 24/7</p>
+                <div className="flex gap-4 flex-wrap">
+                  <a href="tel:+77781556699" className="px-6 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition">+7 778 155 6699</a>
+                  <a href="tel:+77089389145" className="px-6 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition">+7 708 938 9145</a>
+                  <a href="tel:+77771351387" className="px-6 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition">+7 777 135 1387</a>
+                </div>
+              </motion.div>
+            )}
+
+            {desktopTab === 'booking' && (
+              <motion.div
+                className="rounded-2xl border border-accent/35 bg-white/5 p-8 max-w-2xl"
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                WhatsApp
-              </button>
-            </form>
-          </motion.div>
-        </section>
+                <h2 className="section-title text-4xl">Заказ</h2>
+                <p className="mt-3 text-white/70 text-base mb-6">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня.</p>
+                
+                <form className="space-y-4">
+                  <div>
+                    <label htmlFor="name_desktop" className="text-sm text-white/60">Имя *</label>
+                    <input id="name_desktop" name="name" required placeholder="Белгибаев Дархан" value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent" />
+                  </div>
+                  <div>
+                    <label htmlFor="phone_desktop" className="text-sm text-white/60">Телефон *</label>
+                    <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder="+7 (___) ___-__-__" value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border bg-black/50 px-4 py-2 text-base outline-none transition ${
+                      formData.phone.length > 2 && !isValidPhone(formData.phone)
+                        ? 'border-red-500/50 focus:border-red-500'
+                        : 'border-white/20 focus:border-accent'
+                    }`} />
+                  </div>
+                  <div>
+                    <label htmlFor="service_desktop" className="text-sm text-white/60">Услуга *</label>
+                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent">
+                      {services.map((service) => (
+                        <option key={service.title} value={service.title} className="text-black">{service.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="date_desktop" className="text-sm text-white/60">Дата *</label>
+                    <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent" />
+                  </div>
+                  <div>
+                    <label htmlFor="comment_desktop" className="text-sm text-white/60">Комментарий</label>
+                    <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-base outline-none transition focus:border-accent resize-none" rows="3" />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (canSubmit) {
+                        window.open(whatsappHref, '_blank')
+                      }
+                    }}
+                    disabled={!canSubmit}
+                    className={`w-full mt-4 px-4 py-3 rounded-lg text-base font-semibold transition ${
+                      canSubmit
+                        ? 'bg-accent text-black hover:bg-accent/90 cursor-pointer'
+                        : 'bg-accent/40 text-black/60 cursor-not-allowed'
+                    }`}
+                  >
+                    Отправить в WhatsApp
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </div>
+        </div>
       </main>
 
       <a
