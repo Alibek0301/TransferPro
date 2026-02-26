@@ -105,6 +105,8 @@ function App() {
             <div className="w-6 h-0.5 bg-white"></div>
             <div className="w-6 h-0.5 bg-white"></div>
           </button>
+        </div>
+        {mobileMenuOpen && (
           <div id="mobile-menu" className="md:hidden border-t border-white/10 bg-black/95">
             <nav className="flex flex-col gap-2 px-4 py-4 text-sm">
               <button
