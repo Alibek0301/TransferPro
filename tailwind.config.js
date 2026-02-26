@@ -5,14 +5,14 @@ export default {
     extend: {
       colors: {
         base: '#050505',
-        accent: '#D4AF37',
+        accent: '#FFD949',
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
         sans: ['Inter', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 20px rgba(212, 175, 55, 0.35)',
+        glow: '0 0 25px rgba(255, 217, 73, 0.45), 0 0 40px rgba(255, 217, 73, 0.25)',
       },
     },
   },
