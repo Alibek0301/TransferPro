@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, ShieldCheck, Wifi, Baby, Crown, Plane, Building2, Car, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Moon, Sun, Globe, Heart, Trash2 } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2 } from 'lucide-react'
 
 const whatsappNumber = '77781556699'
 
@@ -21,7 +21,7 @@ const translations = {
     services: 'Қызметтер',
     standards: 'Стандарттар',
     contacts: 'Байланыс',
-    booking: 'Тапсыс',
+    booking: 'Тапсырыс',
     history: 'Тарихы',
     favorites: 'Ұнайтқандар',
     saved: '✓ Сақталды',
@@ -139,7 +139,6 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true')
   const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ru')
   const [savedSince, setSavedSince] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
@@ -162,16 +161,14 @@ function App() {
     }
   })
 
-  // Сохранение темы
-  useEffect(() => {
-    localStorage.setItem('darkMode', darkMode)
-    document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light'
-  }, [darkMode])
-
   // Сохранение языка
   useEffect(() => {
     localStorage.setItem('language', language)
   }, [language])
+
+  useEffect(() => {
+    document.documentElement.style.colorScheme = 'dark'
+  }, [])
 
   // Автосохранение формы
   useEffect(() => {
@@ -238,6 +235,7 @@ function App() {
       `Телефон: ${formData.phone || '-'}`,
       `Услуга: ${formData.service || '-'}`,
       `Дата: ${formData.date || '-'}`,
+      `Адрес: ${formData.address || '-'}`,
     ].join('\n')
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
   }, [formData])
@@ -260,24 +258,21 @@ function App() {
   }
 
   return (
-    <div className={`${darkMode ? 'dark' : ''}`}>
+    <div className="dark">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
           <a href="#top" className="font-serif text-lg tracking-[0.2em] text-accent">TRANSFER PRO</a>
           
           <div className="hidden md:flex gap-5 items-center text-sm">
             <nav className="flex gap-5">
-              <a href="#services" className="hover:text-accent transition">{t.services}</a>
-              <a href="#standards" className="hover:text-accent transition">{t.standards}</a>
-              <a href="#price" className="hover:text-accent transition">Прайс</a>
-              <a href="#booking" className="hover:text-accent transition">{t.booking}</a>
-              <a href="#contacts" className="hover:text-accent transition">{t.contacts}</a>
+              <button onClick={() => setDesktopTab('services')} className="hover:text-accent transition">{t.services}</button>
+              <button onClick={() => setDesktopTab('standards')} className="hover:text-accent transition">{t.standards}</button>
+              <button onClick={() => setDesktopTab('booking')} className="hover:text-accent transition">Прайс</button>
+              <button onClick={() => setDesktopTab('booking')} className="hover:text-accent transition">{t.booking}</button>
+              <button onClick={() => setDesktopTab('contacts')} className="hover:text-accent transition">{t.contacts}</button>
             </nav>
             
             <div className="flex gap-2 border-l border-white/20 pl-5">
-              <button onClick={() => setDarkMode(!darkMode)} className="p-2 hover:bg-white/10 rounded transition" title="Тема">
-                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
               <select value={language} onChange={(e) => setLanguage(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs cursor-pointer hover:border-accent transition">
                 <option value="ru">РУ</option>
                 <option value="kk">KK</option>
@@ -350,9 +345,6 @@ function App() {
                   ❤️ Избранное ({favorites.length})
                 </button>
               </div>
-              <button onClick={() => setDarkMode(!darkMode)} className="w-full text-left py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-xs mt-2">
-                {darkMode ? '☀️ Светлая тема' : '🌙 Темная тема'}
-              </button>
               <a href={whatsappHref} target="_blank" rel="noreferrer" className="mt-2 w-full block py-3 text-center rounded-lg bg-accent text-black font-semibold">WhatsApp</a>
             </nav>
           </div>
@@ -544,6 +536,60 @@ function App() {
                     onFocus={closeMobileMenu} 
                     className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md" 
                   />
+                </div>
+
+                <div>
+                  <label htmlFor="address_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Адрес подачи</label>
+                  <input
+                    id="address_mobile"
+                    name="address"
+                    placeholder="Например: Астана, Кабанбай батыра 53"
+                    value={formData.address}
+                    onChange={updateField}
+                    onFocus={closeMobileMenu}
+                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={addFavorite}
+                    disabled={!formData.address}
+                    className={`mt-2 w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                      formData.address ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-white/5 text-white/50 cursor-not-allowed'
+                    }`}
+                  >
+                    Сохранить адрес в избранное
+                  </button>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                  <p className="text-sm font-bold text-accent">{t.calculator}</p>
+                  <div>
+                    <label htmlFor="distance_mobile" className="block text-xs text-white/80 mb-1">Расстояние (км)</label>
+                    <input
+                      id="distance_mobile"
+                      type="number"
+                      min="1"
+                      placeholder="Введите км"
+                      value={distance}
+                      onChange={(event) => setDistance(event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="car_class_mobile" className="block text-xs text-white/80 mb-1">Класс авто</label>
+                    <select
+                      id="car_class_mobile"
+                      value={carClass}
+                      onChange={(event) => setCarClass(event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    >
+                      <option value="standard">Standard</option>
+                      <option value="comfort">Comfort</option>
+                      <option value="business">Business</option>
+                      <option value="premium">Premium</option>
+                    </select>
+                  </div>
+                  <p className="text-sm text-white/80">Ориентировочная стоимость: <span className="text-accent font-bold">{finalPrice > 0 ? `${finalPrice.toLocaleString('ru-RU')} ₸` : '—'}</span></p>
                 </div>
 
                 <div>
@@ -811,14 +857,62 @@ function App() {
                     <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
                   </div>
                   <div>
+                    <label htmlFor="address_desktop" className="text-sm font-semibold text-white">Адрес подачи</label>
+                    <input id="address_desktop" name="address" placeholder="Астана, Кабанбай батыра 53" value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                    <button
+                      type="button"
+                      onClick={addFavorite}
+                      disabled={!formData.address}
+                      className={`mt-2 w-full rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                        formData.address ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-white/5 text-white/50 cursor-not-allowed'
+                      }`}
+                    >
+                      Сохранить адрес в избранное
+                    </button>
+                  </div>
+                  <div>
                     <label htmlFor="comment_desktop" className="text-sm font-semibold text-white">Комментарий</label>
                     <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15 resize-none" rows="3" />
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                    <p className="text-sm font-bold text-accent">{t.calculator}</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor="distance_desktop" className="block text-xs text-white/80 mb-1">Расстояние (км)</label>
+                        <input
+                          id="distance_desktop"
+                          type="number"
+                          min="1"
+                          placeholder="Км"
+                          value={distance}
+                          onChange={(event) => setDistance(event.target.value)}
+                          className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="car_class_desktop" className="block text-xs text-white/80 mb-1">Класс авто</label>
+                        <select
+                          id="car_class_desktop"
+                          value={carClass}
+                          onChange={(event) => setCarClass(event.target.value)}
+                          className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                        >
+                          <option value="standard">Standard</option>
+                          <option value="comfort">Comfort</option>
+                          <option value="business">Business</option>
+                          <option value="premium">Premium</option>
+                        </select>
+                      </div>
+                    </div>
+                    <p className="text-sm text-white/80">Ориентировочная стоимость: <span className="text-accent font-bold">{finalPrice > 0 ? `${finalPrice.toLocaleString('ru-RU')} ₸` : '—'}</span></p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => {
                       if (canSubmit) {
+                        addToHistory()
                         window.open(whatsappHref, '_blank')
                       }
                     }}
