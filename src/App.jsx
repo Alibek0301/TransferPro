@@ -14,7 +14,6 @@ const translations = {
     history: 'История',
     favorites: 'Избранное',
     saved: '✓ Сохранено',
-    calculator: '💰 Калькулятор',
   },
   kk: {
     home: 'Басты бет',
@@ -25,7 +24,6 @@ const translations = {
     history: 'Тарихы',
     favorites: 'Ұнайтқандар',
     saved: '✓ Сақталды',
-    calculator: '💰 Калькулятор',
   },
   en: {
     home: 'Home',
@@ -36,7 +34,6 @@ const translations = {
     history: 'History',
     favorites: 'Favorites',
     saved: '✓ Saved',
-    calculator: '💰 Calculator',
   },
 }
 
@@ -143,8 +140,6 @@ function App() {
   const [savedSince, setSavedSince] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
-  const [distance, setDistance] = useState('')
-  const [carClass, setCarClass] = useState('comfort')
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -177,19 +172,6 @@ function App() {
     const timer = setTimeout(() => setSavedSince(''), 2000)
     return () => clearTimeout(timer)
   }, [formData])
-
-  // Калькулятор стоимости
-  const calculatePrice = () => {
-    if (!distance || isNaN(distance)) return 0
-    const distNum = parseFloat(distance)
-    const basePrice = { standard: 100, comfort: 150, business: 250, premium: 400 }
-    const pricePerKm = basePrice[carClass] || 100
-    return Math.round(distNum * pricePerKm)
-  }
-
-  const totalPrice = calculatePrice()
-  const commission = Math.round(totalPrice * 0.1)
-  const finalPrice = totalPrice + commission
 
   const getTodayDate = () => {
     const today = new Date()
@@ -561,37 +543,6 @@ function App() {
                   </button>
                 </div>
 
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
-                  <p className="text-sm font-bold text-accent">{t.calculator}</p>
-                  <div>
-                    <label htmlFor="distance_mobile" className="block text-xs text-white/80 mb-1">Расстояние (км)</label>
-                    <input
-                      id="distance_mobile"
-                      type="number"
-                      min="1"
-                      placeholder="Введите км"
-                      value={distance}
-                      onChange={(event) => setDistance(event.target.value)}
-                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="car_class_mobile" className="block text-xs text-white/80 mb-1">Класс авто</label>
-                    <select
-                      id="car_class_mobile"
-                      value={carClass}
-                      onChange={(event) => setCarClass(event.target.value)}
-                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                    >
-                      <option value="standard">Standard</option>
-                      <option value="comfort">Comfort</option>
-                      <option value="business">Business</option>
-                      <option value="premium">Premium</option>
-                    </select>
-                  </div>
-                  <p className="text-sm text-white/80">Ориентировочная стоимость: <span className="text-accent font-bold">{finalPrice > 0 ? `${finalPrice.toLocaleString('ru-RU')} ₸` : '—'}</span></p>
-                </div>
-
                 <div>
                   <label htmlFor="comment_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Дополнительные пожелания</label>
                   <textarea 
@@ -873,39 +824,6 @@ function App() {
                   <div>
                     <label htmlFor="comment_desktop" className="text-sm font-semibold text-white">Комментарий</label>
                     <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15 resize-none" rows="3" />
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
-                    <p className="text-sm font-bold text-accent">{t.calculator}</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label htmlFor="distance_desktop" className="block text-xs text-white/80 mb-1">Расстояние (км)</label>
-                        <input
-                          id="distance_desktop"
-                          type="number"
-                          min="1"
-                          placeholder="Км"
-                          value={distance}
-                          onChange={(event) => setDistance(event.target.value)}
-                          className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="car_class_desktop" className="block text-xs text-white/80 mb-1">Класс авто</label>
-                        <select
-                          id="car_class_desktop"
-                          value={carClass}
-                          onChange={(event) => setCarClass(event.target.value)}
-                          className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                        >
-                          <option value="standard">Standard</option>
-                          <option value="comfort">Comfort</option>
-                          <option value="business">Business</option>
-                          <option value="premium">Premium</option>
-                        </select>
-                      </div>
-                    </div>
-                    <p className="text-sm text-white/80">Ориентировочная стоимость: <span className="text-accent font-bold">{finalPrice > 0 ? `${finalPrice.toLocaleString('ru-RU')} ₸` : '—'}</span></p>
                   </div>
 
                   <button
