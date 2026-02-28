@@ -127,6 +127,29 @@ const standards = [
   { title: 'Полная страховка', icon: Award, desc: 'Страховое покрытие пассажира, водителя и автомобиля.' },
 ]
 
+const trustPoints = ['Ответ менеджера 3–5 минут', 'Поддержка 24/7', 'Без скрытых доплат']
+
+const quickScenarios = [
+  { label: 'Аэропорт', service: 'VIP Meeting — Аэропорт-Город', address: 'Аэропорт Астана' },
+  { label: 'Детский маршрут', service: 'Smart Parents — Развозка детей', address: 'Школа / дом' },
+  { label: 'Бизнес-день', service: 'Бизнес-сопровождение', address: 'Офис / встречи' },
+]
+
+const reviews = [
+  {
+    author: 'Алия К.',
+    text: 'Всегда вовремя, салон чистый, водитель вежливый. Для аэропорта — лучший вариант.',
+  },
+  {
+    author: 'N. Consulting',
+    text: 'Используем для корпоративных гостей. Сервис стабильный, отчётность и коммуникация на уровне.',
+  },
+  {
+    author: 'Руслан М.',
+    text: 'Быстро подтвердили заказ в WhatsApp и сразу закрыли вопрос с маршрутом.',
+  },
+]
+
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   show: { opacity: 1, y: 0 },
@@ -140,6 +163,8 @@ function App() {
   const [savedSince, setSavedSince] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
+  const [showMobileDetails, setShowMobileDetails] = useState(false)
+  const [showDesktopDetails, setShowDesktopDetails] = useState(false)
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -184,6 +209,12 @@ function App() {
   }
 
   const canSubmit = formData.name.trim() && isValidPhone(formData.phone) && formData.date
+  const primaryStepComplete = formData.name.trim() && isValidPhone(formData.phone)
+  const secondStepComplete = formData.service && formData.date
+  const thirdStepComplete = formData.address.trim() || formData.comment.trim()
+  const completedSteps = [primaryStepComplete, secondStepComplete, thirdStepComplete].filter(Boolean).length
+  const progressPercent = Math.round((completedSteps / 3) * 100)
+  const hasDraft = formData.name.trim() || formData.date || formData.address.trim() || formData.comment.trim()
 
   const addToHistory = () => {
     const newOrder = { ...formData, id: Date.now(), createdAt: new Date().toLocaleString() }
@@ -208,6 +239,20 @@ function App() {
     const updated = favorites.filter(f => f.id !== id)
     setFavorites(updated)
     localStorage.setItem('favorites', JSON.stringify(updated))
+  }
+
+  const applyQuickScenario = (scenario, target = 'mobile') => {
+    setFormData((prev) => ({
+      ...prev,
+      service: scenario.service,
+      address: prev.address || scenario.address,
+      date: prev.date || getTodayDate(),
+    }))
+    if (target === 'mobile') {
+      setMobileTab('booking')
+    } else {
+      setDesktopTab('booking')
+    }
   }
 
   const whatsappHref = useMemo(() => {
@@ -364,6 +409,48 @@ function App() {
               >
                 Начать заказ
               </button>
+
+              {hasDraft && (
+                <button
+                  onClick={() => setMobileTab('booking')}
+                  className="w-full py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/15 transition"
+                >
+                  Продолжить заявку
+                </button>
+              )}
+
+              <div className="grid grid-cols-1 gap-2">
+                {trustPoints.map((point) => (
+                  <div key={point} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/90">
+                    ✓ {point}
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-accent font-semibold">Быстрые сценарии</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {quickScenarios.map((scenario) => (
+                    <button
+                      key={scenario.label}
+                      onClick={() => applyQuickScenario(scenario, 'mobile')}
+                      className="rounded-lg bg-white/8 border border-white/10 px-2 py-2 text-xs font-semibold hover:bg-white/12 transition"
+                    >
+                      {scenario.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-accent font-semibold">Отзывы клиентов</p>
+                {reviews.slice(0, 2).map((review) => (
+                  <div key={review.author} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                    <p className="text-xs text-white/80">“{review.text}”</p>
+                    <p className="text-xs text-accent mt-2 font-semibold">★ 5.0 · {review.author}</p>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           )}
 
@@ -453,6 +540,45 @@ function App() {
                 {savedSince && <span className="text-xs text-green-400 font-semibold whitespace-nowrap mt-1">✓ Сохранено</span>}
               </div>
 
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <div className="flex items-center justify-between text-xs text-white/70 mb-2">
+                  <span>Прогресс заявки</span>
+                  <span>{progressPercent}%</span>
+                </div>
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-accent transition-all" style={{ width: `${progressPercent}%` }} />
+                </div>
+                <div className="mt-2 flex gap-2 text-[11px]">
+                  <span className={primaryStepComplete ? 'text-accent' : 'text-white/40'}>1. Контакты</span>
+                  <span className={secondStepComplete ? 'text-accent' : 'text-white/40'}>2. Услуга и дата</span>
+                  <span className={thirdStepComplete ? 'text-accent' : 'text-white/40'}>3. Детали</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2">
+                {trustPoints.map((point) => (
+                  <div key={point} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/90">
+                    ✓ {point}
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-accent font-semibold">Быстрый выбор</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {quickScenarios.map((scenario) => (
+                    <button
+                      key={scenario.label}
+                      type="button"
+                      onClick={() => applyQuickScenario(scenario, 'mobile')}
+                      className="rounded-lg bg-white/8 border border-white/10 px-2 py-2 text-xs font-semibold hover:bg-white/12 transition"
+                    >
+                      {scenario.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-3.5 sm:space-y-4">
                 <div>
                   <label htmlFor="name_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Ваше имя *</label>
@@ -521,41 +647,55 @@ function App() {
                 </div>
 
                 <div>
-                  <label htmlFor="address_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Адрес подачи</label>
-                  <input
-                    id="address_mobile"
-                    name="address"
-                    placeholder="Например: Астана, Кабанбай батыра 53"
-                    value={formData.address}
-                    onChange={updateField}
-                    onFocus={closeMobileMenu}
-                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md"
-                  />
                   <button
                     type="button"
-                    onClick={addFavorite}
-                    disabled={!formData.address}
-                    className={`mt-2 w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                      formData.address ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-white/5 text-white/50 cursor-not-allowed'
-                    }`}
+                    onClick={() => setShowMobileDetails((prev) => !prev)}
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
                   >
-                    Сохранить адрес в избранное
+                    {showMobileDetails ? 'Скрыть доп. поля' : 'Добавить адрес и комментарий'}
                   </button>
                 </div>
 
-                <div>
-                  <label htmlFor="comment_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Дополнительные пожелания</label>
-                  <textarea 
-                    id="comment_mobile"
-                    name="comment" 
-                    placeholder="Поделитесь своими пожеланиями..." 
-                    value={formData.comment} 
-                    onChange={updateField} 
-                    onFocus={closeMobileMenu} 
-                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition resize-none placeholder-white/40 shadow-md" 
-                    rows="4" 
-                  />
-                </div>
+                {showMobileDetails && (
+                  <>
+                    <div>
+                      <label htmlFor="address_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Адрес подачи</label>
+                      <input
+                        id="address_mobile"
+                        name="address"
+                        placeholder="Например: Астана, Кабанбай батыра 53"
+                        value={formData.address}
+                        onChange={updateField}
+                        onFocus={closeMobileMenu}
+                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={addFavorite}
+                        disabled={!formData.address}
+                        className={`mt-2 w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                          formData.address ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-white/5 text-white/50 cursor-not-allowed'
+                        }`}
+                      >
+                        Сохранить адрес в избранное
+                      </button>
+                    </div>
+
+                    <div>
+                      <label htmlFor="comment_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">Дополнительные пожелания</label>
+                      <textarea 
+                        id="comment_mobile"
+                        name="comment" 
+                        placeholder="Поделитесь своими пожеланиями..." 
+                        value={formData.comment} 
+                        onChange={updateField} 
+                        onFocus={closeMobileMenu} 
+                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition resize-none placeholder-white/40 shadow-md" 
+                        rows="4" 
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               <button
@@ -682,6 +822,47 @@ function App() {
                 >
                   Начать заказ
                 </button>
+
+                {hasDraft && (
+                  <button
+                    onClick={() => setDesktopTab('booking')}
+                    className="mt-2 px-8 py-3 rounded-lg bg-white/10 text-white font-semibold text-base hover:bg-white/15 transition"
+                  >
+                    Продолжить заявку
+                  </button>
+                )}
+
+                <div className="grid grid-cols-3 gap-3 max-w-3xl mt-4">
+                  {trustPoints.map((point) => (
+                    <div key={point} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90">
+                      ✓ {point}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <p className="text-accent font-semibold">Быстрые сценарии</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {quickScenarios.map((scenario) => (
+                      <button
+                        key={scenario.label}
+                        onClick={() => applyQuickScenario(scenario, 'desktop')}
+                        className="rounded-lg bg-white/8 border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/12 transition"
+                      >
+                        {scenario.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 pt-2">
+                  {reviews.map((review) => (
+                    <div key={review.author} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm text-white/85">“{review.text}”</p>
+                      <p className="text-xs text-accent mt-3 font-semibold">★ 5.0 · {review.author}</p>
+                    </div>
+                  ))}
+                </div>
               </motion.div>
             )}
 
@@ -781,6 +962,45 @@ function App() {
               >
                 <h2 className="section-title text-4xl text-accent">Заказ</h2>
                 <p className="mt-3 text-white text-base mb-6">Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня.</p>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 mb-5">
+                  <div className="flex items-center justify-between text-xs text-white/70 mb-2">
+                    <span>Прогресс заявки</span>
+                    <span>{progressPercent}%</span>
+                  </div>
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-accent transition-all" style={{ width: `${progressPercent}%` }} />
+                  </div>
+                  <div className="mt-2 flex gap-3 text-xs">
+                    <span className={primaryStepComplete ? 'text-accent' : 'text-white/40'}>1. Контакты</span>
+                    <span className={secondStepComplete ? 'text-accent' : 'text-white/40'}>2. Услуга и дата</span>
+                    <span className={thirdStepComplete ? 'text-accent' : 'text-white/40'}>3. Детали</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mb-5">
+                  {trustPoints.map((point) => (
+                    <div key={point} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/90">
+                      ✓ {point}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mb-5">
+                  <p className="text-accent font-semibold text-sm mb-2">Быстрый выбор</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {quickScenarios.map((scenario) => (
+                      <button
+                        key={scenario.label}
+                        type="button"
+                        onClick={() => applyQuickScenario(scenario, 'desktop')}
+                        className="rounded-lg bg-white/8 border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/12 transition"
+                      >
+                        {scenario.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 
                 <form className="space-y-4">
                   <div>
@@ -808,23 +1028,37 @@ function App() {
                     <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
                   </div>
                   <div>
-                    <label htmlFor="address_desktop" className="text-sm font-semibold text-white">Адрес подачи</label>
-                    <input id="address_desktop" name="address" placeholder="Астана, Кабанбай батыра 53" value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
                     <button
                       type="button"
-                      onClick={addFavorite}
-                      disabled={!formData.address}
-                      className={`mt-2 w-full rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                        formData.address ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-white/5 text-white/50 cursor-not-allowed'
-                      }`}
+                      onClick={() => setShowDesktopDetails((prev) => !prev)}
+                      className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
                     >
-                      Сохранить адрес в избранное
+                      {showDesktopDetails ? 'Скрыть доп. поля' : 'Добавить адрес и комментарий'}
                     </button>
                   </div>
-                  <div>
-                    <label htmlFor="comment_desktop" className="text-sm font-semibold text-white">Комментарий</label>
-                    <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15 resize-none" rows="3" />
-                  </div>
+
+                  {showDesktopDetails && (
+                    <>
+                      <div>
+                        <label htmlFor="address_desktop" className="text-sm font-semibold text-white">Адрес подачи</label>
+                        <input id="address_desktop" name="address" placeholder="Астана, Кабанбай батыра 53" value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                        <button
+                          type="button"
+                          onClick={addFavorite}
+                          disabled={!formData.address}
+                          className={`mt-2 w-full rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                            formData.address ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-white/5 text-white/50 cursor-not-allowed'
+                          }`}
+                        >
+                          Сохранить адрес в избранное
+                        </button>
+                      </div>
+                      <div>
+                        <label htmlFor="comment_desktop" className="text-sm font-semibold text-white">Комментарий</label>
+                        <textarea id="comment_desktop" name="comment" placeholder="Дополнительные пожелания..." value={formData.comment} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15 resize-none" rows="3" />
+                      </div>
+                    </>
+                  )}
 
                   <button
                     type="button"
@@ -853,6 +1087,15 @@ function App() {
       <footer className="border-t border-white/10 px-4 py-6 text-center text-xs text-white/60 md:px-8 md:translate-y-0">
         © {new Date().getFullYear()} TransferPro · Premium transfer in Astana
       </footer>
+
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noreferrer"
+        className="hidden md:flex fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full bg-accent text-black font-bold shadow-lg hover:bg-accent/90 transition"
+      >
+        WhatsApp
+      </a>
     </div>
   )
 }
