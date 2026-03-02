@@ -101,6 +101,22 @@ const translations = {
     driverPassword: 'Пароль водителя',
     driversList: 'Список водителей',
     noDrivers: 'Водители пока не добавлены',
+    transferSchedule: 'График трансферов',
+    transferScheduleSubtitle: 'Назначение водителя и машины с проверкой конфликтов',
+    createTransfer: 'Добавить трансфер',
+    clientName: 'Клиент',
+    routeFrom: 'Откуда',
+    routeTo: 'Куда',
+    startTime: 'Начало',
+    endTime: 'Окончание',
+    assignedDriver: 'Водитель',
+    vehicle: 'Машина',
+    conflictDetected: 'Конфликт: водитель или машина уже заняты в это время',
+    invalidTimeRange: 'Время окончания должно быть позже начала',
+    transferSaved: 'Трансфер добавлен в график',
+    noTransfers: 'Нет запланированных трансферов',
+    myTransfers: 'Мои трансферы',
+    noTransfersForRole: 'Нет назначенных трансферов',
   },
   kk: {
     home: 'Басты бет',
@@ -198,6 +214,22 @@ const translations = {
     driverPassword: 'Жүргізуші құпиясөзі',
     driversList: 'Жүргізушілер тізімі',
     noDrivers: 'Жүргізушілер әлі қосылмаған',
+    transferSchedule: 'Трансфер кестесі',
+    transferScheduleSubtitle: 'Жүргізуші мен көлікті тағайындау, қақтығысты тексеру',
+    createTransfer: 'Трансфер қосу',
+    clientName: 'Клиент',
+    routeFrom: 'Қайдан',
+    routeTo: 'Қайда',
+    startTime: 'Басталуы',
+    endTime: 'Аяқталуы',
+    assignedDriver: 'Жүргізуші',
+    vehicle: 'Көлік',
+    conflictDetected: 'Қақтығыс: жүргізуші немесе көлік осы уақытта бос емес',
+    invalidTimeRange: 'Аяқталу уақыты басталу уақытынан кейін болуы керек',
+    transferSaved: 'Трансфер кестеге қосылды',
+    noTransfers: 'Жоспарланған трансфер жоқ',
+    myTransfers: 'Менің трансферлерім',
+    noTransfersForRole: 'Сізге тағайындалған трансфер жоқ',
   },
   en: {
     home: 'Home',
@@ -295,6 +327,22 @@ const translations = {
     driverPassword: 'Driver password',
     driversList: 'Drivers list',
     noDrivers: 'No drivers added yet',
+    transferSchedule: 'Transfer schedule',
+    transferScheduleSubtitle: 'Assign driver and vehicle with conflict checks',
+    createTransfer: 'Add transfer',
+    clientName: 'Client',
+    routeFrom: 'From',
+    routeTo: 'To',
+    startTime: 'Start time',
+    endTime: 'End time',
+    assignedDriver: 'Driver',
+    vehicle: 'Vehicle',
+    conflictDetected: 'Conflict: the driver or vehicle is already booked for this slot',
+    invalidTimeRange: 'End time must be after start time',
+    transferSaved: 'Transfer saved to schedule',
+    noTransfers: 'No scheduled transfers',
+    myTransfers: 'My transfers',
+    noTransfersForRole: 'No transfers assigned yet',
   },
 }
 
@@ -436,6 +484,10 @@ function App() {
   const [savedSince, setSavedSince] = useState('')
   const [submitNotice, setSubmitNotice] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
+  const [transfers, setTransfers] = useState(() => JSON.parse(localStorage.getItem('transfers') || '[]'))
+  const [transferDraft, setTransferDraft] = useState(() => getEmptyTransferDraft())
+  const [transferConflict, setTransferConflict] = useState('')
+  const [transferNotice, setTransferNotice] = useState('')
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
   const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
@@ -486,6 +538,10 @@ function App() {
   }, [driverAccounts])
 
   useEffect(() => {
+    localStorage.setItem('transfers', JSON.stringify(transfers))
+  }, [transfers])
+
+  useEffect(() => {
     document.documentElement.style.colorScheme = 'dark'
   }, [])
 
@@ -503,14 +559,58 @@ function App() {
     }
   }, [formData.service])
 
-  const getTodayDate = () => {
+  function getTodayDate() {
     const today = new Date()
     return today.toISOString().split('T')[0]
+  }
+
+  function getEmptyTransferDraft() {
+    return {
+      clientName: '',
+      service: services[0]?.title || '',
+      routeFrom: '',
+      routeTo: '',
+      date: getTodayDate(),
+      startTime: '09:00',
+      endTime: '10:00',
+      driver: driverAccounts[0]?.login || '',
+      vehicle: '',
+      status: 'confirmed',
+    }
   }
 
   const isValidPhone = (phone) => {
     const digitsOnly = phone.replace(/\D/g, '')
     return digitsOnly.length === 11 && digitsOnly.startsWith('7')
+  }
+
+  const timeToMinutes = (time) => {
+    if (!time || !time.includes(':')) return null
+    const [hours, minutes] = time.split(':').map(Number)
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) return null
+    return hours * 60 + minutes
+  }
+
+  const findTransferConflict = (candidate, ignoreId) => {
+    const start = timeToMinutes(candidate.startTime)
+    const end = timeToMinutes(candidate.endTime)
+    if (start === null || end === null) return ''
+    if (end <= start) return t.invalidTimeRange
+
+    const conflicting = transfers.find((transfer) => {
+      if (transfer.id === ignoreId) return false
+      if (transfer.date !== candidate.date) return false
+      const otherStart = timeToMinutes(transfer.startTime)
+      const otherEnd = timeToMinutes(transfer.endTime)
+      if (otherStart === null || otherEnd === null) return false
+      const overlaps = start < otherEnd && otherStart < end
+      const sameDriver = candidate.driver && transfer.driver && transfer.driver.toLowerCase() === candidate.driver.toLowerCase()
+      const sameVehicle = candidate.vehicle && transfer.vehicle && transfer.vehicle.toLowerCase().trim() === candidate.vehicle.toLowerCase().trim()
+      return overlaps && (sameDriver || sameVehicle)
+    })
+
+    if (!conflicting) return ''
+    return `${t.conflictDetected} · ${conflicting.date} ${conflicting.startTime}-${conflicting.endTime}`
   }
 
   const canSubmit = formData.name.trim() && isValidPhone(formData.phone) && formData.date
@@ -549,6 +649,20 @@ function App() {
 
   const activeOrdersCount = orderHistory.filter((order) => !['completed', 'canceled'].includes(order.status || 'new')).length
   const completedOrdersCount = orderHistory.filter((order) => (order.status || 'new') === 'completed').length
+  const isTransferReady = Boolean(
+    transferDraft.clientName.trim()
+    && transferDraft.routeFrom.trim()
+    && transferDraft.routeTo.trim()
+    && transferDraft.driver.trim()
+    && transferDraft.vehicle.trim()
+    && transferDraft.date
+    && transferDraft.startTime
+    && transferDraft.endTime
+    && !transferConflict
+  )
+  const visibleTransfers = role === 'admin'
+    ? transfers
+    : transfers.filter((transfer) => transfer.driver && staffSession?.login && transfer.driver.toLowerCase() === staffSession.login.toLowerCase())
 
   const handleStaffLogin = (event) => {
     event.preventDefault()
@@ -613,6 +727,32 @@ function App() {
     const updated = favorites.filter(f => f.id !== id)
     setFavorites(updated)
     localStorage.setItem('favorites', JSON.stringify(updated))
+  }
+
+  const updateTransferDraftField = (field, value) => {
+    const nextDraft = { ...transferDraft, [field]: value }
+    setTransferDraft(nextDraft)
+    setTransferNotice('')
+    setTransferConflict(findTransferConflict(nextDraft))
+  }
+
+  const createTransfer = (event) => {
+    event.preventDefault()
+    const conflictMessage = findTransferConflict(transferDraft)
+    if (conflictMessage) {
+      setTransferConflict(conflictMessage)
+      setTransferNotice('')
+      return
+    }
+    const newTransfer = { ...transferDraft, id: Date.now() }
+    setTransfers((prev) => [newTransfer, ...prev])
+    setTransferDraft(getEmptyTransferDraft())
+    setTransferConflict('')
+    setTransferNotice(t.transferSaved)
+  }
+
+  const removeTransfer = (transferId) => {
+    setTransfers((prev) => prev.filter((transfer) => transfer.id !== transferId))
   }
 
   const applyQuickScenario = (scenario, target = 'mobile') => {
@@ -1541,6 +1681,182 @@ function App() {
                 </div>
               </div>
             )}
+
+            <div className="mt-6 space-y-4">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-lg font-semibold text-white">{role === 'admin' ? t.transferSchedule : t.myTransfers}</p>
+                  <p className="text-sm text-white/60">{t.transferScheduleSubtitle}</p>
+                </div>
+                <div className="flex flex-col items-end gap-1 text-xs">
+                  {transferNotice && (
+                    <span className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-1 text-green-200">{transferNotice}</span>
+                  )}
+                  {transferConflict && (
+                    <span className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1 text-red-200">{transferConflict}</span>
+                  )}
+                </div>
+              </div>
+
+              {role === 'admin' && (
+                <form onSubmit={createTransfer} className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.clientName}</label>
+                    <input
+                      value={transferDraft.clientName}
+                      onChange={(event) => updateTransferDraftField('clientName', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      placeholder="Имя клиента"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.serviceLabel}</label>
+                    <select
+                      value={transferDraft.service}
+                      onChange={(event) => updateTransferDraftField('service', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    >
+                      {services.map((service) => (
+                        <option key={service.title} value={service.title} className="text-black">{service.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.dateLabel}</label>
+                    <input
+                      type="date"
+                      min={getTodayDate()}
+                      value={transferDraft.date}
+                      onChange={(event) => updateTransferDraftField('date', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.startTime}</label>
+                    <input
+                      type="time"
+                      value={transferDraft.startTime}
+                      onChange={(event) => updateTransferDraftField('startTime', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.endTime}</label>
+                    <input
+                      type="time"
+                      value={transferDraft.endTime}
+                      onChange={(event) => updateTransferDraftField('endTime', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.routeFrom}</label>
+                    <input
+                      value={transferDraft.routeFrom}
+                      onChange={(event) => updateTransferDraftField('routeFrom', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      placeholder="Астана, аэропорт"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.routeTo}</label>
+                    <input
+                      value={transferDraft.routeTo}
+                      onChange={(event) => updateTransferDraftField('routeTo', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      placeholder="Отель"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.assignedDriver}</label>
+                    {driverAccounts.length > 0 ? (
+                      <select
+                        value={transferDraft.driver}
+                        onChange={(event) => updateTransferDraftField('driver', event.target.value)}
+                        className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      >
+                        <option value="" className="text-black">—</option>
+                        {driverAccounts.map((driver) => (
+                          <option key={driver.id} value={driver.login} className="text-black">{driver.login}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        value={transferDraft.driver}
+                        onChange={(event) => updateTransferDraftField('driver', event.target.value)}
+                        className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                        placeholder="driver@mail.ru"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.vehicle}</label>
+                    <input
+                      value={transferDraft.vehicle}
+                      onChange={(event) => updateTransferDraftField('vehicle', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      placeholder="Mercedes V-class"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-end">
+                    <button
+                      type="submit"
+                      disabled={!isTransferReady}
+                      className={`w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                        isTransferReady ? 'bg-accent text-black hover:bg-accent/90' : 'bg-white/5 text-white/50 cursor-not-allowed'
+                      }`}
+                    >
+                      {t.createTransfer}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="space-y-2">
+                {visibleTransfers.length === 0 ? (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center text-sm text-white/70">
+                    {role === 'admin' ? t.noTransfers : t.noTransfersForRole}
+                  </div>
+                ) : (
+                  visibleTransfers.map((transfer) => {
+                    const conflictMessage = findTransferConflict(transfer, transfer.id)
+                    return (
+                      <div
+                        key={transfer.id}
+                        className={`rounded-xl border p-4 ${
+                          conflictMessage ? 'border-red-400/50 bg-red-500/5' : 'border-white/10 bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-white font-semibold">{transfer.service || t.transferSchedule}</p>
+                            <p className="text-xs text-white/60">{transfer.clientName || t.clientName}</p>
+                          </div>
+                          {role === 'admin' && (
+                            <button
+                              type="button"
+                              onClick={() => removeTransfer(transfer.id)}
+                              className="rounded-lg border border-white/15 bg-white/5 p-2 text-white/70 hover:bg-white/10"
+                              aria-label="Delete transfer"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+                        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-3 text-sm text-white/80">
+                          <div>{transfer.date} · {transfer.startTime}–{transfer.endTime}</div>
+                          <div>{t.routeFrom}: {transfer.routeFrom || '—'}</div>
+                          <div>{t.routeTo}: {transfer.routeTo || '—'}</div>
+                          <div>{t.assignedDriver}: {transfer.driver || '—'}</div>
+                          <div>{t.vehicle}: {transfer.vehicle || '—'}</div>
+                        </div>
+                        {conflictMessage && <p className="mt-2 text-xs text-red-300">{conflictMessage}</p>}
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </div>
           </motion.section>
 
           <div className="space-y-3">
