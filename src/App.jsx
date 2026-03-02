@@ -130,6 +130,20 @@ const translations = {
     printSchedule: 'Печать / PDF',
     importSuccess: 'Импорт выполнен',
     importError: 'Ошибка импорта: неверный файл',
+    notifyLabel: 'Уведомления о заявке',
+    notifyEnable: 'Включите браузерные уведомления, чтобы не пропустить ответ менеджера',
+    notifyEnabled: 'Уведомления включены',
+    notifyBlocked: 'Браузер отклонил уведомления. Проверьте настройки',
+    notifyButton: 'Включить уведомления',
+    notifyTitle: 'Заявка отправлена',
+    notifyBody: 'Мы свяжемся с вами для подтверждения бронирования',
+    supportCardTitle: 'Связаться с менеджером',
+    supportCall: 'Позвонить',
+    supportEmail: 'Написать на почту',
+    supportWhatsapp: 'Открыть WhatsApp',
+    lastOrderTitle: 'Последняя заявка',
+    lastOrderEmpty: 'У вас пока нет заявок',
+    statusTimeline: 'Этапы',
   },
   kk: {
     home: 'Басты бет',
@@ -256,6 +270,20 @@ const translations = {
     printSchedule: 'Басып шығару / PDF',
     importSuccess: 'Импорт орындалды',
     importError: 'Импорт қатесі: файл дұрыс емес',
+    notifyLabel: 'Өтінім хабарламалары',
+    notifyEnable: 'Менеджер жауаптарын жіберіп алмау үшін браузер хабарламаларын қосыңыз',
+    notifyEnabled: 'Хабарламалар қосылған',
+    notifyBlocked: 'Браузер хабарламаны бұғаттады. Баптауды тексеріңіз',
+    notifyButton: 'Хабарламаларды қосу',
+    notifyTitle: 'Өтінім жіберілді',
+    notifyBody: 'Брондауды растау үшін хабарласамыз',
+    supportCardTitle: 'Менеджермен байланыс',
+    supportCall: 'Қоңырау шалу',
+    supportEmail: 'Поштаға жазу',
+    supportWhatsapp: 'WhatsApp ашу',
+    lastOrderTitle: 'Соңғы өтінім',
+    lastOrderEmpty: 'Өтінімдер әлі жоқ',
+    statusTimeline: 'Кезеңдер',
   },
   en: {
     home: 'Home',
@@ -382,6 +410,20 @@ const translations = {
     printSchedule: 'Print / PDF',
     importSuccess: 'Import completed',
     importError: 'Import error: invalid file',
+    notifyLabel: 'Booking notifications',
+    notifyEnable: 'Enable browser notifications to stay updated',
+    notifyEnabled: 'Notifications are on',
+    notifyBlocked: 'Notifications are blocked. Check browser settings',
+    notifyButton: 'Enable notifications',
+    notifyTitle: 'Request sent',
+    notifyBody: 'We will get back to confirm your booking',
+    supportCardTitle: 'Reach a manager',
+    supportCall: 'Call',
+    supportEmail: 'Email',
+    supportWhatsapp: 'Open WhatsApp',
+    lastOrderTitle: 'Last request',
+    lastOrderEmpty: 'No requests yet',
+    statusTimeline: 'Steps',
   },
 }
 
@@ -533,6 +575,8 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
   const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
+  const [notificationsAllowed, setNotificationsAllowed] = useState(() => (typeof Notification !== 'undefined' && Notification.permission === 'granted'))
+  const [notificationHint, setNotificationHint] = useState('')
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -589,6 +633,12 @@ function App() {
 
   useEffect(() => {
     document.documentElement.style.colorScheme = 'dark'
+  }, [])
+
+  useEffect(() => {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      setNotificationsAllowed(true)
+    }
   }, [])
 
   // Автосохранение формы
@@ -698,6 +748,10 @@ function App() {
   }
 
   const getStatusLabel = (status) => statusLabels[status] || t.statusNew
+
+  const statusSteps = ['new', 'confirmed', 'on_way', 'completed']
+  const latestOrder = orderHistory[0]
+  const currentStatusIndex = latestOrder ? statusSteps.indexOf(latestOrder.status || 'new') : -1
 
   const activeOrdersCount = orderHistory.filter((order) => !['completed', 'canceled'].includes(order.status || 'new')).length
   const completedOrdersCount = orderHistory.filter((order) => (order.status || 'new') === 'completed').length
@@ -883,6 +937,32 @@ function App() {
     }
   }
 
+  const requestNotifications = async () => {
+    if (typeof Notification === 'undefined') {
+      setNotificationHint(t.notifyBlocked)
+      return
+    }
+    try {
+      const permission = await Notification.requestPermission()
+      const allowed = permission === 'granted'
+      setNotificationsAllowed(allowed)
+      setNotificationHint(allowed ? t.notifyEnabled : t.notifyBlocked)
+    } catch (error) {
+      setNotificationsAllowed(false)
+      setNotificationHint(t.notifyBlocked)
+    }
+  }
+
+  const pushLocalNotification = (title, body) => {
+    if (!notificationsAllowed) return
+    if (typeof Notification === 'undefined') return
+    try {
+      new Notification(title, { body })
+    } catch (error) {
+      // ignore notification errors
+    }
+  }
+
   const whatsappHref = useMemo(() => {
     const message = [
       t.waMessageTitle,
@@ -905,6 +985,7 @@ function App() {
     }
     setSubmitNotice(t.submitSuccess)
     setTimeout(() => setSubmitNotice(''), 3500)
+    pushLocalNotification(t.notifyTitle, `${t.notifyBody}: ${formData.service || ''}`)
   }
 
   const handleSubmit = (event) => {
@@ -1251,6 +1332,60 @@ function App() {
                 </div>
               </div>
 
+              <div className="space-y-3">
+                {latestOrder ? (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-accent">{t.lastOrderTitle}</p>
+                        <p className="text-xs text-white/60">{latestOrder.service} · {latestOrder.date || '-'}</p>
+                      </div>
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/80">{getStatusLabel(latestOrder.status || 'new')}</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-1">
+                      {statusSteps.map((step, idx) => (
+                        <div key={step} className={`h-2 flex-1 rounded-full ${idx <= currentStatusIndex ? 'bg-accent' : 'bg-white/10'}`} />
+                      ))}
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
+                      <span className="line-clamp-1">{latestOrder.address || t.waAddress}</span>
+                      <button onClick={() => repeatOrder(latestOrder)} className="px-2 py-1 rounded-lg bg-accent/15 text-accent hover:bg-accent/25 transition">{t.repeat}</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">{t.lastOrderEmpty}</div>
+                )}
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-accent">{t.notifyLabel}</p>
+                      <p className="text-xs text-white/60">{notificationsAllowed ? t.notifyEnabled : t.notifyEnable}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={requestNotifications}
+                      disabled={notificationsAllowed}
+                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                        notificationsAllowed ? 'bg-white/5 text-white/50 cursor-not-allowed' : 'bg-accent/20 text-accent hover:bg-accent/30'
+                      }`}
+                    >
+                      {notificationsAllowed ? t.notifyEnabled : t.notifyButton}
+                    </button>
+                  </div>
+                  {notificationHint && <p className="mt-2 text-xs text-white/60">{notificationHint}</p>}
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
+                  <p className="text-sm font-semibold text-accent">{t.supportCardTitle}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <a href="tel:+77781556699" className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.supportCall}</a>
+                    <a href="mailto:transferpro.manager@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
+                    <a href={whatsappHref} target="_blank" rel="noreferrer" className="rounded-lg bg-green-500/20 text-green-200 px-3 py-2 text-xs font-semibold hover:bg-green-500/30 transition">{t.supportWhatsapp}</a>
+                  </div>
+                </div>
+              </div>
+
               <form className="space-y-3.5 sm:space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="name_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.nameLabel}</label>
@@ -1557,6 +1692,7 @@ function App() {
                             <div key={i} className="flex items-start gap-2 text-sm text-white/70">
                               <span className="text-accent mt-1 flex-shrink-0">✓</span>
                               <span>{detail}</span>
+
                             </div>
                           ))}
                         </div>
@@ -1650,6 +1786,60 @@ function App() {
                         {scenario.label}
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-5">
+                  {latestOrder ? (
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-accent">{t.lastOrderTitle}</p>
+                          <p className="text-xs text-white/60">{latestOrder.service} · {latestOrder.date || '-'}</p>
+                        </div>
+                        <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/80">{getStatusLabel(latestOrder.status || 'new')}</span>
+                      </div>
+                      <div className="mt-3 flex items-center gap-1">
+                        {statusSteps.map((step, idx) => (
+                          <div key={step} className={`h-2 flex-1 rounded-full ${idx <= currentStatusIndex ? 'bg-accent' : 'bg-white/10'}`} />
+                        ))}
+                      </div>
+                      <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
+                        <span className="line-clamp-1">{latestOrder.address || t.waAddress}</span>
+                        <button onClick={() => repeatOrder(latestOrder)} className="px-3 py-1 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition">{t.repeat}</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">{t.lastOrderEmpty}</div>
+                  )}
+
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-accent">{t.notifyLabel}</p>
+                        <p className="text-xs text-white/60">{notificationsAllowed ? t.notifyEnabled : t.notifyEnable}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={requestNotifications}
+                        disabled={notificationsAllowed}
+                        className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                          notificationsAllowed ? 'bg-white/5 text-white/50 cursor-not-allowed' : 'bg-accent/20 text-accent hover:bg-accent/30'
+                        }`}
+                      >
+                        {notificationsAllowed ? t.notifyEnabled : t.notifyButton}
+                      </button>
+                    </div>
+                    {notificationHint && <p className="mt-2 text-xs text-white/60">{notificationHint}</p>}
+                  </div>
+
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+                    <p className="text-sm font-semibold text-accent">{t.supportCardTitle}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <a href="tel:+77781556699" className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.supportCall}</a>
+                      <a href="mailto:transferpro.manager@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
+                      <a href={whatsappHref} target="_blank" rel="noreferrer" className="rounded-lg bg-green-500/20 text-green-200 px-3 py-2 text-xs font-semibold hover:bg-green-500/30 transition">{t.supportWhatsapp}</a>
+                    </div>
                   </div>
                 </div>
                 
