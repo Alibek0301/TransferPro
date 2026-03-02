@@ -90,6 +90,17 @@ const translations = {
     markConfirmed: 'Подтвердить',
     markOnWay: 'Отметить: в пути',
     markCompleted: 'Отметить: завершён',
+    staffLogin: 'Вход для персонала',
+    loginLabel: 'Логин',
+    passwordLabel: 'Пароль',
+    signIn: 'Войти',
+    signOut: 'Выйти',
+    invalidCredentials: 'Неверный логин или пароль',
+    addDriver: 'Добавить водителя',
+    driverLogin: 'Логин водителя',
+    driverPassword: 'Пароль водителя',
+    driversList: 'Список водителей',
+    noDrivers: 'Водители пока не добавлены',
   },
   kk: {
     home: 'Басты бет',
@@ -176,6 +187,17 @@ const translations = {
     markConfirmed: 'Растау',
     markOnWay: 'Белгілеу: жолда',
     markCompleted: 'Белгілеу: аяқталды',
+    staffLogin: 'Персоналға кіру',
+    loginLabel: 'Логин',
+    passwordLabel: 'Құпиясөз',
+    signIn: 'Кіру',
+    signOut: 'Шығу',
+    invalidCredentials: 'Логин немесе құпиясөз қате',
+    addDriver: 'Жүргізуші қосу',
+    driverLogin: 'Жүргізуші логині',
+    driverPassword: 'Жүргізуші құпиясөзі',
+    driversList: 'Жүргізушілер тізімі',
+    noDrivers: 'Жүргізушілер әлі қосылмаған',
   },
   en: {
     home: 'Home',
@@ -262,6 +284,17 @@ const translations = {
     markConfirmed: 'Confirm',
     markOnWay: 'Mark: on the way',
     markCompleted: 'Mark: completed',
+    staffLogin: 'Staff login',
+    loginLabel: 'Login',
+    passwordLabel: 'Password',
+    signIn: 'Sign in',
+    signOut: 'Sign out',
+    invalidCredentials: 'Invalid login or password',
+    addDriver: 'Add driver',
+    driverLogin: 'Driver login',
+    driverPassword: 'Driver password',
+    driversList: 'Drivers list',
+    noDrivers: 'No drivers added yet',
   },
 }
 
@@ -383,13 +416,23 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 }
 
+const ADMIN_LOGIN = 'alibek-u@mail.ru'
+const ADMIN_PASSWORD = '123456'
+
 function App() {
   const prefersReducedMotion = useReducedMotion()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
   const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ru')
-  const [role, setRole] = useState(() => localStorage.getItem('role') || 'client')
+  const [staffSession, setStaffSession] = useState(() => JSON.parse(localStorage.getItem('staffSession') || 'null'))
+  const [driverAccounts, setDriverAccounts] = useState(() => JSON.parse(localStorage.getItem('driverAccounts') || '[]'))
+  const [showStaffAuth, setShowStaffAuth] = useState(false)
+  const [authLogin, setAuthLogin] = useState('')
+  const [authPassword, setAuthPassword] = useState('')
+  const [authError, setAuthError] = useState('')
+  const [newDriverLogin, setNewDriverLogin] = useState('')
+  const [newDriverPassword, setNewDriverPassword] = useState('')
   const [savedSince, setSavedSince] = useState('')
   const [submitNotice, setSubmitNotice] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
@@ -399,6 +442,7 @@ function App() {
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
+  const role = staffSession?.role || 'client'
   
   const [formData, setFormData] = useState(() => {
     const saved = localStorage.getItem('formData')
@@ -434,8 +478,12 @@ function App() {
   }, [language])
 
   useEffect(() => {
-    localStorage.setItem('role', role)
-  }, [role])
+    localStorage.setItem('staffSession', JSON.stringify(staffSession))
+  }, [staffSession])
+
+  useEffect(() => {
+    localStorage.setItem('driverAccounts', JSON.stringify(driverAccounts))
+  }, [driverAccounts])
 
   useEffect(() => {
     document.documentElement.style.colorScheme = 'dark'
@@ -501,6 +549,52 @@ function App() {
 
   const activeOrdersCount = orderHistory.filter((order) => !['completed', 'canceled'].includes(order.status || 'new')).length
   const completedOrdersCount = orderHistory.filter((order) => (order.status || 'new') === 'completed').length
+
+  const handleStaffLogin = (event) => {
+    event.preventDefault()
+    const login = authLogin.trim().toLowerCase()
+    const password = authPassword
+
+    if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
+      setStaffSession({ role: 'admin', login: ADMIN_LOGIN })
+      setAuthError('')
+      setShowStaffAuth(false)
+      setAuthLogin('')
+      setAuthPassword('')
+      return
+    }
+
+    const matchedDriver = driverAccounts.find((driver) => driver.login.toLowerCase() === login && driver.password === password)
+    if (matchedDriver) {
+      setStaffSession({ role: 'driver', login: matchedDriver.login })
+      setAuthError('')
+      setShowStaffAuth(false)
+      setAuthLogin('')
+      setAuthPassword('')
+      return
+    }
+
+    setAuthError(t.invalidCredentials)
+  }
+
+  const handleStaffLogout = () => {
+    setStaffSession(null)
+    setDesktopTab('home')
+    setMobileTab('home')
+  }
+
+  const addDriverAccount = (event) => {
+    event.preventDefault()
+    const login = newDriverLogin.trim().toLowerCase()
+    const password = newDriverPassword.trim()
+    if (!login || !password) return
+    if (login === ADMIN_LOGIN) return
+    if (driverAccounts.some((driver) => driver.login.toLowerCase() === login)) return
+    const newDriver = { id: Date.now(), login, password }
+    setDriverAccounts((prev) => [newDriver, ...prev])
+    setNewDriverLogin('')
+    setNewDriverPassword('')
+  }
 
   const repeatOrder = (order) => {
     setFormData({ name: order.name, phone: order.phone, service: order.service, date: getTodayDate(), comment: order.comment, address: order.address || '' })
@@ -603,11 +697,15 @@ function App() {
                 <option value="kk">KK</option>
                 <option value="en">EN</option>
               </select>
-              <select value={role} onChange={(e) => setRole(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs cursor-pointer hover:border-accent transition">
-                <option value="client">{t.roleClient}</option>
-                <option value="admin">{t.roleAdmin}</option>
-                <option value="driver">{t.roleDriver}</option>
-              </select>
+              {role === 'client' ? (
+                <button onClick={() => setShowStaffAuth(true)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs hover:border-accent transition">
+                  {t.staffLogin}
+                </button>
+              ) : (
+                <button onClick={handleStaffLogout} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs hover:border-accent transition">
+                  {t.signOut}
+                </button>
+              )}
             </div>
           </div>
 
@@ -648,11 +746,15 @@ function App() {
                   <option value="kk">KK</option>
                   <option value="en">EN</option>
                 </select>
-                <select value={role} onChange={(e) => setRole(e.target.value)} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs cursor-pointer hover:border-accent transition">
-                  <option value="client">{t.roleClient}</option>
-                  <option value="admin">{t.roleAdmin}</option>
-                  <option value="driver">{t.roleDriver}</option>
-                </select>
+                {role === 'client' ? (
+                  <button onClick={() => { setShowStaffAuth(true); setMobileMenuOpen(false) }} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs hover:border-accent transition">
+                    {t.staffLogin}
+                  </button>
+                ) : (
+                  <button onClick={() => { handleStaffLogout(); setMobileMenuOpen(false) }} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs hover:border-accent transition">
+                    {t.signOut}
+                  </button>
+                )}
               </div>
               <button
                 onClick={closeMobileMenu}
@@ -665,6 +767,38 @@ function App() {
           </div>
         )}
       </header>
+
+      {showStaffAuth && (
+        <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+          <form onSubmit={handleStaffLogin} className="w-full max-w-md rounded-2xl border border-white/15 bg-black p-5 space-y-4">
+            <h3 className="text-xl font-serif text-accent">{t.staffLogin}</h3>
+            <div>
+              <label className="text-xs text-white/80">{t.loginLabel}</label>
+              <input
+                value={authLogin}
+                onChange={(event) => setAuthLogin(event.target.value)}
+                placeholder="email"
+                className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm outline-none focus:border-accent"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-white/80">{t.passwordLabel}</label>
+              <input
+                type="password"
+                value={authPassword}
+                onChange={(event) => setAuthPassword(event.target.value)}
+                placeholder="••••••"
+                className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm outline-none focus:border-accent"
+              />
+            </div>
+            {authError && <p className="text-xs text-red-400">{authError}</p>}
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setShowStaffAuth(false)} className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/15 transition">{t.close}</button>
+              <button type="submit" className="flex-1 rounded-lg bg-accent text-black px-3 py-2 text-sm font-semibold hover:bg-accent/90 transition">{t.signIn}</button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {role === 'client' ? (
       <>
@@ -1361,6 +1495,52 @@ function App() {
               <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90">{t.ordersActive}: {activeOrdersCount}</div>
               <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90">{t.ordersDone}: {completedOrdersCount}</div>
             </div>
+
+            {role === 'admin' && (
+              <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+                <form onSubmit={addDriverAccount} className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                  <p className="text-sm font-semibold text-accent">{t.addDriver}</p>
+                  <div>
+                    <label className="text-xs text-white/70">{t.driverLogin}</label>
+                    <input
+                      value={newDriverLogin}
+                      onChange={(event) => setNewDriverLogin(event.target.value)}
+                      className="mt-1 w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      placeholder="driver@mail.ru"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/70">{t.driverPassword}</label>
+                    <input
+                      type="text"
+                      value={newDriverPassword}
+                      onChange={(event) => setNewDriverPassword(event.target.value)}
+                      className="mt-1 w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      placeholder="******"
+                    />
+                  </div>
+                  <button type="submit" className="w-full rounded-lg bg-accent text-black px-3 py-2 text-sm font-semibold hover:bg-accent/90 transition">
+                    {t.addDriver}
+                  </button>
+                </form>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-sm font-semibold text-accent mb-2">{t.driversList}</p>
+                  {driverAccounts.length === 0 ? (
+                    <p className="text-xs text-white/60">{t.noDrivers}</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {driverAccounts.map((driver) => (
+                        <div key={driver.id} className="rounded-lg border border-white/10 bg-black/30 px-3 py-2">
+                          <p className="text-sm text-white">{driver.login}</p>
+                          <p className="text-xs text-white/50">{t.passwordLabel}: {driver.password}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </motion.section>
 
           <div className="space-y-3">
