@@ -444,12 +444,11 @@ const services = [
   {
     title: 'Smart Parents — Развозка детей',
     subtitle: 'School Transfer',
-    price: 'от 300 000 ₸ / мес',
+    price: 'от 100 000 ₸ / мес',
     icon: Baby,
     details: [
       'Контроль от двери до двери с передачей из рук в руки',
       'Фотоотчёт родителю при посадке и высадке',
-      'Современные детские кресла или бустеры',
       'Постоянный проверенный водитель',
       'Замена водителя/машины по предварительному согласованию'
     ]
@@ -1380,7 +1379,7 @@ function App() {
                   <p className="text-sm font-semibold text-accent">{t.supportCardTitle}</p>
                   <div className="flex flex-wrap gap-2">
                     <a href="tel:+77781556699" className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.supportCall}</a>
-                    <a href="mailto:transferpro.manager@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
+                    <a href="mailto:vip.transfer.astana@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
                     <a href={whatsappHref} target="_blank" rel="noreferrer" className="rounded-lg bg-green-500/20 text-green-200 px-3 py-2 text-xs font-semibold hover:bg-green-500/30 transition">{t.supportWhatsapp}</a>
                   </div>
                 </div>
@@ -1837,7 +1836,7 @@ function App() {
                     <p className="text-sm font-semibold text-accent">{t.supportCardTitle}</p>
                     <div className="flex flex-wrap gap-2">
                       <a href="tel:+77781556699" className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.supportCall}</a>
-                      <a href="mailto:transferpro.manager@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
+                      <a href="mailto:vip.transfer.astana@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
                       <a href={whatsappHref} target="_blank" rel="noreferrer" className="rounded-lg bg-green-500/20 text-green-200 px-3 py-2 text-xs font-semibold hover:bg-green-500/30 transition">{t.supportWhatsapp}</a>
                     </div>
                   </div>
