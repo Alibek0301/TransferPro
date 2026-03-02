@@ -117,6 +117,19 @@ const translations = {
     noTransfers: 'Нет запланированных трансферов',
     myTransfers: 'Мои трансферы',
     noTransfersForRole: 'Нет назначенных трансферов',
+    filters: 'Фильтры',
+    filterDate: 'Дата',
+    filterDriver: 'Водитель',
+    filterVehicle: 'Машина',
+    searchTransfers: 'Поиск по клиенту/маршруту',
+    clearFilters: 'Сбросить фильтры',
+    bufferLabel: 'Буфер (мин) к проверке конфликтов',
+    bufferHelper: 'Добавляет запас ко времени начала/конца для водителя и машины',
+    exportJson: 'Экспорт JSON',
+    importJson: 'Импорт JSON',
+    printSchedule: 'Печать / PDF',
+    importSuccess: 'Импорт выполнен',
+    importError: 'Ошибка импорта: неверный файл',
   },
   kk: {
     home: 'Басты бет',
@@ -230,6 +243,19 @@ const translations = {
     noTransfers: 'Жоспарланған трансфер жоқ',
     myTransfers: 'Менің трансферлерім',
     noTransfersForRole: 'Сізге тағайындалған трансфер жоқ',
+    filters: 'Сүзгілер',
+    filterDate: 'Күні',
+    filterDriver: 'Жүргізуші',
+    filterVehicle: 'Көлік',
+    searchTransfers: 'Клиент/маршрут бойынша іздеу',
+    clearFilters: 'Сүзгілерді тазарту',
+    bufferLabel: 'Қақтығысқа буфер (мин)',
+    bufferHelper: 'Жүргізуші/көлік уақытына запас қосады',
+    exportJson: 'JSON экспорт',
+    importJson: 'JSON импорт',
+    printSchedule: 'Басып шығару / PDF',
+    importSuccess: 'Импорт орындалды',
+    importError: 'Импорт қатесі: файл дұрыс емес',
   },
   en: {
     home: 'Home',
@@ -343,6 +369,19 @@ const translations = {
     noTransfers: 'No scheduled transfers',
     myTransfers: 'My transfers',
     noTransfersForRole: 'No transfers assigned yet',
+    filters: 'Filters',
+    filterDate: 'Date',
+    filterDriver: 'Driver',
+    filterVehicle: 'Vehicle',
+    searchTransfers: 'Search by client/route',
+    clearFilters: 'Clear filters',
+    bufferLabel: 'Buffer (min) for conflict check',
+    bufferHelper: 'Adds slack to start/end time for driver and vehicle',
+    exportJson: 'Export JSON',
+    importJson: 'Import JSON',
+    printSchedule: 'Print / PDF',
+    importSuccess: 'Import completed',
+    importError: 'Import error: invalid file',
   },
 }
 
@@ -488,6 +527,9 @@ function App() {
   const [transferDraft, setTransferDraft] = useState(() => getEmptyTransferDraft())
   const [transferConflict, setTransferConflict] = useState('')
   const [transferNotice, setTransferNotice] = useState('')
+  const [transferFilters, setTransferFilters] = useState({ date: '', driver: '', vehicle: '', query: '' })
+  const [bufferMinutes, setBufferMinutes] = useState(() => Number(localStorage.getItem('transferBuffer') || 15))
+  const [importNotice, setImportNotice] = useState('')
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
   const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
@@ -540,6 +582,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('transfers', JSON.stringify(transfers))
   }, [transfers])
+
+  useEffect(() => {
+    localStorage.setItem('transferBuffer', String(bufferMinutes || 0))
+  }, [bufferMinutes])
 
   useEffect(() => {
     document.documentElement.style.colorScheme = 'dark'
@@ -597,13 +643,19 @@ function App() {
     if (start === null || end === null) return ''
     if (end <= start) return t.invalidTimeRange
 
+    const buffer = Math.max(0, Number(bufferMinutes) || 0)
+    const startBuffered = Math.max(0, start - buffer)
+    const endBuffered = end + buffer
+
     const conflicting = transfers.find((transfer) => {
       if (transfer.id === ignoreId) return false
       if (transfer.date !== candidate.date) return false
-      const otherStart = timeToMinutes(transfer.startTime)
-      const otherEnd = timeToMinutes(transfer.endTime)
-      if (otherStart === null || otherEnd === null) return false
-      const overlaps = start < otherEnd && otherStart < end
+      const otherStartRaw = timeToMinutes(transfer.startTime)
+      const otherEndRaw = timeToMinutes(transfer.endTime)
+      if (otherStartRaw === null || otherEndRaw === null) return false
+      const otherStart = Math.max(0, otherStartRaw - buffer)
+      const otherEnd = otherEndRaw + buffer
+      const overlaps = startBuffered < otherEnd && otherStart < endBuffered
       const sameDriver = candidate.driver && transfer.driver && transfer.driver.toLowerCase() === candidate.driver.toLowerCase()
       const sameVehicle = candidate.vehicle && transfer.vehicle && transfer.vehicle.toLowerCase().trim() === candidate.vehicle.toLowerCase().trim()
       return overlaps && (sameDriver || sameVehicle)
@@ -663,6 +715,16 @@ function App() {
   const visibleTransfers = role === 'admin'
     ? transfers
     : transfers.filter((transfer) => transfer.driver && staffSession?.login && transfer.driver.toLowerCase() === staffSession.login.toLowerCase())
+  const filteredTransfers = visibleTransfers.filter((transfer) => {
+    const matchDate = !transferFilters.date || transfer.date === transferFilters.date
+    const matchDriver = !transferFilters.driver || (transfer.driver || '').toLowerCase() === transferFilters.driver.toLowerCase()
+    const matchVehicle = !transferFilters.vehicle || (transfer.vehicle || '').toLowerCase().includes(transferFilters.vehicle.toLowerCase())
+    const q = transferFilters.query.trim().toLowerCase()
+    const matchQuery = !q || [transfer.clientName, transfer.routeFrom, transfer.routeTo, transfer.vehicle, transfer.driver, transfer.service]
+      .some((field) => (field || '').toLowerCase().includes(q))
+    return matchDate && matchDriver && matchVehicle && matchQuery
+  })
+  const transfersToDisplay = role === 'admin' ? filteredTransfers : visibleTransfers
 
   const handleStaffLogin = (event) => {
     event.preventDefault()
@@ -736,6 +798,12 @@ function App() {
     setTransferConflict(findTransferConflict(nextDraft))
   }
 
+  const updateTransferFilter = (field, value) => {
+    setTransferFilters((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const clearTransferFilters = () => setTransferFilters({ date: '', driver: '', vehicle: '', query: '' })
+
   const createTransfer = (event) => {
     event.preventDefault()
     const conflictMessage = findTransferConflict(transferDraft)
@@ -749,11 +817,57 @@ function App() {
     setTransferDraft(getEmptyTransferDraft())
     setTransferConflict('')
     setTransferNotice(t.transferSaved)
+    setImportNotice('')
   }
 
   const removeTransfer = (transferId) => {
     setTransfers((prev) => prev.filter((transfer) => transfer.id !== transferId))
   }
+
+  const exportTransfers = () => {
+    const dataStr = JSON.stringify(transfers, null, 2)
+    const blob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'transfers.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const importTransfers = (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result)
+        if (!Array.isArray(parsed)) throw new Error('invalid')
+        const normalized = parsed.map((item) => ({
+          id: item.id || Date.now() + Math.random(),
+          clientName: item.clientName || '',
+          service: item.service || services[0]?.title || '',
+          routeFrom: item.routeFrom || '',
+          routeTo: item.routeTo || '',
+          date: item.date || getTodayDate(),
+          startTime: item.startTime || '09:00',
+          endTime: item.endTime || '10:00',
+          driver: item.driver || '',
+          vehicle: item.vehicle || '',
+          status: item.status || 'confirmed',
+        }))
+        setTransfers(normalized)
+        setImportNotice(t.importSuccess)
+        setTransferNotice('')
+        setTransferConflict('')
+      } catch (error) {
+        setImportNotice(t.importError)
+      }
+    }
+    reader.readAsText(file)
+  }
+
+  const printSchedule = () => window.print()
 
   const applyQuickScenario = (scenario, target = 'mobile') => {
     setFormData((prev) => ({
@@ -1695,10 +1809,77 @@ function App() {
                   {transferConflict && (
                     <span className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1 text-red-200">{transferConflict}</span>
                   )}
+                  {importNotice && (
+                    <span className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-amber-200">{importNotice}</span>
+                  )}
                 </div>
               </div>
 
               {role === 'admin' && (
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.filterDate}</label>
+                    <input
+                      type="date"
+                      value={transferFilters.date}
+                      onChange={(event) => updateTransferFilter('date', event.target.value)}
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.filterDriver}</label>
+                    <input
+                      value={transferFilters.driver}
+                      onChange={(event) => updateTransferFilter('driver', event.target.value)}
+                      placeholder="driver@mail.ru"
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.filterVehicle}</label>
+                    <input
+                      value={transferFilters.vehicle}
+                      onChange={(event) => updateTransferFilter('vehicle', event.target.value)}
+                      placeholder="V-class"
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-white/70">{t.searchTransfers}</label>
+                    <input
+                      value={transferFilters.query}
+                      onChange={(event) => updateTransferFilter('query', event.target.value)}
+                      placeholder="Имя, адрес, маршрут"
+                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="text-xs text-white/70">{t.bufferLabel}</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        value={bufferMinutes}
+                        onChange={(event) => setBufferMinutes(Math.max(0, Number(event.target.value) || 0))}
+                        className="w-28 rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      />
+                      <p className="text-xs text-white/60 self-center">{t.bufferHelper}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 md:col-span-2 md:items-end">
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" onClick={clearTransferFilters} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.clearFilters}</button>
+                      <button type="button" onClick={exportTransfers} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.exportJson}</button>
+                      <label className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10 cursor-pointer">
+                        {t.importJson}
+                        <input type="file" accept="application/json" className="hidden" onChange={importTransfers} />
+                      </label>
+                      <button type="button" onClick={printSchedule} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.printSchedule}</button>
+                    </div>
+                  </div>
+                </div>
+
                 <form onSubmit={createTransfer} className="grid grid-cols-1 gap-3 md:grid-cols-3">
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-white/70">{t.clientName}</label>
@@ -1813,12 +1994,12 @@ function App() {
               )}
 
               <div className="space-y-2">
-                {visibleTransfers.length === 0 ? (
+                {transfersToDisplay.length === 0 ? (
                   <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center text-sm text-white/70">
                     {role === 'admin' ? t.noTransfers : t.noTransfersForRole}
                   </div>
                 ) : (
-                  visibleTransfers.map((transfer) => {
+                  transfersToDisplay.map((transfer) => {
                     const conflictMessage = findTransferConflict(transfer, transfer.id)
                     return (
                       <div
