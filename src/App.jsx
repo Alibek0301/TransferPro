@@ -67,6 +67,29 @@ const translations = {
     waService: 'Услуга',
     waDate: 'Дата',
     waAddress: 'Адрес',
+    role: 'Роль',
+    roleClient: 'Клиент',
+    roleAdmin: 'Администратор',
+    roleDriver: 'Водитель',
+    adminPanel: 'Панель администратора',
+    adminSubtitle: 'Контроль заявок и управление статусами',
+    driverPanel: 'Кабинет водителя',
+    driverSubtitle: 'Просмотр заказов и отметка этапов поездки',
+    orderStatus: 'Статус',
+    noOrdersForRole: 'Заказов пока нет',
+    orderCreated: 'Создан',
+    statusNew: 'Новый',
+    statusConfirmed: 'Подтверждён',
+    statusOnWay: 'В пути',
+    statusCompleted: 'Завершён',
+    statusCanceled: 'Отменён',
+    setStatus: 'Установить статус',
+    ordersTotal: 'Всего заказов',
+    ordersActive: 'Активные',
+    ordersDone: 'Завершённые',
+    markConfirmed: 'Подтвердить',
+    markOnWay: 'Отметить: в пути',
+    markCompleted: 'Отметить: завершён',
   },
   kk: {
     home: 'Басты бет',
@@ -130,6 +153,29 @@ const translations = {
     waService: 'Қызмет',
     waDate: 'Күні',
     waAddress: 'Мекенжай',
+    role: 'Рөл',
+    roleClient: 'Клиент',
+    roleAdmin: 'Әкімші',
+    roleDriver: 'Жүргізуші',
+    adminPanel: 'Әкімші панелі',
+    adminSubtitle: 'Өтінімдерді бақылау және мәртебені басқару',
+    driverPanel: 'Жүргізуші кабинеті',
+    driverSubtitle: 'Тапсырыстарды көру және сапар кезеңдерін белгілеу',
+    orderStatus: 'Мәртебе',
+    noOrdersForRole: 'Тапсырыстар әлі жоқ',
+    orderCreated: 'Құрылған',
+    statusNew: 'Жаңа',
+    statusConfirmed: 'Расталған',
+    statusOnWay: 'Жолда',
+    statusCompleted: 'Аяқталды',
+    statusCanceled: 'Бас тартылды',
+    setStatus: 'Мәртебені орнату',
+    ordersTotal: 'Барлық тапсырыс',
+    ordersActive: 'Белсенді',
+    ordersDone: 'Аяқталған',
+    markConfirmed: 'Растау',
+    markOnWay: 'Белгілеу: жолда',
+    markCompleted: 'Белгілеу: аяқталды',
   },
   en: {
     home: 'Home',
@@ -193,6 +239,29 @@ const translations = {
     waService: 'Service',
     waDate: 'Date',
     waAddress: 'Address',
+    role: 'Role',
+    roleClient: 'Client',
+    roleAdmin: 'Administrator',
+    roleDriver: 'Driver',
+    adminPanel: 'Administrator panel',
+    adminSubtitle: 'Order control and status management',
+    driverPanel: 'Driver workspace',
+    driverSubtitle: 'View orders and mark trip status',
+    orderStatus: 'Status',
+    noOrdersForRole: 'No orders yet',
+    orderCreated: 'Created',
+    statusNew: 'New',
+    statusConfirmed: 'Confirmed',
+    statusOnWay: 'On the way',
+    statusCompleted: 'Completed',
+    statusCanceled: 'Canceled',
+    setStatus: 'Set status',
+    ordersTotal: 'Total orders',
+    ordersActive: 'Active',
+    ordersDone: 'Completed',
+    markConfirmed: 'Confirm',
+    markOnWay: 'Mark: on the way',
+    markCompleted: 'Mark: completed',
   },
 }
 
@@ -320,6 +389,7 @@ function App() {
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
   const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ru')
+  const [role, setRole] = useState(() => localStorage.getItem('role') || 'client')
   const [savedSince, setSavedSince] = useState('')
   const [submitNotice, setSubmitNotice] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
@@ -364,6 +434,10 @@ function App() {
   }, [language])
 
   useEffect(() => {
+    localStorage.setItem('role', role)
+  }, [role])
+
+  useEffect(() => {
     document.documentElement.style.colorScheme = 'dark'
   }, [])
 
@@ -400,10 +474,33 @@ function App() {
   const hasDraft = formData.name.trim() || formData.date || formData.address.trim() || formData.comment.trim()
 
   const addToHistory = () => {
-    const newOrder = { ...formData, id: Date.now(), createdAt: new Date().toLocaleString() }
+    const newOrder = { ...formData, id: Date.now(), status: 'new', createdAt: new Date().toLocaleString(), updatedAt: new Date().toLocaleString() }
     setOrderHistory([newOrder, ...orderHistory.slice(0, 9)])
     localStorage.setItem('orderHistory', JSON.stringify([newOrder, ...orderHistory.slice(0, 9)]))
   }
+
+  const updateOrderStatus = (orderId, nextStatus) => {
+    const updatedOrders = orderHistory.map((order) => (
+      order.id === orderId
+        ? { ...order, status: nextStatus, updatedAt: new Date().toLocaleString() }
+        : order
+    ))
+    setOrderHistory(updatedOrders)
+    localStorage.setItem('orderHistory', JSON.stringify(updatedOrders))
+  }
+
+  const statusLabels = {
+    new: t.statusNew,
+    confirmed: t.statusConfirmed,
+    on_way: t.statusOnWay,
+    completed: t.statusCompleted,
+    canceled: t.statusCanceled,
+  }
+
+  const getStatusLabel = (status) => statusLabels[status] || t.statusNew
+
+  const activeOrdersCount = orderHistory.filter((order) => !['completed', 'canceled'].includes(order.status || 'new')).length
+  const completedOrdersCount = orderHistory.filter((order) => (order.status || 'new') === 'completed').length
 
   const repeatOrder = (order) => {
     setFormData({ name: order.name, phone: order.phone, service: order.service, date: getTodayDate(), comment: order.comment, address: order.address || '' })
@@ -491,18 +588,25 @@ function App() {
           <a href="#top" className="font-serif text-lg tracking-[0.2em] text-accent">TRANSFER PRO</a>
           
           <div className="hidden md:flex gap-5 items-center text-sm">
-            <nav className="flex gap-5">
-              <button onClick={() => setDesktopTab('services')} className="hover:text-accent transition">{t.services}</button>
-              <button onClick={() => setDesktopTab('standards')} className="hover:text-accent transition">{t.standards}</button>
-              <button onClick={() => setDesktopTab('booking')} className="hover:text-accent transition">{t.booking}</button>
-              <button onClick={() => setDesktopTab('contacts')} className="hover:text-accent transition">{t.contacts}</button>
-            </nav>
+            {role === 'client' && (
+              <nav className="flex gap-5">
+                <button onClick={() => setDesktopTab('services')} className="hover:text-accent transition">{t.services}</button>
+                <button onClick={() => setDesktopTab('standards')} className="hover:text-accent transition">{t.standards}</button>
+                <button onClick={() => setDesktopTab('booking')} className="hover:text-accent transition">{t.booking}</button>
+                <button onClick={() => setDesktopTab('contacts')} className="hover:text-accent transition">{t.contacts}</button>
+              </nav>
+            )}
             
             <div className="flex gap-2 border-l border-white/20 pl-5">
               <select value={language} onChange={(e) => setLanguage(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs cursor-pointer hover:border-accent transition">
                 <option value="ru">РУ</option>
                 <option value="kk">KK</option>
                 <option value="en">EN</option>
+              </select>
+              <select value={role} onChange={(e) => setRole(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs cursor-pointer hover:border-accent transition">
+                <option value="client">{t.roleClient}</option>
+                <option value="admin">{t.roleAdmin}</option>
+                <option value="driver">{t.roleDriver}</option>
               </select>
             </div>
           </div>
@@ -523,22 +627,31 @@ function App() {
           <div id="mobile-menu" className="md:hidden border-t border-white/10 bg-black/95">
             <nav className="flex flex-col gap-2 px-4 py-4 text-sm">
               <div className="border-t border-white/10 my-2 pt-2">
-                <button
-                  onClick={() => { setMobileMenuOpen(false); setMobileTab('history') }}
-                  className="w-full text-left py-2 px-3 rounded-lg bg-cyan-950/20 hover:bg-cyan-950/30 transition text-xs"
-                >
-                  📋 {t.history} ({orderHistory.length})
-                </button>
-                <button
-                  onClick={() => { setMobileMenuOpen(false); setMobileTab('favorites') }}
-                  className="w-full text-left py-2 px-3 rounded-lg bg-pink-950/20 hover:bg-pink-950/30 transition text-xs mt-2"
-                >
-                  ❤️ {t.favorites} ({favorites.length})
-                </button>
+                {role === 'client' && (
+                  <>
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); setMobileTab('history') }}
+                      className="w-full text-left py-2 px-3 rounded-lg bg-cyan-950/20 hover:bg-cyan-950/30 transition text-xs"
+                    >
+                      📋 {t.history} ({orderHistory.length})
+                    </button>
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); setMobileTab('favorites') }}
+                      className="w-full text-left py-2 px-3 rounded-lg bg-pink-950/20 hover:bg-pink-950/30 transition text-xs mt-2"
+                    >
+                      ❤️ {t.favorites} ({favorites.length})
+                    </button>
+                  </>
+                )}
                 <select value={language} onChange={(e) => setLanguage(e.target.value)} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs cursor-pointer hover:border-accent transition">
                   <option value="ru">РУ</option>
                   <option value="kk">KK</option>
                   <option value="en">EN</option>
+                </select>
+                <select value={role} onChange={(e) => setRole(e.target.value)} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs cursor-pointer hover:border-accent transition">
+                  <option value="client">{t.roleClient}</option>
+                  <option value="admin">{t.roleAdmin}</option>
+                  <option value="driver">{t.roleDriver}</option>
                 </select>
               </div>
               <button
@@ -553,6 +666,8 @@ function App() {
         )}
       </header>
 
+      {role === 'client' ? (
+      <>
       {/* Mobile single-screen tabbed view */}
       <div onPointerDown={closeMobileMenu} className="md:hidden min-h-[calc(100vh-120px)] w-full flex flex-col bg-gradient-to-b from-black to-black/90 pb-24">
         <div className="flex-1 flex flex-col justify-start items-start px-4 sm:px-5 py-6 sm:py-8 overflow-y-auto">
@@ -893,6 +1008,7 @@ function App() {
                     <div key={order.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent">
                       <p className="text-sm text-white/80">{order.service}</p>
                       <p className="text-xs text-white/60">{order.name} • {order.createdAt}</p>
+                      <p className="text-xs text-accent mt-1">{t.orderStatus}: {getStatusLabel(order.status || 'new')}</p>
                       <button onClick={() => repeatOrder(order)} className="text-xs mt-2 px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
                         {t.repeat}
                       </button>
@@ -1228,18 +1344,86 @@ function App() {
         </div>
       </main>
 
+      </>
+      ) : (
+      <main className="min-h-[calc(100vh-140px)] px-4 py-6 md:px-8 md:py-10">
+        <div className="mx-auto max-w-6xl space-y-4">
+          <motion.section className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-8" {...sectionMotionProps}>
+            <h1 className="text-2xl md:text-3xl font-serif text-accent font-bold">
+              {role === 'admin' ? t.adminPanel : t.driverPanel}
+            </h1>
+            <p className="mt-2 text-white/70 text-sm md:text-base">
+              {role === 'admin' ? t.adminSubtitle : t.driverSubtitle}
+            </p>
+
+            <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-3">
+              <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90">{t.ordersTotal}: {orderHistory.length}</div>
+              <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90">{t.ordersActive}: {activeOrdersCount}</div>
+              <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90">{t.ordersDone}: {completedOrdersCount}</div>
+            </div>
+          </motion.section>
+
+          <div className="space-y-3">
+            {orderHistory.length === 0 ? (
+              <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-white/70">{t.noOrdersForRole}</div>
+            ) : (
+              orderHistory.map((order) => {
+                const currentStatus = order.status || 'new'
+                return (
+                  <div key={order.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+                      <p className="text-white font-semibold">{order.service}</p>
+                      <p className="text-xs text-accent">{t.orderStatus}: {getStatusLabel(currentStatus)}</p>
+                    </div>
+                    <p className="mt-1 text-sm text-white/80">{order.name} · {order.phone}</p>
+                    <p className="mt-1 text-xs text-white/60">{t.orderCreated}: {order.createdAt}</p>
+                    {order.address && <p className="mt-1 text-xs text-white/70">{t.waAddress}: {order.address}</p>}
+
+                    {role === 'admin' ? (
+                      <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-center">
+                        <span className="text-xs text-white/70">{t.setStatus}</span>
+                        <select
+                          value={currentStatus}
+                          onChange={(event) => updateOrderStatus(order.id, event.target.value)}
+                          className="w-full md:w-64 rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-sm"
+                        >
+                          <option value="new">{t.statusNew}</option>
+                          <option value="confirmed">{t.statusConfirmed}</option>
+                          <option value="on_way">{t.statusOnWay}</option>
+                          <option value="completed">{t.statusCompleted}</option>
+                          <option value="canceled">{t.statusCanceled}</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-3">
+                        <button type="button" onClick={() => updateOrderStatus(order.id, 'confirmed')} className="rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.markConfirmed}</button>
+                        <button type="button" onClick={() => updateOrderStatus(order.id, 'on_way')} className="rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.markOnWay}</button>
+                        <button type="button" onClick={() => updateOrderStatus(order.id, 'completed')} className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.markCompleted}</button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
+      </main>
+      )}
+
       <footer className="border-t border-white/10 px-4 py-6 text-center text-xs text-white/60 md:px-8 md:translate-y-0">
         © {new Date().getFullYear()} TransferPro · Premium transfer in Astana
       </footer>
 
-      <a
-        href={whatsappHref}
-        target="_blank"
-        rel="noreferrer"
-        className="hidden md:flex fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full bg-accent text-black font-bold shadow-lg hover:bg-accent/90 transition"
-      >
-        {t.whatsapp}
-      </a>
+      {role === 'client' && (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noreferrer"
+          className="hidden md:flex fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full bg-accent text-black font-bold shadow-lg hover:bg-accent/90 transition"
+        >
+          {t.whatsapp}
+        </a>
+      )}
     </div>
   )
 }
