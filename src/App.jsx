@@ -1816,71 +1816,72 @@ function App() {
               </div>
 
               {role === 'admin' && (
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-white/70">{t.filterDate}</label>
-                    <input
-                      type="date"
-                      value={transferFilters.date}
-                      onChange={(event) => updateTransferFilter('date', event.target.value)}
-                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-white/70">{t.filterDriver}</label>
-                    <input
-                      value={transferFilters.driver}
-                      onChange={(event) => updateTransferFilter('driver', event.target.value)}
-                      placeholder="driver@mail.ru"
-                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-white/70">{t.filterVehicle}</label>
-                    <input
-                      value={transferFilters.vehicle}
-                      onChange={(event) => updateTransferFilter('vehicle', event.target.value)}
-                      placeholder="V-class"
-                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-white/70">{t.searchTransfers}</label>
-                    <input
-                      value={transferFilters.query}
-                      onChange={(event) => updateTransferFilter('query', event.target.value)}
-                      placeholder="Имя, адрес, маршрут"
-                      className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 md:col-span-2">
-                    <label className="text-xs text-white/70">{t.bufferLabel}</label>
-                    <div className="flex gap-2">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-white/70">{t.filterDate}</label>
                       <input
-                        type="number"
-                        min="0"
-                        max="120"
-                        value={bufferMinutes}
-                        onChange={(event) => setBufferMinutes(Math.max(0, Number(event.target.value) || 0))}
-                        className="w-28 rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                        type="date"
+                        value={transferFilters.date}
+                        onChange={(event) => updateTransferFilter('date', event.target.value)}
+                        className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
                       />
-                      <p className="text-xs text-white/60 self-center">{t.bufferHelper}</p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-white/70">{t.filterDriver}</label>
+                      <input
+                        value={transferFilters.driver}
+                        onChange={(event) => updateTransferFilter('driver', event.target.value)}
+                        placeholder="driver@mail.ru"
+                        className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-white/70">{t.filterVehicle}</label>
+                      <input
+                        value={transferFilters.vehicle}
+                        onChange={(event) => updateTransferFilter('vehicle', event.target.value)}
+                        placeholder="V-class"
+                        className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-white/70">{t.searchTransfers}</label>
+                      <input
+                        value={transferFilters.query}
+                        onChange={(event) => updateTransferFilter('query', event.target.value)}
+                        placeholder="Имя, адрес, маршрут"
+                        className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2 md:col-span-2">
+                      <label className="text-xs text-white/70">{t.bufferLabel}</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          max="120"
+                          value={bufferMinutes}
+                          onChange={(event) => setBufferMinutes(Math.max(0, Number(event.target.value) || 0))}
+                          className="w-28 rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
+                        />
+                        <p className="text-xs text-white/60 self-center">{t.bufferHelper}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2 md:col-span-2 md:items-end">
+                      <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={clearTransferFilters} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.clearFilters}</button>
+                        <button type="button" onClick={exportTransfers} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.exportJson}</button>
+                        <label className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10 cursor-pointer">
+                          {t.importJson}
+                          <input type="file" accept="application/json" className="hidden" onChange={importTransfers} />
+                        </label>
+                        <button type="button" onClick={printSchedule} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.printSchedule}</button>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2 md:col-span-2 md:items-end">
-                    <div className="flex flex-wrap gap-2">
-                      <button type="button" onClick={clearTransferFilters} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.clearFilters}</button>
-                      <button type="button" onClick={exportTransfers} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.exportJson}</button>
-                      <label className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10 cursor-pointer">
-                        {t.importJson}
-                        <input type="file" accept="application/json" className="hidden" onChange={importTransfers} />
-                      </label>
-                      <button type="button" onClick={printSchedule} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-white hover:bg-white/10">{t.printSchedule}</button>
-                    </div>
-                  </div>
-                </div>
 
-                <form onSubmit={createTransfer} className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <form onSubmit={createTransfer} className="grid grid-cols-1 gap-3 md:grid-cols-3">
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-white/70">{t.clientName}</label>
                     <input
@@ -1991,6 +1992,7 @@ function App() {
                     </button>
                   </div>
                 </form>
+              </div>
               )}
 
               <div className="space-y-2">
