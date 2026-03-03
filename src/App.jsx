@@ -544,8 +544,7 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 }
 
-const ADMIN_LOGIN = 'alibek-u@mail.ru'
-const ADMIN_PASSWORD = '123456'
+const ADMIN_LOGIN = 'admin'
 
 function App() {
   const prefersReducedMotion = useReducedMotion()
@@ -557,10 +556,8 @@ function App() {
   const [driverAccounts, setDriverAccounts] = useState(() => JSON.parse(localStorage.getItem('driverAccounts') || '[]'))
   const [showStaffAuth, setShowStaffAuth] = useState(false)
   const [authLogin, setAuthLogin] = useState('')
-  const [authPassword, setAuthPassword] = useState('')
   const [authError, setAuthError] = useState('')
   const [newDriverLogin, setNewDriverLogin] = useState('')
-  const [newDriverPassword, setNewDriverPassword] = useState('')
   const [savedSince, setSavedSince] = useState('')
   const [submitNotice, setSubmitNotice] = useState('')
   const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
@@ -722,10 +719,31 @@ function App() {
   const progressPercent = Math.round((completedSteps / 3) * 100)
   const hasDraft = formData.name.trim() || formData.date || formData.address.trim() || formData.comment.trim()
 
+  const maskPhone = (phone) => {
+    const digits = (phone || '').replace(/\D/g, '')
+    if (digits.length < 4) return ''
+    return `+7***${digits.slice(-4)}`
+  }
+
   const addToHistory = () => {
-    const newOrder = { ...formData, id: Date.now(), status: 'new', createdAt: new Date().toLocaleString(), updatedAt: new Date().toLocaleString() }
-    setOrderHistory([newOrder, ...orderHistory.slice(0, 9)])
-    localStorage.setItem('orderHistory', JSON.stringify([newOrder, ...orderHistory.slice(0, 9)]))
+    const newOrder = {
+      id: Date.now(),
+      service: formData.service,
+      date: formData.date,
+      name: formData.name.trim(),
+      phoneMasked: maskPhone(formData.phone),
+      status: 'new',
+      createdAt: new Date().toLocaleString(),
+      updatedAt: new Date().toLocaleString(),
+    }
+    const nextHistory = [newOrder, ...orderHistory.slice(0, 9)]
+    setOrderHistory(nextHistory)
+    localStorage.setItem('orderHistory', JSON.stringify(nextHistory))
+  }
+
+  const clearHistory = () => {
+    setOrderHistory([])
+    localStorage.removeItem('orderHistory')
   }
 
   const updateOrderStatus = (orderId, nextStatus) => {
@@ -782,24 +800,25 @@ function App() {
   const handleStaffLogin = (event) => {
     event.preventDefault()
     const login = authLogin.trim().toLowerCase()
-    const password = authPassword
+    if (!login) {
+      setAuthError(t.invalidCredentials)
+      return
+    }
 
-    if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
+    if (login === ADMIN_LOGIN) {
       setStaffSession({ role: 'admin', login: ADMIN_LOGIN })
       setAuthError('')
       setShowStaffAuth(false)
       setAuthLogin('')
-      setAuthPassword('')
       return
     }
 
-    const matchedDriver = driverAccounts.find((driver) => driver.login.toLowerCase() === login && driver.password === password)
+    const matchedDriver = driverAccounts.find((driver) => driver.login.toLowerCase() === login)
     if (matchedDriver) {
       setStaffSession({ role: 'driver', login: matchedDriver.login })
       setAuthError('')
       setShowStaffAuth(false)
       setAuthLogin('')
-      setAuthPassword('')
       return
     }
 
@@ -815,14 +834,12 @@ function App() {
   const addDriverAccount = (event) => {
     event.preventDefault()
     const login = newDriverLogin.trim().toLowerCase()
-    const password = newDriverPassword.trim()
-    if (!login || !password) return
+    if (!login) return
     if (login === ADMIN_LOGIN) return
     if (driverAccounts.some((driver) => driver.login.toLowerCase() === login)) return
-    const newDriver = { id: Date.now(), login, password }
+    const newDriver = { id: Date.now(), login }
     setDriverAccounts((prev) => [newDriver, ...prev])
     setNewDriverLogin('')
-    setNewDriverPassword('')
   }
 
   const repeatOrder = (order) => {
@@ -896,19 +913,23 @@ function App() {
       try {
         const parsed = JSON.parse(reader.result)
         if (!Array.isArray(parsed)) throw new Error('invalid')
-        const normalized = parsed.map((item) => ({
-          id: item.id || Date.now() + Math.random(),
-          clientName: item.clientName || '',
-          service: item.service || services[0]?.title || '',
-          routeFrom: item.routeFrom || '',
-          routeTo: item.routeTo || '',
-          date: item.date || getTodayDate(),
-          startTime: item.startTime || '09:00',
-          endTime: item.endTime || '10:00',
-          driver: item.driver || '',
-          vehicle: item.vehicle || '',
-          status: item.status || 'confirmed',
-        }))
+        const normalized = parsed.map((item) => {
+          const hasRequired = typeof item === 'object' && item !== null && item.clientName && item.routeFrom && item.routeTo
+          if (!hasRequired) throw new Error('invalid')
+          return {
+            id: item.id || Date.now() + Math.random(),
+            clientName: item.clientName || '',
+            service: item.service || services[0]?.title || '',
+            routeFrom: item.routeFrom || '',
+            routeTo: item.routeTo || '',
+            date: item.date || getTodayDate(),
+            startTime: item.startTime || '09:00',
+            endTime: item.endTime || '10:00',
+            driver: item.driver || '',
+            vehicle: item.vehicle || '',
+            status: item.status || 'confirmed',
+          }
+        })
         setTransfers(normalized)
         setImportNotice(t.importSuccess)
         setTransferNotice('')
@@ -1111,19 +1132,10 @@ function App() {
               <input
                 value={authLogin}
                 onChange={(event) => setAuthLogin(event.target.value)}
-                placeholder="email"
+                placeholder="admin или driver@mail.ru"
                 className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm outline-none focus:border-accent"
               />
-            </div>
-            <div>
-              <label className="text-xs text-white/80">{t.passwordLabel}</label>
-              <input
-                type="password"
-                value={authPassword}
-                onChange={(event) => setAuthPassword(event.target.value)}
-                placeholder="••••••"
-                className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm outline-none focus:border-accent"
-              />
+              <p className="text-[11px] text-white/60 mt-1">Демо-доступ без пароля до подключения бэкенда.</p>
             </div>
             {authError && <p className="text-xs text-red-400">{authError}</p>}
             <div className="flex gap-2">
@@ -1521,7 +1533,12 @@ function App() {
 
           {mobileTab === 'history' && (
             <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-cyan-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
-              <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">📋 {t.history}</h2>
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">📋 {t.history}</h2>
+                {orderHistory.length > 0 && (
+                  <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">Очистить</button>
+                )}
+              </div>
               {orderHistory.length === 0 ? (
                 <p className="text-white/60 text-center py-8">{t.noOrders}</p>
               ) : (
@@ -1529,7 +1546,7 @@ function App() {
                   {orderHistory.map((order) => (
                     <div key={order.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent">
                       <p className="text-sm text-white/80">{order.service}</p>
-                      <p className="text-xs text-white/60">{order.name} • {order.createdAt}</p>
+                      <p className="text-xs text-white/60">{order.name || '—'} • {order.createdAt}</p>
                       <p className="text-xs text-accent mt-1">{t.orderStatus}: {getStatusLabel(order.status || 'new')}</p>
                       <button onClick={() => repeatOrder(order)} className="text-xs mt-2 px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
                         {t.repeat}
@@ -1790,7 +1807,7 @@ function App() {
 
                 <div className="space-y-3 mb-5">
                   {latestOrder ? (
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-accent">{t.lastOrderTitle}</p>
@@ -1812,7 +1829,7 @@ function App() {
                     <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">{t.lastOrderEmpty}</div>
                   )}
 
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-accent">{t.notifyLabel}</p>
@@ -1952,16 +1969,6 @@ function App() {
                       placeholder="driver@mail.ru"
                     />
                   </div>
-                  <div>
-                    <label className="text-xs text-white/70">{t.driverPassword}</label>
-                    <input
-                      type="text"
-                      value={newDriverPassword}
-                      onChange={(event) => setNewDriverPassword(event.target.value)}
-                      className="mt-1 w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                      placeholder="******"
-                    />
-                  </div>
                   <button type="submit" className="w-full rounded-lg bg-accent text-black px-3 py-2 text-sm font-semibold hover:bg-accent/90 transition">
                     {t.addDriver}
                   </button>
@@ -1976,7 +1983,7 @@ function App() {
                       {driverAccounts.map((driver) => (
                         <div key={driver.id} className="rounded-lg border border-white/10 bg-black/30 px-3 py-2">
                           <p className="text-sm text-white">{driver.login}</p>
-                          <p className="text-xs text-white/50">{t.passwordLabel}: {driver.password}</p>
+                          <p className="text-xs text-white/50">Offline demo</p>
                         </div>
                       ))}
                     </div>
@@ -2235,6 +2242,11 @@ function App() {
             {orderHistory.length === 0 ? (
               <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-white/70">{t.noOrdersForRole}</div>
             ) : (
+              <div className="flex justify-end">
+                <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">Очистить историю</button>
+              </div>
+            )}
+            {orderHistory.length !== 0 && (
               orderHistory.map((order) => {
                 const currentStatus = order.status || 'new'
                 return (
@@ -2243,9 +2255,8 @@ function App() {
                       <p className="text-white font-semibold">{order.service}</p>
                       <p className="text-xs text-accent">{t.orderStatus}: {getStatusLabel(currentStatus)}</p>
                     </div>
-                    <p className="mt-1 text-sm text-white/80">{order.name} · {order.phone}</p>
+                    <p className="mt-1 text-sm text-white/80">{order.name || '—'} · {order.phoneMasked || '—'}</p>
                     <p className="mt-1 text-xs text-white/60">{t.orderCreated}: {order.createdAt}</p>
-                    {order.address && <p className="mt-1 text-xs text-white/70">{t.waAddress}: {order.address}</p>}
 
                     {role === 'admin' ? (
                       <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-center">
