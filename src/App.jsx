@@ -26,6 +26,8 @@ const translations = {
     reviews: 'Отзывы клиентов',
     noOrders: 'Нет заказов',
     noFavorites: 'Нет избранных адресов',
+    clearHistory: 'Очистить',
+    clearHistoryFull: 'Очистить историю',
     repeat: 'Повторить',
     hideDetails: 'Скрыть доп. поля',
     showDetails: 'Добавить адрес и комментарий',
@@ -144,6 +146,14 @@ const translations = {
     lastOrderTitle: 'Последняя заявка',
     lastOrderEmpty: 'У вас пока нет заявок',
     statusTimeline: 'Этапы',
+    staffLoginPlaceholder: 'admin или driver@mail.ru',
+    staffLoginHint: 'Демо-доступ без пароля до подключения бэкенда.',
+    transferSearchPlaceholder: 'Имя, адрес, маршрут',
+    clientNamePlaceholder: 'Имя клиента',
+    routeFromPlaceholder: 'Астана, аэропорт',
+    routeToPlaceholder: 'Отель',
+    driverLoginPlaceholder: 'driver@mail.ru',
+    vehiclePlaceholder: 'Mercedes V-class',
   },
   kk: {
     home: 'Басты бет',
@@ -166,6 +176,8 @@ const translations = {
     reviews: 'Клиент пікірлері',
     noOrders: 'Тапсырыстар жоқ',
     noFavorites: 'Таңдаулы мекенжайлар жоқ',
+    clearHistory: 'Тазарту',
+    clearHistoryFull: 'Тарихты тазарту',
     repeat: 'Қайта тапсыру',
     hideDetails: 'Қосымша өрістерді жасыру',
     showDetails: 'Мекенжай мен пікір қосу',
@@ -284,6 +296,14 @@ const translations = {
     lastOrderTitle: 'Соңғы өтінім',
     lastOrderEmpty: 'Өтінімдер әлі жоқ',
     statusTimeline: 'Кезеңдер',
+    staffLoginPlaceholder: 'admin немесе driver@mail.ru',
+    staffLoginHint: 'Бэкенд қосылғанша құпиясөзсіз демо қолжетімді.',
+    transferSearchPlaceholder: 'Аты, мекенжайы, маршрут',
+    clientNamePlaceholder: 'Клиент аты',
+    routeFromPlaceholder: 'Астана, әуежай',
+    routeToPlaceholder: 'Қонақ үй',
+    driverLoginPlaceholder: 'driver@mail.ru',
+    vehiclePlaceholder: 'Mercedes V-class',
   },
   en: {
     home: 'Home',
@@ -306,6 +326,8 @@ const translations = {
     reviews: 'Client reviews',
     noOrders: 'No orders yet',
     noFavorites: 'No favorite addresses',
+    clearHistory: 'Clear',
+    clearHistoryFull: 'Clear history',
     repeat: 'Repeat',
     hideDetails: 'Hide optional fields',
     showDetails: 'Add address and comment',
@@ -424,6 +446,14 @@ const translations = {
     lastOrderTitle: 'Last request',
     lastOrderEmpty: 'No requests yet',
     statusTimeline: 'Steps',
+    staffLoginPlaceholder: 'admin or driver@mail.ru',
+    staffLoginHint: 'Demo access works without a password until backend integration.',
+    transferSearchPlaceholder: 'Name, address, route',
+    clientNamePlaceholder: 'Client name',
+    routeFromPlaceholder: 'Astana airport',
+    routeToPlaceholder: 'Hotel',
+    driverLoginPlaceholder: 'driver@mail.ru',
+    vehiclePlaceholder: 'Mercedes V-class',
   },
 }
 
@@ -546,29 +576,57 @@ const fadeUp = {
 
 const ADMIN_LOGIN = 'admin'
 
+const parseStoredJson = (rawValue, fallback) => {
+  if (!rawValue) return fallback
+  try {
+    const parsed = JSON.parse(rawValue)
+    return parsed ?? fallback
+  } catch (error) {
+    return fallback
+  }
+}
+
+const getStoredValue = (key, fallback) => {
+  try {
+    const stored = localStorage.getItem(key)
+    if (typeof fallback === 'string') {
+      return stored ?? fallback
+    }
+    return parseStoredJson(stored, fallback)
+  } catch (error) {
+    return fallback
+  }
+}
+
+const normalizeBufferMinutes = (value) => {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return 0
+  return Math.min(120, Math.max(0, Math.round(parsed)))
+}
+
 function App() {
   const prefersReducedMotion = useReducedMotion()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
-  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ru')
-  const [staffSession, setStaffSession] = useState(() => JSON.parse(localStorage.getItem('staffSession') || 'null'))
-  const [driverAccounts, setDriverAccounts] = useState(() => JSON.parse(localStorage.getItem('driverAccounts') || '[]'))
+  const [language, setLanguage] = useState(() => getStoredValue('language', 'ru'))
+  const [staffSession, setStaffSession] = useState(() => getStoredValue('staffSession', null))
+  const [driverAccounts, setDriverAccounts] = useState(() => getStoredValue('driverAccounts', []))
   const [showStaffAuth, setShowStaffAuth] = useState(false)
   const [authLogin, setAuthLogin] = useState('')
   const [authError, setAuthError] = useState('')
   const [newDriverLogin, setNewDriverLogin] = useState('')
   const [savedSince, setSavedSince] = useState('')
   const [submitNotice, setSubmitNotice] = useState('')
-  const [orderHistory, setOrderHistory] = useState(() => JSON.parse(localStorage.getItem('orderHistory') || '[]'))
-  const [transfers, setTransfers] = useState(() => JSON.parse(localStorage.getItem('transfers') || '[]'))
+  const [orderHistory, setOrderHistory] = useState(() => getStoredValue('orderHistory', []))
+  const [transfers, setTransfers] = useState(() => getStoredValue('transfers', []))
   const [transferDraft, setTransferDraft] = useState(() => getEmptyTransferDraft())
   const [transferConflict, setTransferConflict] = useState('')
   const [transferNotice, setTransferNotice] = useState('')
   const [transferFilters, setTransferFilters] = useState({ date: '', driver: '', vehicle: '', query: '' })
-  const [bufferMinutes, setBufferMinutes] = useState(() => Number(localStorage.getItem('transferBuffer') || 15))
+  const [bufferMinutes, setBufferMinutes] = useState(() => normalizeBufferMinutes(getStoredValue('transferBuffer', '15')))
   const [importNotice, setImportNotice] = useState('')
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'))
+  const [favorites, setFavorites] = useState(() => getStoredValue('favorites', []))
   const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
   const [notificationsAllowed, setNotificationsAllowed] = useState(() => (typeof Notification !== 'undefined' && Notification.permission === 'granted'))
@@ -579,14 +637,24 @@ function App() {
   const role = staffSession?.role || 'client'
   
   const [formData, setFormData] = useState(() => {
-    const saved = localStorage.getItem('formData')
-    return saved ? JSON.parse(saved) : {
+    const defaultFormData = {
       name: '',
       phone: '+7',
       service: services[0]?.title || '',
       date: '',
       comment: '',
       address: '',
+    }
+
+    const saved = getStoredValue('formData', null)
+    if (!saved || typeof saved !== 'object') {
+      return defaultFormData
+    }
+
+    return {
+      ...defaultFormData,
+      ...saved,
+      phone: typeof saved.phone === 'string' ? saved.phone : defaultFormData.phone,
     }
   })
 
@@ -652,8 +720,10 @@ function App() {
   }, [formData.service])
 
   function getTodayDate() {
+    // Keep date inputs aligned with local calendar day instead of UTC day.
     const today = new Date()
-    return today.toISOString().split('T')[0]
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset())
+    return today.toISOString().slice(0, 10)
   }
 
   function getEmptyTransferDraft() {
@@ -731,7 +801,10 @@ function App() {
       service: formData.service,
       date: formData.date,
       name: formData.name.trim(),
+      phone: formData.phone,
       phoneMasked: maskPhone(formData.phone),
+      address: formData.address.trim(),
+      comment: formData.comment.trim(),
       status: 'new',
       createdAt: new Date().toLocaleString(),
       updatedAt: new Date().toLocaleString(),
@@ -843,16 +916,29 @@ function App() {
   }
 
   const repeatOrder = (order) => {
-    setFormData({ name: order.name, phone: order.phone, service: order.service, date: getTodayDate(), comment: order.comment, address: order.address || '' })
+    setFormData({
+      name: order.name || '',
+      phone: order.phone || '+7',
+      service: order.service || services[0]?.title || '',
+      date: getTodayDate(),
+      comment: order.comment || '',
+      address: order.address || '',
+    })
     setMobileTab('booking')
+    setDesktopTab('booking')
   }
 
   const addFavorite = () => {
-    if (formData.address && !favorites.find(f => f.address === formData.address)) {
-      const newFav = { address: formData.address, name: `${t.favoriteAddressPrefix} ${favorites.length + 1}`, id: Date.now() }
-      setFavorites([...favorites, newFav])
-      localStorage.setItem('favorites', JSON.stringify([...favorites, newFav]))
-    }
+    const normalizedAddress = formData.address.trim()
+    if (!normalizedAddress) return
+
+    const exists = favorites.some((favorite) => favorite.address.trim().toLowerCase() === normalizedAddress.toLowerCase())
+    if (exists) return
+
+    const newFav = { address: normalizedAddress, name: `${t.favoriteAddressPrefix} ${favorites.length + 1}`, id: Date.now() }
+    const nextFavorites = [...favorites, newFav]
+    setFavorites(nextFavorites)
+    localStorage.setItem('favorites', JSON.stringify(nextFavorites))
   }
 
   const removeFavorite = (id) => {
@@ -911,7 +997,8 @@ function App() {
     const reader = new FileReader()
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(reader.result)
+        const raw = typeof reader.result === 'string' ? reader.result : ''
+        const parsed = JSON.parse(raw)
         if (!Array.isArray(parsed)) throw new Error('invalid')
         const normalized = parsed.map((item) => {
           const hasRequired = typeof item === 'object' && item !== null && item.clientName && item.routeFrom && item.routeTo
@@ -936,6 +1023,9 @@ function App() {
         setTransferConflict('')
       } catch (error) {
         setImportNotice(t.importError)
+      } finally {
+        // Reset value so selecting the same file triggers onChange again.
+        event.target.value = ''
       }
     }
     reader.readAsText(file)
@@ -1132,10 +1222,10 @@ function App() {
               <input
                 value={authLogin}
                 onChange={(event) => setAuthLogin(event.target.value)}
-                placeholder="admin или driver@mail.ru"
+                placeholder={t.staffLoginPlaceholder}
                 className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm outline-none focus:border-accent"
               />
-              <p className="text-[11px] text-white/60 mt-1">Демо-доступ без пароля до подключения бэкенда.</p>
+              <p className="text-[11px] text-white/60 mt-1">{t.staffLoginHint}</p>
             </div>
             {authError && <p className="text-xs text-red-400">{authError}</p>}
             <div className="flex gap-2">
@@ -1536,7 +1626,7 @@ function App() {
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">📋 {t.history}</h2>
                 {orderHistory.length > 0 && (
-                  <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">Очистить</button>
+                  <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">{t.clearHistory}</button>
                 )}
               </div>
               {orderHistory.length === 0 ? (
@@ -1966,7 +2056,7 @@ function App() {
                       value={newDriverLogin}
                       onChange={(event) => setNewDriverLogin(event.target.value)}
                       className="mt-1 w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                      placeholder="driver@mail.ru"
+                      placeholder={t.driverLoginPlaceholder}
                     />
                   </div>
                   <button type="submit" className="w-full rounded-lg bg-accent text-black px-3 py-2 text-sm font-semibold hover:bg-accent/90 transition">
@@ -2028,7 +2118,7 @@ function App() {
                       <input
                         value={transferFilters.driver}
                         onChange={(event) => updateTransferFilter('driver', event.target.value)}
-                        placeholder="driver@mail.ru"
+                        placeholder={t.driverLoginPlaceholder}
                         className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </div>
@@ -2037,7 +2127,7 @@ function App() {
                       <input
                         value={transferFilters.vehicle}
                         onChange={(event) => updateTransferFilter('vehicle', event.target.value)}
-                        placeholder="V-class"
+                        placeholder={t.vehiclePlaceholder}
                         className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </div>
@@ -2046,7 +2136,7 @@ function App() {
                       <input
                         value={transferFilters.query}
                         onChange={(event) => updateTransferFilter('query', event.target.value)}
-                        placeholder="Имя, адрес, маршрут"
+                        placeholder={t.transferSearchPlaceholder}
                         className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </div>
@@ -2058,7 +2148,7 @@ function App() {
                           min="0"
                           max="120"
                           value={bufferMinutes}
-                          onChange={(event) => setBufferMinutes(Math.max(0, Number(event.target.value) || 0))}
+                          onChange={(event) => setBufferMinutes(normalizeBufferMinutes(event.target.value))}
                           className="w-28 rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
                         />
                         <p className="text-xs text-white/60 self-center">{t.bufferHelper}</p>
@@ -2084,7 +2174,7 @@ function App() {
                       value={transferDraft.clientName}
                       onChange={(event) => updateTransferDraftField('clientName', event.target.value)}
                       className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                      placeholder="Имя клиента"
+                      placeholder={t.clientNamePlaceholder}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -2133,7 +2223,7 @@ function App() {
                       value={transferDraft.routeFrom}
                       onChange={(event) => updateTransferDraftField('routeFrom', event.target.value)}
                       className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                      placeholder="Астана, аэропорт"
+                      placeholder={t.routeFromPlaceholder}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -2142,7 +2232,7 @@ function App() {
                       value={transferDraft.routeTo}
                       onChange={(event) => updateTransferDraftField('routeTo', event.target.value)}
                       className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                      placeholder="Отель"
+                      placeholder={t.routeToPlaceholder}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -2163,7 +2253,7 @@ function App() {
                         value={transferDraft.driver}
                         onChange={(event) => updateTransferDraftField('driver', event.target.value)}
                         className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                        placeholder="driver@mail.ru"
+                        placeholder={t.driverLoginPlaceholder}
                       />
                     )}
                   </div>
@@ -2173,7 +2263,7 @@ function App() {
                       value={transferDraft.vehicle}
                       onChange={(event) => updateTransferDraftField('vehicle', event.target.value)}
                       className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm outline-none focus:border-accent"
-                      placeholder="Mercedes V-class"
+                      placeholder={t.vehiclePlaceholder}
                     />
                   </div>
                   <div className="flex flex-col justify-end">
@@ -2243,7 +2333,7 @@ function App() {
               <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-white/70">{t.noOrdersForRole}</div>
             ) : (
               <div className="flex justify-end">
-                <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">Очистить историю</button>
+                <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">{t.clearHistoryFull}</button>
               </div>
             )}
             {orderHistory.length !== 0 && (
