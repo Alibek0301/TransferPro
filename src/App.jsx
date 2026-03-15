@@ -1121,10 +1121,10 @@ function App() {
   }
 
   return (
-    <div className="dark">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
+    <div className="dark app-shell">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/75 backdrop-blur-xl supports-[backdrop-filter]:bg-black/50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
-          <a href="#top" className="font-serif text-lg tracking-[0.2em] text-accent">TRANSFER PRO</a>
+          <a href="#top" className="font-serif text-lg tracking-[0.2em] text-accent drop-shadow-[0_0_10px_rgba(245,200,106,0.35)]">TRANSFER PRO</a>
           
           <div className="hidden md:flex gap-5 items-center text-sm">
             {role === 'client' && (
@@ -1239,11 +1239,11 @@ function App() {
       {role === 'client' ? (
       <>
       {/* Mobile single-screen tabbed view */}
-      <div onPointerDown={closeMobileMenu} className="md:hidden min-h-[calc(100vh-120px)] w-full flex flex-col bg-gradient-to-b from-black to-black/90 pb-24">
+      <div onPointerDown={closeMobileMenu} className="md:hidden relative min-h-[calc(100vh-120px)] w-full flex flex-col bg-gradient-to-b from-transparent via-black/20 to-black/35 pb-24">
         <div className="flex-1 flex flex-col justify-start items-start px-4 sm:px-5 py-6 sm:py-8 overflow-y-auto">
           {mobileTab === 'home' && (
-            <motion.div className="w-full space-y-5 sm:space-y-6 bg-gradient-to-b from-black via-amber-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
-              <div className="border-l-3 border-accent pl-4 sm:pl-5">
+            <motion.div className="w-full space-y-5 sm:space-y-6 bg-gradient-to-b from-black/70 via-amber-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
+              <div className="border-l-2 border-accent pl-4 sm:pl-5">
                 <p className="text-accent text-sm sm:text-base font-bold tracking-wide">{t.heroBadge}</p>
               </div>
               
@@ -1307,7 +1307,7 @@ function App() {
           )}
 
           {mobileTab === 'services' && (
-            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black via-blue-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
+            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black/70 via-blue-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">{t.services}</h2>
               
               <div className="space-y-3 sm:space-y-4 text-white/75">
@@ -1346,7 +1346,7 @@ function App() {
           )}
 
           {mobileTab === 'standards' && (
-            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black via-purple-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
+            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black/70 via-slate-900/40 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">{t.standards}</h2>
               
               <div className="space-y-3 sm:space-y-4 text-white/75">
@@ -1372,7 +1372,7 @@ function App() {
           )}
 
           {mobileTab === 'contacts' && (
-            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black via-emerald-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
+            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black/70 via-emerald-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">{t.contacts}</h2>
               <div className="space-y-3 sm:space-y-4 text-white/90">
                 <a href="tel:+77781556699" className="block w-full p-4 sm:p-5 rounded-xl bg-gradient-to-r from-accent/20 to-accent/10 hover:from-accent/30 hover:to-accent/20 active:scale-95 transition border-l-4 border-accent text-base sm:text-lg font-semibold text-accent shadow-md">+7 778 155 6699</a>
@@ -1383,7 +1383,7 @@ function App() {
           )}
 
           {mobileTab === 'booking' && (
-            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black via-rose-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
+            <motion.div className="w-full space-y-4 sm:space-y-5 bg-gradient-to-b from-black/70 via-rose-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">{t.bookingTitle}</h2>
@@ -1622,7 +1622,7 @@ function App() {
           )}
 
           {mobileTab === 'history' && (
-            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-cyan-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black/70 via-cyan-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">📋 {t.history}</h2>
                 {orderHistory.length > 0 && (
@@ -1649,7 +1649,7 @@ function App() {
           )}
 
           {mobileTab === 'favorites' && (
-            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black via-pink-950/20 to-black rounded-2xl sm:rounded-3xl p-6 sm:p-8" {...sectionMotionProps}>
+            <motion.div className="w-full space-y-3 bg-gradient-to-b from-black/70 via-pink-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">❤️ {t.favorites}</h2>
               {favorites.length === 0 ? (
                 <p className="text-white/60 text-center py-8">{t.noFavorites}</p>
@@ -1672,7 +1672,7 @@ function App() {
           )}
         </div>
 
-        <div className="border-t border-white/10 p-2 sm:p-3 bg-black/98 backdrop-blur fixed bottom-0 left-0 right-0 md:hidden">
+        <div className="border-t border-white/10 p-2 sm:p-3 bg-black/90 supports-[backdrop-filter]:bg-black/60 backdrop-blur-xl fixed bottom-0 left-0 right-0 md:hidden">
           <div className="flex items-center justify-between gap-2 sm:gap-2.5 px-2">
             <div className="flex gap-1.5 sm:gap-2 w-full overflow-x-auto">
                 <button onClick={() => setMobileTab('home')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'home' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.home}>{t.home}</button>
@@ -1690,21 +1690,21 @@ function App() {
 
       <main id="top" className="hidden md:flex md:flex-col md:min-h-screen">
         {/* Desktop Tab Navigation */}
-        <div className="sticky top-[60px] z-40 border-b border-white/10 bg-black/70 backdrop-blur py-3 px-8">
+        <div className="sticky top-[60px] z-40 border-b border-white/10 bg-black/80 supports-[backdrop-filter]:bg-black/55 backdrop-blur-xl py-3 px-8">
           <div className="mx-auto max-w-7xl flex gap-4">
-            <button onClick={() => setDesktopTab('home')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'home' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>{t.home}</button>
-            <button onClick={() => setDesktopTab('services')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'services' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>{t.services}</button>
-            <button onClick={() => setDesktopTab('standards')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'standards' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>{t.standards}</button>
-            <button onClick={() => setDesktopTab('contacts')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'contacts' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>{t.contacts}</button>
-            <button onClick={() => setDesktopTab('booking')} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${desktopTab === 'booking' ? 'bg-accent text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>{t.booking}</button>
+            <button onClick={() => setDesktopTab('home')} className={`px-4 py-2 rounded-lg text-sm font-semibold border transition ${desktopTab === 'home' ? 'bg-accent text-black border-accent shadow-[0_10px_22px_rgba(245,200,106,0.24)]' : 'bg-white/5 text-white/85 border-white/15 hover:bg-white/10 hover:border-white/25'}`}>{t.home}</button>
+            <button onClick={() => setDesktopTab('services')} className={`px-4 py-2 rounded-lg text-sm font-semibold border transition ${desktopTab === 'services' ? 'bg-accent text-black border-accent shadow-[0_10px_22px_rgba(245,200,106,0.24)]' : 'bg-white/5 text-white/85 border-white/15 hover:bg-white/10 hover:border-white/25'}`}>{t.services}</button>
+            <button onClick={() => setDesktopTab('standards')} className={`px-4 py-2 rounded-lg text-sm font-semibold border transition ${desktopTab === 'standards' ? 'bg-accent text-black border-accent shadow-[0_10px_22px_rgba(245,200,106,0.24)]' : 'bg-white/5 text-white/85 border-white/15 hover:bg-white/10 hover:border-white/25'}`}>{t.standards}</button>
+            <button onClick={() => setDesktopTab('contacts')} className={`px-4 py-2 rounded-lg text-sm font-semibold border transition ${desktopTab === 'contacts' ? 'bg-accent text-black border-accent shadow-[0_10px_22px_rgba(245,200,106,0.24)]' : 'bg-white/5 text-white/85 border-white/15 hover:bg-white/10 hover:border-white/25'}`}>{t.contacts}</button>
+            <button onClick={() => setDesktopTab('booking')} className={`px-4 py-2 rounded-lg text-sm font-semibold border transition ${desktopTab === 'booking' ? 'bg-accent text-black border-accent shadow-[0_10px_22px_rgba(245,200,106,0.24)]' : 'bg-white/5 text-white/85 border-white/15 hover:bg-white/10 hover:border-white/25'}`}>{t.booking}</button>
           </div>
         </div>
 
         {/* Desktop Content Area */}
-        <div className="flex-1 flex items-center justify-center px-8 py-12">
+        <div className="flex-1 flex items-start justify-center px-8 py-12">
           <div className="w-full max-w-6xl">
             {desktopTab === 'home' && (
-              <motion.div className="space-y-6 bg-gradient-to-br from-black via-amber-950/30 to-black rounded-2xl p-12" {...sectionMotionProps}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black/80 via-amber-950/28 to-black/65 rounded-2xl p-12 border border-white/10 shadow-2xl" {...sectionMotionProps}>
                 <div className="border-l-4 border-accent pl-6">
                   <p className="text-accent text-sm font-semibold">{t.heroBadge}</p>
                 </div>
@@ -1768,7 +1768,7 @@ function App() {
             )}
 
             {desktopTab === 'services' && (
-              <motion.div className="space-y-6 bg-gradient-to-br from-black via-blue-950/30 to-black rounded-2xl p-12" {...sectionMotionProps}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black/80 via-blue-950/28 to-black/65 rounded-2xl p-12 border border-white/10 shadow-2xl" {...sectionMotionProps}>
                 <h2 className="section-title text-4xl text-accent">{t.services}</h2>
                 
                 <div className="grid gap-6 grid-cols-2">
@@ -1812,7 +1812,7 @@ function App() {
             )}
 
             {desktopTab === 'standards' && (
-              <motion.div className="space-y-6 bg-gradient-to-br from-black via-purple-950/30 to-black rounded-2xl p-12" {...sectionMotionProps}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black/80 via-slate-900/40 to-black/65 rounded-2xl p-12 border border-white/10 shadow-2xl" {...sectionMotionProps}>
                 <h2 className="section-title text-4xl text-accent">{t.standardsTitleDesktop}</h2>
                 
                 <div className="grid gap-4 grid-cols-3">
@@ -1835,7 +1835,7 @@ function App() {
             )}
 
             {desktopTab === 'contacts' && (
-              <motion.div className="space-y-6 bg-gradient-to-br from-black via-emerald-950/30 to-black rounded-2xl p-12" {...sectionMotionProps}>
+              <motion.div className="space-y-6 bg-gradient-to-br from-black/80 via-emerald-950/24 to-black/65 rounded-2xl p-12 border border-white/10 shadow-2xl" {...sectionMotionProps}>
                 <h2 className="section-title text-4xl text-accent">{t.contacts}</h2>
                 <p className="text-white text-base mb-6">{t.contactsHint}</p>
                 <div className="flex gap-4 flex-wrap">

@@ -4,15 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: '#050505',
-        accent: '#FFD949',
+        base: '#0f1318',
+        surface: '#151c24',
+        accent: '#f5c86a',
+        accentSoft: '#ffe7af',
       },
       fontFamily: {
-        serif: ['Playfair Display', 'serif'],
-        sans: ['Inter', 'sans-serif'],
+        serif: ['Cormorant Garamond', 'serif'],
+        sans: ['Manrope', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 25px rgba(255, 217, 73, 0.45), 0 0 40px rgba(255, 217, 73, 0.25)',
+        glow: '0 0 28px rgba(245, 200, 106, 0.32), 0 0 48px rgba(245, 200, 106, 0.14)',
       },
     },
   },
