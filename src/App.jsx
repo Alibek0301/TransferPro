@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2 } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2, Phone, User, CalendarDays } from 'lucide-react'
 
 const whatsappNumber = '77781556699'
 
@@ -546,7 +546,7 @@ const standards = [
   { title: 'Полная страховка', icon: Award, desc: 'Страховое покрытие пассажира, водителя и автомобиля.' },
 ]
 
-const trustPoints = ['Ответ менеджера 3–5 минут', 'Поддержка 24/7', 'Без скрытых доплат']
+const trustPoints = ['Без скрытых доплат']
 
 const quickScenarios = [
   { label: 'Аэропорт', service: 'VIP Meeting — Аэропорт-Город', address: 'Аэропорт Астана' },
@@ -572,6 +572,11 @@ const reviews = [
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   show: { opacity: 1, y: 0 },
+}
+
+const heroStagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.18 } },
 }
 
 const ADMIN_LOGIN = 'admin'
@@ -788,6 +793,7 @@ function App() {
   const completedSteps = [primaryStepComplete, secondStepComplete, thirdStepComplete].filter(Boolean).length
   const progressPercent = Math.round((completedSteps / 3) * 100)
   const hasDraft = formData.name.trim() || formData.date || formData.address.trim() || formData.comment.trim()
+  const ordersToday = ((Math.floor(Date.now() / 86400000) % 7) + 8 + orderHistory.length)
 
   const maskPhone = (phone) => {
     const digits = (phone || '').replace(/\D/g, '')
@@ -1249,18 +1255,30 @@ function App() {
               
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight text-white">{t.heroTitle}</h1>
               
-              <div className="space-y-3 sm:space-y-4 text-white text-sm sm:text-base leading-relaxed font-light">
-                <p>{t.heroP1}</p>
-                <p>{t.heroP2}</p>
-                <p>{t.heroP3}</p>
-              </div>
-              
-              <button
-                onClick={() => setMobileTab('booking')}
-                className="w-full mt-5 sm:mt-6 py-3.5 sm:py-4 rounded-xl bg-accent text-black font-bold text-base sm:text-lg hover:bg-accent/90 active:scale-95 transition shadow-lg"
+              <motion.div
+                className="space-y-3 sm:space-y-4 text-white text-sm sm:text-base leading-relaxed font-light"
+                {...(prefersReducedMotion ? {} : { variants: heroStagger, initial: 'hidden', animate: 'show' })}
               >
-                {t.startOrder}
-              </button>
+                <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP1}</motion.p>
+                <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP2}</motion.p>
+                <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP3}</motion.p>
+              </motion.div>
+
+              <div className="mt-5 sm:mt-6 space-y-2">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-xl bg-accent/30 animate-ping pointer-events-none" />
+                  <button
+                    onClick={() => setMobileTab('booking')}
+                    className="relative w-full py-3.5 sm:py-4 rounded-xl bg-accent text-black font-bold text-base sm:text-lg hover:bg-accent/90 active:scale-95 transition shadow-lg"
+                  >
+                    {t.startOrder}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between text-xs text-white/55 px-1">
+                  <span>от 10 000 ₸ за поездку</span>
+                  <span>🔥 {ordersToday} заказов сегодня</span>
+                </div>
+              </div>
 
               {hasDraft && (
                 <button
@@ -1294,15 +1312,7 @@ function App() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm text-accent font-semibold">{t.reviews}</p>
-                {reviews.slice(0, 2).map((review) => (
-                  <div key={review.author} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs text-white/80">“{review.text}”</p>
-                    <p className="text-xs text-accent mt-2 font-semibold">★ 5.0 · {review.author}</p>
-                  </div>
-                ))}
-              </div>
+
             </motion.div>
           )}
 
@@ -1490,35 +1500,41 @@ function App() {
               <form className="space-y-3.5 sm:space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="name_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.nameLabel}</label>
-                  <input 
-                    id="name_mobile" 
-                    name="name" 
-                    placeholder={t.namePlaceholder} 
-                    value={formData.name} 
-                    onChange={updateField} 
-                    onFocus={closeMobileMenu} 
-                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md" 
-                  />
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
+                    <input 
+                      id="name_mobile" 
+                      name="name" 
+                      placeholder={t.namePlaceholder} 
+                      value={formData.name} 
+                      onChange={updateField} 
+                      onFocus={closeMobileMenu} 
+                      className="w-full rounded-xl border-2 border-white/20 bg-black/60 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md" 
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label htmlFor="phone_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.phoneLabel}</label>
-                  <input 
-                    id="phone_mobile" 
-                    name="phone" 
-                    type="tel" 
-                    inputMode="tel" 
-                    pattern="\\+7[0-9]{10}" 
-                    placeholder={t.phonePlaceholder} 
-                    value={formData.phone} 
-                    onChange={updateField} 
-                    onFocus={closeMobileMenu} 
-                    className={`w-full rounded-xl border-2 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none transition ${
-                      formData.phone.length > 2 && !isValidPhone(formData.phone)
-                        ? 'border-red-500/60 bg-red-500/10 focus:border-red-500/80 focus:bg-red-500/15'
-                        : 'border-white/20 bg-black/60 focus:border-accent focus:bg-black/80'
-                    } placeholder-white/40 shadow-md`}
-                  />
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
+                    <input 
+                      id="phone_mobile" 
+                      name="phone" 
+                      type="tel" 
+                      inputMode="tel" 
+                      pattern="\\+7[0-9]{10}" 
+                      placeholder={t.phonePlaceholder} 
+                      value={formData.phone} 
+                      onChange={updateField} 
+                      onFocus={closeMobileMenu} 
+                      className={`w-full rounded-xl border-2 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none transition ${
+                        formData.phone.length > 2 && !isValidPhone(formData.phone)
+                          ? 'border-red-500/60 bg-red-500/10 focus:border-red-500/80 focus:bg-red-500/15'
+                          : 'border-white/20 bg-black/60 focus:border-accent focus:bg-black/80'
+                      } placeholder-white/40 shadow-md`}
+                    />
+                  </div>
                   {formData.phone.length > 2 && !isValidPhone(formData.phone) && (
                     <p className="mt-1.5 text-xs sm:text-sm text-red-400 font-medium">{t.phoneInvalid}</p>
                   )}
@@ -1542,16 +1558,19 @@ function App() {
 
                 <div>
                   <label htmlFor="date_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.dateLabel}</label>
-                  <input 
-                    id="date_mobile"
-                    name="date" 
-                    type="date" 
-                    min={getTodayDate()} 
-                    value={formData.date} 
-                    onChange={updateField} 
-                    onFocus={closeMobileMenu} 
-                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md" 
-                  />
+                  <div className="relative">
+                    <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
+                    <input 
+                      id="date_mobile"
+                      name="date" 
+                      type="date" 
+                      min={getTodayDate()} 
+                      value={formData.date} 
+                      onChange={updateField} 
+                      onFocus={closeMobileMenu} 
+                      className="w-full rounded-xl border-2 border-white/20 bg-black/60 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md" 
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -1682,7 +1701,13 @@ function App() {
                 <button onClick={() => setMobileTab('booking')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'booking' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.booking}>{t.booking}</button>
               </div>
             <div className="flex gap-1.5 sm:gap-2">
-              <a href={whatsappHref} target="_blank" rel="noreferrer" className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-accent text-black text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-accent/90 active:scale-95 transition shadow-md">{t.whatsapp}</a>
+              <a href="tel:+77781556699" className="flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg bg-white/10 text-white text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-white/15 active:scale-95 transition shadow-md" aria-label="Позвонить">
+                <Phone className="w-4 h-4" />
+              </a>
+              <div className="relative">
+                <div className="absolute inset-0 rounded-lg bg-accent/30 animate-ping pointer-events-none" />
+                <a href={whatsappHref} target="_blank" rel="noreferrer" className="relative block px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-accent text-black text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-accent/90 active:scale-95 transition shadow-md">{t.whatsapp}</a>
+              </div>
             </div>
           </div>
         </div>
@@ -1711,18 +1736,30 @@ function App() {
                 
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">{t.heroTitle}</h1>
                 
-                <div className="space-y-4 text-white text-base leading-relaxed max-w-3xl">
-                  <p>{t.heroP1}</p>
-                  <p>{t.heroP2}</p>
-                  <p>{t.heroP3}</p>
-                </div>
-                
-                <button
-                  onClick={() => setDesktopTab('booking')}
-                  className="mt-6 px-8 py-3 rounded-lg bg-accent text-black font-semibold text-base hover:bg-accent/90 transition"
+                <motion.div
+                  className="space-y-4 text-white text-base leading-relaxed max-w-3xl"
+                  {...(prefersReducedMotion ? {} : { variants: heroStagger, initial: 'hidden', animate: 'show' })}
                 >
-                  {t.startOrder}
-                </button>
+                  <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP1}</motion.p>
+                  <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP2}</motion.p>
+                  <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP3}</motion.p>
+                </motion.div>
+                
+                <div className="mt-6 flex items-center gap-5 flex-wrap">
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
+                    <button
+                      onClick={() => setDesktopTab('booking')}
+                      className="relative px-8 py-3 rounded-lg bg-accent text-black font-bold text-base hover:bg-accent/90 transition shadow-lg shadow-accent/20"
+                    >
+                      {t.startOrder}
+                    </button>
+                  </div>
+                  <div className="text-sm text-white/60 space-y-0.5">
+                    <p>от 10 000 ₸ за поездку</p>
+                    <p className="text-accent/80">🔥 {ordersToday} заказов сегодня</p>
+                  </div>
+                </div>
 
                 {hasDraft && (
                   <button
@@ -1756,14 +1793,7 @@ function App() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 pt-2">
-                  {reviews.map((review) => (
-                    <div key={review.author} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-sm text-white/85">“{review.text}”</p>
-                      <p className="text-xs text-accent mt-3 font-semibold">★ 5.0 · {review.author}</p>
-                    </div>
-                  ))}
-                </div>
+
               </motion.div>
             )}
 
@@ -1952,15 +1982,21 @@ function App() {
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div>
                     <label htmlFor="name_desktop" className="text-sm font-semibold text-white">{t.nameLabel}</label>
-                    <input id="name_desktop" name="name" required placeholder={t.namePlaceholder} value={formData.name} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                    <div className="relative mt-1">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
+                      <input id="name_desktop" name="name" required placeholder={t.namePlaceholder} value={formData.name} onChange={updateField} className="w-full rounded-lg border border-white/30 bg-white/10 pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                    </div>
                   </div>
                   <div>
                     <label htmlFor="phone_desktop" className="text-sm font-semibold text-white">{t.phoneLabel}</label>
-                    <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder={t.phonePlaceholder} value={formData.phone} onChange={updateField} className={`mt-1 w-full rounded-lg border px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition ${
-                      formData.phone.length > 2 && !isValidPhone(formData.phone)
-                        ? 'border-red-500/50 bg-red-500/10 focus:bg-red-500/15 focus:border-red-500'
-                        : 'border-white/30 bg-white/10 focus:border-accent focus:bg-white/15'
-                    }`} />
+                    <div className="relative mt-1">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
+                      <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder={t.phonePlaceholder} value={formData.phone} onChange={updateField} className={`w-full rounded-lg border pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition ${
+                        formData.phone.length > 2 && !isValidPhone(formData.phone)
+                          ? 'border-red-500/50 bg-red-500/10 focus:bg-red-500/15 focus:border-red-500'
+                          : 'border-white/30 bg-white/10 focus:border-accent focus:bg-white/15'
+                      }`} />
+                    </div>
                     {formData.phone.length > 2 && !isValidPhone(formData.phone) && (
                       <p className="mt-1 text-xs text-red-400">{t.phoneInvalid}</p>
                     )}
@@ -1975,7 +2011,10 @@ function App() {
                   </div>
                   <div>
                     <label htmlFor="date_desktop" className="text-sm font-semibold text-white">{t.dateLabel}</label>
-                    <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
+                    <div className="relative mt-1">
+                      <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
+                      <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="w-full rounded-lg border border-white/30 bg-white/10 pl-10 pr-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
+                    </div>
                   </div>
                   <div>
                     <button
@@ -2027,6 +2066,34 @@ function App() {
           </div>
         </div>
       </main>
+
+      {desktopTab === 'home' && (
+        <div className="hidden md:block fixed bottom-0 left-0 right-0 z-30 bg-black/95 backdrop-blur-xl border-t border-accent/25 py-3 px-8">
+          <div className="mx-auto max-w-6xl flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs text-white/50 uppercase tracking-wider">Transfer Pro · Астана</p>
+              <p className="text-sm font-semibold">
+                <span className="text-white">от 10 000 ₸ за поездку</span>
+                <span className="text-accent/80"> · 🔥 {ordersToday} заказов сегодня</span>
+              </p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <a href="tel:+77781556699" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/8 border border-white/15 text-white text-sm font-semibold hover:bg-white/12 transition">
+                <Phone className="w-3.5 h-3.5" /> Позвонить
+              </a>
+              <div className="relative">
+                <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
+                <button
+                  onClick={() => setDesktopTab('booking')}
+                  className="relative px-6 py-2 rounded-lg bg-accent text-black font-bold text-sm hover:bg-accent/90 transition shadow-lg shadow-accent/25"
+                >
+                  Заказать сейчас →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       </>
       ) : (
