@@ -147,13 +147,29 @@ const translations = {
     lastOrderEmpty: 'У вас пока нет заявок',
     statusTimeline: 'Этапы',
     staffLoginPlaceholder: 'admin или driver@mail.ru',
-    staffLoginHint: 'Демо-доступ без пароля до подключения бэкенда.',
+    staffLoginHint: 'Вход персонала доступен только в защищённом backend-контуре.',
     transferSearchPlaceholder: 'Имя, адрес, маршрут',
     clientNamePlaceholder: 'Имя клиента',
     routeFromPlaceholder: 'Астана, аэропорт',
     routeToPlaceholder: 'Отель',
     driverLoginPlaceholder: 'driver@mail.ru',
     vehiclePlaceholder: 'Mercedes V-class',
+    trustNoHiddenFees: 'Без скрытых доплат',
+    trustNda: 'Конфиденциальность поездок и маршрутов',
+    trustInsured: 'Страхование пассажиров и ответственности',
+    privacyConsentLabel: 'Я согласен(а) на обработку персональных данных для оформления заявки',
+    privacyPolicyLabel: 'Политика конфиденциальности',
+    termsLabel: 'Условия обслуживания',
+    rememberDataLabel: 'Запомнить данные на этом устройстве',
+    rememberDataHint: 'Если отключено, данные сохраняются только в текущей сессии браузера',
+    clearMyData: 'Удалить мои данные с устройства',
+    dataCleared: 'Локальные данные удалены',
+    submitConsentRequired: 'Подтвердите согласие на обработку данных',
+    waIncludeSensitive: 'Добавить адрес и комментарий в WhatsApp',
+    waPrivacyHint: 'В WhatsApp отправляются только базовые данные. Адрес и комментарий добавляются только по вашему выбору.',
+    staffLoginDisabled: 'Вход для персонала доступен только в защищенном контуре (backend). Демо-вход отключен.',
+    waComment: 'Комментарий',
+    legalDisclaimer: 'Работаем по договору и соблюдаем политику конфиденциальности.',
   },
   kk: {
     home: 'Басты бет',
@@ -297,13 +313,29 @@ const translations = {
     lastOrderEmpty: 'Өтінімдер әлі жоқ',
     statusTimeline: 'Кезеңдер',
     staffLoginPlaceholder: 'admin немесе driver@mail.ru',
-    staffLoginHint: 'Бэкенд қосылғанша құпиясөзсіз демо қолжетімді.',
+    staffLoginHint: 'Персоналға кіру тек қорғалған backend контурында қолжетімді.',
     transferSearchPlaceholder: 'Аты, мекенжайы, маршрут',
     clientNamePlaceholder: 'Клиент аты',
     routeFromPlaceholder: 'Астана, әуежай',
     routeToPlaceholder: 'Қонақ үй',
     driverLoginPlaceholder: 'driver@mail.ru',
     vehiclePlaceholder: 'Mercedes V-class',
+    trustNoHiddenFees: 'Жасырын төлемдер жоқ',
+    trustNda: 'Сапар мен маршрут құпиялығы',
+    trustInsured: 'Жолаушы және жауапкершілік сақтандырылған',
+    privacyConsentLabel: 'Өтінімді рәсімдеу үшін дербес деректерді өңдеуге келісемін',
+    privacyPolicyLabel: 'Құпиялылық саясаты',
+    termsLabel: 'Қызмет көрсету шарттары',
+    rememberDataLabel: 'Осы құрылғыда деректерді сақтау',
+    rememberDataHint: 'Өшірілсе, деректер тек ағымдағы браузер сессиясында сақталады',
+    clearMyData: 'Құрылғыдан менің деректерімді өшіру',
+    dataCleared: 'Жергілікті деректер өшірілді',
+    submitConsentRequired: 'Деректерді өңдеуге келісімді растаңыз',
+    waIncludeSensitive: 'WhatsApp-қа мекенжай мен пікірді қосу',
+    waPrivacyHint: 'WhatsApp-қа тек негізгі деректер жіберіледі. Мекенжай мен пікір тек сіз таңдасаңыз қосылады.',
+    staffLoginDisabled: 'Персоналға кіру тек қорғалған контурда (backend) қолжетімді. Демо-кіру өшірілген.',
+    waComment: 'Пікір',
+    legalDisclaimer: 'Келісімшартпен жұмыс істейміз және құпиялылық саясатын сақтаймыз.',
   },
   en: {
     home: 'Home',
@@ -447,13 +479,29 @@ const translations = {
     lastOrderEmpty: 'No requests yet',
     statusTimeline: 'Steps',
     staffLoginPlaceholder: 'admin or driver@mail.ru',
-    staffLoginHint: 'Demo access works without a password until backend integration.',
+    staffLoginHint: 'Staff access is available only inside a secured backend environment.',
     transferSearchPlaceholder: 'Name, address, route',
     clientNamePlaceholder: 'Client name',
     routeFromPlaceholder: 'Astana airport',
     routeToPlaceholder: 'Hotel',
     driverLoginPlaceholder: 'driver@mail.ru',
     vehiclePlaceholder: 'Mercedes V-class',
+    trustNoHiddenFees: 'No hidden fees',
+    trustNda: 'Trip and route confidentiality',
+    trustInsured: 'Passenger and liability insurance',
+    privacyConsentLabel: 'I agree to personal data processing for booking purposes',
+    privacyPolicyLabel: 'Privacy Policy',
+    termsLabel: 'Terms of Service',
+    rememberDataLabel: 'Remember data on this device',
+    rememberDataHint: 'If disabled, data is saved only for the current browser session',
+    clearMyData: 'Delete my data from this device',
+    dataCleared: 'Local data deleted',
+    submitConsentRequired: 'Please confirm consent to data processing',
+    waIncludeSensitive: 'Include address and comment in WhatsApp',
+    waPrivacyHint: 'Only essential details are sent to WhatsApp by default. Address and comment are optional.',
+    staffLoginDisabled: 'Staff login is available only in a secured backend environment. Demo login is disabled.',
+    waComment: 'Comment',
+    legalDisclaimer: 'Service is provided under contract and privacy policy compliance.',
   },
 }
 
@@ -546,8 +594,6 @@ const standards = [
   { title: 'Полная страховка', icon: Award, desc: 'Страховое покрытие пассажира, водителя и автомобиля.' },
 ]
 
-const trustPoints = ['Без скрытых доплат']
-
 const quickScenarios = [
   { label: 'Аэропорт', service: 'VIP Meeting — Аэропорт-Город', address: 'Аэропорт Астана' },
   { label: 'Детский маршрут', service: 'Smart Parents — Развозка детей', address: 'Школа / дом' },
@@ -580,6 +626,10 @@ const heroStagger = {
 }
 
 const ADMIN_LOGIN = 'admin'
+const DEMO_STAFF_ENABLED = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMO_STAFF === 'true'
+const SENSITIVE_STORAGE_KEYS = ['staffSession', 'driverAccounts', 'transfers', 'formData', 'orderHistory', 'favorites']
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000
+const ACTIVITY_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'mousemove', 'scroll']
 
 const parseStoredJson = (rawValue, fallback) => {
   if (!rawValue) return fallback
@@ -603,6 +653,40 @@ const getStoredValue = (key, fallback) => {
   }
 }
 
+const getScopedStoredValue = (key, fallback) => {
+  try {
+    const sessionStored = sessionStorage.getItem(key)
+    if (sessionStored !== null) {
+      if (typeof fallback === 'string') return sessionStored
+      return parseStoredJson(sessionStored, fallback)
+    }
+
+    const localStored = localStorage.getItem(key)
+    if (localStored !== null) {
+      if (typeof fallback === 'string') return localStored
+      return parseStoredJson(localStored, fallback)
+    }
+
+    return fallback
+  } catch (error) {
+    return fallback
+  }
+}
+
+const writeScopedValue = (key, value, persistLocally) => {
+  try {
+    const serialized = typeof value === 'string' ? value : JSON.stringify(value)
+    sessionStorage.setItem(key, serialized)
+    if (persistLocally) {
+      localStorage.setItem(key, serialized)
+    } else {
+      localStorage.removeItem(key)
+    }
+  } catch (error) {
+    // no-op for private mode/storage access errors
+  }
+}
+
 const normalizeBufferMinutes = (value) => {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return 0
@@ -615,23 +699,26 @@ function App() {
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
   const [language, setLanguage] = useState(() => getStoredValue('language', 'ru'))
-  const [staffSession, setStaffSession] = useState(() => getStoredValue('staffSession', null))
-  const [driverAccounts, setDriverAccounts] = useState(() => getStoredValue('driverAccounts', []))
+  const [rememberDataOnDevice, setRememberDataOnDevice] = useState(() => getStoredValue('privacyRememberData', '0') === '1')
+  const [privacyConsentChecked, setPrivacyConsentChecked] = useState(false)
+  const [includeSensitiveInMessage, setIncludeSensitiveInMessage] = useState(false)
+  const [staffSession, setStaffSession] = useState(() => getScopedStoredValue('staffSession', null))
+  const [driverAccounts, setDriverAccounts] = useState(() => getScopedStoredValue('driverAccounts', []))
   const [showStaffAuth, setShowStaffAuth] = useState(false)
   const [authLogin, setAuthLogin] = useState('')
   const [authError, setAuthError] = useState('')
   const [newDriverLogin, setNewDriverLogin] = useState('')
   const [savedSince, setSavedSince] = useState('')
   const [submitNotice, setSubmitNotice] = useState('')
-  const [orderHistory, setOrderHistory] = useState(() => getStoredValue('orderHistory', []))
-  const [transfers, setTransfers] = useState(() => getStoredValue('transfers', []))
+  const [orderHistory, setOrderHistory] = useState(() => getScopedStoredValue('orderHistory', []))
+  const [transfers, setTransfers] = useState(() => getScopedStoredValue('transfers', []))
   const [transferDraft, setTransferDraft] = useState(() => getEmptyTransferDraft())
   const [transferConflict, setTransferConflict] = useState('')
   const [transferNotice, setTransferNotice] = useState('')
   const [transferFilters, setTransferFilters] = useState({ date: '', driver: '', vehicle: '', query: '' })
   const [bufferMinutes, setBufferMinutes] = useState(() => normalizeBufferMinutes(getStoredValue('transferBuffer', '15')))
   const [importNotice, setImportNotice] = useState('')
-  const [favorites, setFavorites] = useState(() => getStoredValue('favorites', []))
+  const [favorites, setFavorites] = useState(() => getScopedStoredValue('favorites', []))
   const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
   const [notificationsAllowed, setNotificationsAllowed] = useState(() => (typeof Notification !== 'undefined' && Notification.permission === 'granted'))
@@ -639,7 +726,7 @@ function App() {
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
-  const role = staffSession?.role || 'client'
+  const role = DEMO_STAFF_ENABLED ? (staffSession?.role || 'client') : 'client'
   
   const [formData, setFormData] = useState(() => {
     const defaultFormData = {
@@ -651,7 +738,7 @@ function App() {
       address: '',
     }
 
-    const saved = getStoredValue('formData', null)
+    const saved = getScopedStoredValue('formData', null)
     if (!saved || typeof saved !== 'object') {
       return defaultFormData
     }
@@ -685,16 +772,23 @@ function App() {
   }, [language])
 
   useEffect(() => {
-    localStorage.setItem('staffSession', JSON.stringify(staffSession))
-  }, [staffSession])
+    localStorage.setItem('privacyRememberData', rememberDataOnDevice ? '1' : '0')
+    if (!rememberDataOnDevice) {
+      SENSITIVE_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key))
+    }
+  }, [rememberDataOnDevice])
 
   useEffect(() => {
-    localStorage.setItem('driverAccounts', JSON.stringify(driverAccounts))
-  }, [driverAccounts])
+    writeScopedValue('staffSession', staffSession, rememberDataOnDevice)
+  }, [staffSession, rememberDataOnDevice])
 
   useEffect(() => {
-    localStorage.setItem('transfers', JSON.stringify(transfers))
-  }, [transfers])
+    writeScopedValue('driverAccounts', driverAccounts, rememberDataOnDevice)
+  }, [driverAccounts, rememberDataOnDevice])
+
+  useEffect(() => {
+    writeScopedValue('transfers', transfers, rememberDataOnDevice)
+  }, [transfers, rememberDataOnDevice])
 
   useEffect(() => {
     localStorage.setItem('transferBuffer', String(bufferMinutes || 0))
@@ -710,13 +804,19 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!DEMO_STAFF_ENABLED && staffSession) {
+      setStaffSession(null)
+    }
+  }, [staffSession])
+
   // Автосохранение формы
   useEffect(() => {
-    localStorage.setItem('formData', JSON.stringify(formData))
+    writeScopedValue('formData', formData, rememberDataOnDevice)
     setSavedSince('just-now')
     const timer = setTimeout(() => setSavedSince(''), 2000)
     return () => clearTimeout(timer)
-  }, [formData])
+  }, [formData, rememberDataOnDevice])
 
   useEffect(() => {
     if (!services.some((service) => service.title === formData.service)) {
@@ -786,14 +886,14 @@ function App() {
     return `${t.conflictDetected} · ${conflicting.date} ${conflicting.startTime}-${conflicting.endTime}`
   }
 
-  const canSubmit = formData.name.trim() && isValidPhone(formData.phone) && formData.date
+  const canSubmit = formData.name.trim() && isValidPhone(formData.phone) && formData.date && privacyConsentChecked
   const primaryStepComplete = formData.name.trim() && isValidPhone(formData.phone)
   const secondStepComplete = formData.service && formData.date
   const thirdStepComplete = true
   const completedSteps = [primaryStepComplete, secondStepComplete, thirdStepComplete].filter(Boolean).length
   const progressPercent = Math.round((completedSteps / 3) * 100)
   const hasDraft = formData.name.trim() || formData.date || formData.address.trim() || formData.comment.trim()
-  const ordersToday = ((Math.floor(Date.now() / 86400000) % 7) + 8 + orderHistory.length)
+  const trustPoints = [t.trustNoHiddenFees, t.trustNda, t.trustInsured]
 
   const maskPhone = (phone) => {
     const digits = (phone || '').replace(/\D/g, '')
@@ -817,11 +917,12 @@ function App() {
     }
     const nextHistory = [newOrder, ...orderHistory.slice(0, 9)]
     setOrderHistory(nextHistory)
-    localStorage.setItem('orderHistory', JSON.stringify(nextHistory))
+    writeScopedValue('orderHistory', nextHistory, rememberDataOnDevice)
   }
 
   const clearHistory = () => {
     setOrderHistory([])
+    sessionStorage.removeItem('orderHistory')
     localStorage.removeItem('orderHistory')
   }
 
@@ -832,7 +933,7 @@ function App() {
         : order
     ))
     setOrderHistory(updatedOrders)
-    localStorage.setItem('orderHistory', JSON.stringify(updatedOrders))
+    writeScopedValue('orderHistory', updatedOrders, rememberDataOnDevice)
   }
 
   const statusLabels = {
@@ -878,6 +979,11 @@ function App() {
 
   const handleStaffLogin = (event) => {
     event.preventDefault()
+    if (!DEMO_STAFF_ENABLED) {
+      setAuthError(t.staffLoginDisabled)
+      return
+    }
+
     const login = authLogin.trim().toLowerCase()
     if (!login) {
       setAuthError(t.invalidCredentials)
@@ -944,14 +1050,62 @@ function App() {
     const newFav = { address: normalizedAddress, name: `${t.favoriteAddressPrefix} ${favorites.length + 1}`, id: Date.now() }
     const nextFavorites = [...favorites, newFav]
     setFavorites(nextFavorites)
-    localStorage.setItem('favorites', JSON.stringify(nextFavorites))
+    writeScopedValue('favorites', nextFavorites, rememberDataOnDevice)
   }
 
   const removeFavorite = (id) => {
     const updated = favorites.filter(f => f.id !== id)
     setFavorites(updated)
-    localStorage.setItem('favorites', JSON.stringify(updated))
+    writeScopedValue('favorites', updated, rememberDataOnDevice)
   }
+
+  const clearSessionSensitiveState = () => {
+    const defaultService = services[0]?.title || ''
+    setFormData({ name: '', phone: '+7', service: defaultService, date: '', comment: '', address: '' })
+    setOrderHistory([])
+    setFavorites([])
+    setStaffSession(null)
+    setDriverAccounts([])
+    setTransfers([])
+    SENSITIVE_STORAGE_KEYS.forEach((key) => sessionStorage.removeItem(key))
+  }
+
+  const clearSensitiveData = () => {
+    const defaultService = services[0]?.title || ''
+    const resetFormData = { name: '', phone: '+7', service: defaultService, date: '', comment: '', address: '' }
+    setFormData(resetFormData)
+    setOrderHistory([])
+    setFavorites([])
+    setStaffSession(null)
+    setDriverAccounts([])
+    setTransfers([])
+    setSubmitNotice(t.dataCleared)
+    SENSITIVE_STORAGE_KEYS.forEach((key) => {
+      sessionStorage.removeItem(key)
+      localStorage.removeItem(key)
+    })
+  }
+
+  useEffect(() => {
+    if (rememberDataOnDevice) return
+
+    let timeoutId
+    const scheduleExpiry = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        clearSessionSensitiveState()
+        setSubmitNotice(t.dataCleared)
+      }, INACTIVITY_TIMEOUT_MS)
+    }
+
+    ACTIVITY_EVENTS.forEach((eventName) => window.addEventListener(eventName, scheduleExpiry, { passive: true }))
+    scheduleExpiry()
+
+    return () => {
+      clearTimeout(timeoutId)
+      ACTIVITY_EVENTS.forEach((eventName) => window.removeEventListener(eventName, scheduleExpiry))
+    }
+  }, [rememberDataOnDevice, t.dataCleared])
 
   const updateTransferDraftField = (field, value) => {
     const nextDraft = { ...transferDraft, [field]: value }
@@ -1080,18 +1234,28 @@ function App() {
   }
 
   const whatsappHref = useMemo(() => {
-    const message = [
+    const messageParts = [
       t.waMessageTitle,
       `${t.waName}: ${formData.name || '-'}`,
       `${t.waPhone}: ${formData.phone || '-'}`,
       `${t.waService}: ${formData.service || '-'}`,
       `${t.waDate}: ${formData.date || '-'}`,
-      `${t.waAddress}: ${formData.address || '-'}`,
-    ].join('\n')
+    ]
+
+    if (includeSensitiveInMessage) {
+      messageParts.push(`${t.waAddress}: ${formData.address || '-'}`)
+      messageParts.push(`${t.waComment}: ${formData.comment || '-'}`)
+    }
+
+    const message = messageParts.join('\n')
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
-  }, [formData, t])
+  }, [formData, includeSensitiveInMessage, t])
 
   const submitOrder = () => {
+    if (!privacyConsentChecked) {
+      setSubmitNotice(t.submitConsentRequired)
+      return
+    }
     if (!canSubmit) return
     addToHistory()
     const popup = window.open(whatsappHref, '_blank', 'noopener,noreferrer')
@@ -1148,15 +1312,15 @@ function App() {
                 <option value="kk">KK</option>
                 <option value="en">EN</option>
               </select>
-              {role === 'client' ? (
+              {role === 'client' && DEMO_STAFF_ENABLED ? (
                 <button onClick={() => setShowStaffAuth(true)} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs hover:border-accent transition">
                   {t.staffLogin}
                 </button>
-              ) : (
+              ) : role !== 'client' ? (
                 <button onClick={handleStaffLogout} className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs hover:border-accent transition">
                   {t.signOut}
                 </button>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -1197,15 +1361,15 @@ function App() {
                   <option value="kk">KK</option>
                   <option value="en">EN</option>
                 </select>
-                {role === 'client' ? (
+                {role === 'client' && DEMO_STAFF_ENABLED ? (
                   <button onClick={() => { setShowStaffAuth(true); setMobileMenuOpen(false) }} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs hover:border-accent transition">
                     {t.staffLogin}
                   </button>
-                ) : (
+                ) : role !== 'client' ? (
                   <button onClick={() => { handleStaffLogout(); setMobileMenuOpen(false) }} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs hover:border-accent transition">
                     {t.signOut}
                   </button>
-                )}
+                ) : null}
               </div>
               <button
                 onClick={closeMobileMenu}
@@ -1219,7 +1383,7 @@ function App() {
         )}
       </header>
 
-      {showStaffAuth && (
+      {showStaffAuth && DEMO_STAFF_ENABLED && (
         <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
           <form onSubmit={handleStaffLogin} className="w-full max-w-md rounded-2xl border border-white/15 bg-black p-5 space-y-4">
             <h3 className="text-xl font-serif text-accent">{t.staffLogin}</h3>
@@ -1276,7 +1440,7 @@ function App() {
                 </div>
                 <div className="flex items-center justify-between text-xs text-white/55 px-1">
                   <span>от 10 000 ₸ за поездку</span>
-                  <span>🔥 {ordersToday} заказов сегодня</span>
+                  <span>{t.legalDisclaimer}</span>
                 </div>
               </div>
 
@@ -1623,6 +1787,49 @@ function App() {
                     </div>
                   </>
                 )}
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-3">
+                  <label className="flex items-start gap-2 text-xs text-white/85 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={privacyConsentChecked}
+                      onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
+                      className="mt-0.5"
+                    />
+                    <span>{t.privacyConsentLabel}</span>
+                  </label>
+                  <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includeSensitiveInMessage}
+                      onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
+                      className="mt-0.5"
+                    />
+                    <span>{t.waIncludeSensitive}</span>
+                  </label>
+                  <p className="text-[11px] text-white/60">{t.waPrivacyHint}</p>
+                  <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={rememberDataOnDevice}
+                      onChange={(event) => setRememberDataOnDevice(event.target.checked)}
+                      className="mt-0.5"
+                    />
+                    <span>{t.rememberDataLabel}</span>
+                  </label>
+                  <p className="text-[11px] text-white/60">{t.rememberDataHint}</p>
+                  <div className="flex flex-wrap gap-3 text-[11px] text-accent">
+                    <a href="privacy.html" className="underline underline-offset-2">{t.privacyPolicyLabel}</a>
+                    <a href="terms.html" className="underline underline-offset-2">{t.termsLabel}</a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearSensitiveData}
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 transition"
+                  >
+                    {t.clearMyData}
+                  </button>
+                </div>
               
 
               <button
@@ -1634,7 +1841,7 @@ function App() {
                     : 'bg-accent/40 text-black/60 cursor-not-allowed'
                 }`}
               >
-                {canSubmit ? t.submitNow : t.fillForm}
+                {canSubmit ? t.submitNow : (privacyConsentChecked ? t.fillForm : t.submitConsentRequired)}
               </button>
               </form>
             </motion.div>
@@ -1757,7 +1964,7 @@ function App() {
                   </div>
                   <div className="text-sm text-white/60 space-y-0.5">
                     <p>от 10 000 ₸ за поездку</p>
-                    <p className="text-accent/80">🔥 {ordersToday} заказов сегодня</p>
+                    <p className="text-accent/80">{t.legalDisclaimer}</p>
                   </div>
                 </div>
 
@@ -2049,6 +2256,49 @@ function App() {
                     </>
                   )}
 
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                    <label className="flex items-start gap-2 text-xs text-white/85 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={privacyConsentChecked}
+                        onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
+                        className="mt-0.5"
+                      />
+                      <span>{t.privacyConsentLabel}</span>
+                    </label>
+                    <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={includeSensitiveInMessage}
+                        onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
+                        className="mt-0.5"
+                      />
+                      <span>{t.waIncludeSensitive}</span>
+                    </label>
+                    <p className="text-[11px] text-white/60">{t.waPrivacyHint}</p>
+                    <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={rememberDataOnDevice}
+                        onChange={(event) => setRememberDataOnDevice(event.target.checked)}
+                        className="mt-0.5"
+                      />
+                      <span>{t.rememberDataLabel}</span>
+                    </label>
+                    <p className="text-[11px] text-white/60">{t.rememberDataHint}</p>
+                    <div className="flex flex-wrap gap-3 text-xs text-accent">
+                      <a href="privacy.html" className="underline underline-offset-2">{t.privacyPolicyLabel}</a>
+                      <a href="terms.html" className="underline underline-offset-2">{t.termsLabel}</a>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearSensitiveData}
+                      className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 transition"
+                    >
+                      {t.clearMyData}
+                    </button>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={!canSubmit}
@@ -2058,7 +2308,7 @@ function App() {
                         : 'bg-accent/40 text-black/60 cursor-not-allowed'
                     }`}
                   >
-                    {t.submitWhatsapp}
+                    {canSubmit ? t.submitWhatsapp : (privacyConsentChecked ? t.fillForm : t.submitConsentRequired)}
                   </button>
                 </form>
               </motion.div>
@@ -2074,7 +2324,7 @@ function App() {
               <p className="text-xs text-white/50 uppercase tracking-wider">Transfer Pro · Астана</p>
               <p className="text-sm font-semibold">
                 <span className="text-white">от 10 000 ₸ за поездку</span>
-                <span className="text-accent/80"> · 🔥 {ordersToday} заказов сегодня</span>
+                <span className="text-accent/80"> · {t.legalDisclaimer}</span>
               </p>
             </div>
             <div className="flex gap-3 items-center">
@@ -2447,7 +2697,13 @@ function App() {
       )}
 
       <footer className="border-t border-white/10 px-4 py-6 text-center text-xs text-white/60 md:px-8 md:translate-y-0">
-        © {new Date().getFullYear()} TransferPro · Premium transfer in Astana
+        <div className="space-y-2">
+          <p>© {new Date().getFullYear()} TransferPro · Premium transfer in Astana</p>
+          <div className="flex items-center justify-center gap-4">
+            <a href="privacy.html" className="text-accent/90 hover:text-accent underline underline-offset-2">{t.privacyPolicyLabel}</a>
+            <a href="terms.html" className="text-accent/90 hover:text-accent underline underline-offset-2">{t.termsLabel}</a>
+          </div>
+        </div>
       </footer>
 
       {role === 'client' && (
