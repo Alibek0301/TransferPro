@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Update the domain after deployment.
+Sitemap: https://example.com/TransferPro/sitemap.xml
