@@ -1339,6 +1339,34 @@ function App() {
         {mobileMenuOpen && (
           <div id="mobile-menu" className="md:hidden border-t border-white/10 bg-black/95">
             <nav className="flex flex-col gap-2 px-4 py-4 text-sm">
+              {role === 'client' && (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); setMobileTab('home') }}
+                    className={`w-full text-left py-2 px-3 rounded-lg border transition ${mobileTab === 'home' ? 'bg-accent text-black border-accent font-semibold' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                  >
+                    {t.home}
+                  </button>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); setMobileTab('services') }}
+                    className={`w-full text-left py-2 px-3 rounded-lg border transition ${mobileTab === 'services' ? 'bg-accent text-black border-accent font-semibold' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                  >
+                    {t.services}
+                  </button>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); setMobileTab('standards') }}
+                    className={`w-full text-left py-2 px-3 rounded-lg border transition ${mobileTab === 'standards' ? 'bg-accent text-black border-accent font-semibold' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                  >
+                    {t.standards}
+                  </button>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); setMobileTab('contacts') }}
+                    className={`w-full text-left py-2 px-3 rounded-lg border transition ${mobileTab === 'contacts' ? 'bg-accent text-black border-accent font-semibold' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                  >
+                    {t.contacts}
+                  </button>
+                </div>
+              )}
               <div className="border-t border-white/10 my-2 pt-2">
                 {role === 'client' && (
                   <>
@@ -1899,22 +1927,20 @@ function App() {
         </div>
 
         <div className="border-t border-white/10 p-2 sm:p-3 bg-black/90 supports-[backdrop-filter]:bg-black/60 backdrop-blur-xl fixed bottom-0 left-0 right-0 md:hidden">
-          <div className="flex items-center justify-between gap-2 sm:gap-2.5 px-2">
-            <div className="flex gap-1.5 sm:gap-2 w-full overflow-x-auto">
-                <button onClick={() => setMobileTab('home')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'home' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.home}>{t.home}</button>
-                <button onClick={() => setMobileTab('services')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'services' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.services}>{t.services}</button>
-                <button onClick={() => setMobileTab('standards')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'standards' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.standards}>{t.standards}</button>
-                <button onClick={() => setMobileTab('contacts')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'contacts' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.contacts}>{t.contacts}</button>
-                <button onClick={() => setMobileTab('booking')} className={`flex-1 text-center px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition active:scale-95 ${mobileTab === 'booking' ? 'bg-accent text-black font-bold shadow-md' : 'bg-white/5 text-white/80 hover:bg-white/10'}`} aria-label={t.booking}>{t.booking}</button>
-              </div>
-            <div className="flex gap-1.5 sm:gap-2">
-              <a href="tel:+77781556699" className="flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg bg-white/10 text-white text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-white/15 active:scale-95 transition shadow-md" aria-label="Позвонить">
+          <div className="grid grid-cols-3 gap-2 px-2">
+            <button
+              onClick={() => setMobileTab('booking')}
+              className={`flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap transition active:scale-95 shadow-md ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
+              aria-label={t.booking}
+            >
+              {t.booking}
+            </button>
+            <a href="tel:+77781556699" className="flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg bg-white/10 text-white text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-white/15 active:scale-95 transition shadow-md" aria-label="Позвонить">
                 <Phone className="w-4 h-4" />
-              </a>
-              <div className="relative">
-                <div className="absolute inset-0 rounded-lg bg-accent/30 animate-ping pointer-events-none" />
-                <a href={whatsappHref} target="_blank" rel="noreferrer" className="relative block px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-accent text-black text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-accent/90 active:scale-95 transition shadow-md">{t.whatsapp}</a>
-              </div>
+            </a>
+            <div className="relative">
+              <div className="absolute inset-0 rounded-lg bg-accent/30 animate-ping pointer-events-none" />
+              <a href={whatsappHref} target="_blank" rel="noreferrer" className="relative block w-full text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-accent text-black text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-accent/90 active:scale-95 transition shadow-md">{t.whatsapp}</a>
             </div>
           </div>
         </div>
