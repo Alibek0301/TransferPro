@@ -42,7 +42,7 @@ const translations = {
     phoneInvalid: 'Введите корректный номер (+7XXXXXXXXXX)',
     bookingTitle: 'Готовы оценить новый уровень комфорта?',
     bookingSubtitle: 'Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.',
-    heroBadge: 'Астана · Premium Transport Service',
+    heroBadge: 'Астана · Премиальный трансфер',
     heroTitle: 'Ваш персональный автопарк в столице',
     heroP1: 'Мы не просто предоставляем автомобиль с водителем — мы берем на себя полную ответственность за ваш комфорт на дорогах столицы.',
     heroP2: 'Transfer Pro — это синергия профессионального этикета, пунктуальности и глубокого понимания потребностей VIP-клиентов.',
@@ -170,6 +170,14 @@ const translations = {
     staffLoginDisabled: 'Вход для персонала доступен только в защищенном контуре (backend). Демо-вход отключен.',
     waComment: 'Комментарий',
     legalDisclaimer: 'Работаем по договору и соблюдаем политику конфиденциальности.',
+    priceFromTrip: 'от 10 000 ₸ за поездку',
+    moreItems: 'ещё',
+    callAriaLabel: 'Позвонить',
+    bottomBrand: 'Transfer Pro · Астана',
+    orderNowCta: 'Заказать сейчас ->',
+    offlineDemo: 'Оффлайн демо',
+    deleteTransferAria: 'Удалить трансфер',
+    footerTagline: 'Премиальный трансфер в Астане',
   },
   kk: {
     home: 'Басты бет',
@@ -208,7 +216,7 @@ const translations = {
     phoneInvalid: 'Дұрыс нөмір енгізіңіз (+7XXXXXXXXXX)',
     bookingTitle: 'Жаңа жайлылық деңгейін көргіңіз келе ме?',
     bookingSubtitle: 'Бір реттік трансферге тапсырыс беріңіз немесе ұзақ мерзімді қызмет көрсету келісімін жасаңыз. Менеджер 24/7 байланыста.',
-    heroBadge: 'Астана · Premium Transport Service',
+    heroBadge: 'Астана · Премиум трансфер қызметі',
     heroTitle: 'Елордадағы жеке автопаркіңіз',
     heroP1: 'Біз жай ғана жүргізушісі бар көлік бермейміз — елорда жолдарындағы жайлылығыңыз үшін толық жауапкершілік аламыз.',
     heroP2: 'Transfer Pro — кәсіби этикет, ұқыптылық және VIP клиент қажеттіліктерін терең түсінудің үйлесімі.',
@@ -336,6 +344,14 @@ const translations = {
     staffLoginDisabled: 'Персоналға кіру тек қорғалған контурда (backend) қолжетімді. Демо-кіру өшірілген.',
     waComment: 'Пікір',
     legalDisclaimer: 'Келісімшартпен жұмыс істейміз және құпиялылық саясатын сақтаймыз.',
+    priceFromTrip: 'сапарға 10 000 ₸ бастап',
+    moreItems: 'тағы',
+    callAriaLabel: 'Қоңырау шалу',
+    bottomBrand: 'Transfer Pro · Астана',
+    orderNowCta: 'Қазір тапсырыс беру ->',
+    offlineDemo: 'Офлайн демо',
+    deleteTransferAria: 'Трансферді жою',
+    footerTagline: 'Астанадағы премиум трансфер',
   },
   en: {
     home: 'Home',
@@ -502,118 +518,376 @@ const translations = {
     staffLoginDisabled: 'Staff login is available only in a secured backend environment. Demo login is disabled.',
     waComment: 'Comment',
     legalDisclaimer: 'Service is provided under contract and privacy policy compliance.',
+    priceFromTrip: 'from 10,000 KZT per trip',
+    moreItems: 'more',
+    callAriaLabel: 'Call',
+    bottomBrand: 'Transfer Pro · Astana',
+    orderNowCta: 'Book now ->',
+    offlineDemo: 'Offline demo',
+    deleteTransferAria: 'Delete transfer',
+    footerTagline: 'Premium transfer in Astana',
   },
 }
 
-const services = [
+const serviceCatalog = [
   {
-    title: 'VIP Meeting — Аэропорт-Город',
-    subtitle: 'Airport Transfer',
-    price: 'от 15 000 ₸',
     icon: Plane,
-    details: [
-      'Встреча с именной табличкой у выхода зоны прилета',
-      'Полная помощь с багажом и транспортировкой',
-      'До 60 мин бесплатного ожидания при задержке рейса',
-      'Охлаждённая вода, влажные салфетки',
-      'Выбор музыки и температуры в салоне'
-    ]
+    title: {
+      ru: 'VIP Встреча - Аэропорт-Город',
+      kk: 'VIP Карсы алу - Әуежай-Қала',
+      en: 'VIP Meet & Greet - Airport to City',
+    },
+    subtitle: {
+      ru: 'Трансфер из аэропорта',
+      kk: 'Әуежай трансфері',
+      en: 'Airport Transfer',
+    },
+    price: {
+      ru: 'от 15 000 ₸',
+      kk: '15 000 ₸ бастап',
+      en: 'from 15,000 KZT',
+    },
+    details: {
+      ru: [
+        'Встреча с именной табличкой у выхода зоны прилета',
+        'Полная помощь с багажом и транспортировкой',
+        'До 60 мин бесплатного ожидания при задержке рейса',
+        'Охлажденная вода, влажные салфетки',
+        'Выбор музыки и температуры в салоне',
+      ],
+      kk: [
+        'Келу аймағынан шығаберісте аты-жөні бар тақтайшамен қарсы алу',
+        'Жүкке толық көмек көрсету',
+        'Рейс кешіксе 60 минутқа дейін тегін күту',
+        'Салқын су және дымқыл майлықтар',
+        'Салонда музыка мен температураны таңдау',
+      ],
+      en: [
+        'Meet-and-greet with a name sign at arrivals exit',
+        'Full assistance with luggage handling',
+        'Up to 60 minutes of free waiting for delayed flights',
+        'Chilled water and wet wipes',
+        'Personalized music and cabin temperature',
+      ],
+    },
   },
   {
-    title: 'Smart Parents — Развозка детей',
-    subtitle: 'School Transfer',
-    price: 'от 100 000 ₸ / мес',
     icon: Baby,
-    details: [
-      'Контроль от двери до двери с передачей из рук в руки',
-      'Фотоотчёт родителю при посадке и высадке',
-      'Постоянный проверенный водитель',
-      'Замена водителя/машины по предварительному согласованию'
-    ]
+    title: {
+      ru: 'Smart Parents - Развозка детей',
+      kk: 'Smart Parents - Балаларды тасымалдау',
+      en: 'Smart Parents - Kids Shuttle',
+    },
+    subtitle: {
+      ru: 'Школьный трансфер',
+      kk: 'Мектеп трансфері',
+      en: 'School Transfer',
+    },
+    price: {
+      ru: 'от 100 000 ₸ / мес',
+      kk: '100 000 ₸ / ай бастап',
+      en: 'from 100,000 KZT / month',
+    },
+    details: {
+      ru: [
+        'Контроль от двери до двери с передачей из рук в руки',
+        'Фотоотчет родителю при посадке и высадке',
+        'Постоянный проверенный водитель',
+        'Замена водителя/машины по предварительному согласованию',
+      ],
+      kk: [
+        'Есіктен есікке дейін жеке бақылау',
+        'Отырғызу және түсіру кезінде ата-анаға фотоесеп',
+        'Тұрақты тексерілген жүргізуші',
+        'Жүргізушіні немесе көлікті алдын ала келісіп ауыстыру',
+      ],
+      en: [
+        'Door-to-door supervision with hand-to-hand handover',
+        'Photo updates to parents at pickup and drop-off',
+        'Dedicated vetted driver',
+        'Driver or vehicle replacement by prior agreement',
+      ],
+    },
   },
   {
-    title: 'Бизнес-сопровождение',
-    subtitle: 'Hourly Rental',
-    price: 'от 10 000 ₸ / час',
     icon: BriefcaseBusiness,
-    details: [
-      'Любой класс автомобиля на выбор (седан, представительский, минивэн)',
-      'Безлимитное ожидание — водитель всегда в часе езды',
-      'Консьерж-функции: покупки, переговоры, записки',
-      'Дресс-код по запросу (строгий костюм или Smart Casual)',
-      'Плотный график встреч без суеты'
-    ]
+    title: {
+      ru: 'Бизнес-сопровождение',
+      kk: 'Бизнес сүйемелдеу',
+      en: 'Business Assistance',
+    },
+    subtitle: {
+      ru: 'Почасовая аренда',
+      kk: 'Сағаттық жалдау',
+      en: 'Hourly Rental',
+    },
+    price: {
+      ru: 'от 10 000 ₸ / час',
+      kk: '10 000 ₸ / сағ бастап',
+      en: 'from 10,000 KZT / hour',
+    },
+    details: {
+      ru: [
+        'Любой класс автомобиля на выбор (седан, представительский, минивэн)',
+        'Безлимитное ожидание - водитель всегда в часе езды',
+        'Консьерж-функции: покупки, переговоры, записки',
+        'Дресс-код по запросу (строгий костюм или Smart Casual)',
+        'Плотный график встреч без суеты',
+      ],
+      kk: [
+        'Көлік класын таңдау (седан, бизнес, минивэн)',
+        'Шексіз күту - жүргізуші әрдайым жақын маңда',
+        'Консьерж қызметтері: сатып алу, келіссөз, құжат жеткізу',
+        'Сұраныс бойынша дресс-код (қатаң костюм немесе Smart Casual)',
+        'Кездесулер кестесін тыныш әрі ыңғайлы ұстау',
+      ],
+      en: [
+        'Any vehicle class on demand (sedan, executive, minivan)',
+        'Unlimited waiting time - your driver stays nearby',
+        'Concierge tasks: shopping, meetings, document delivery',
+        'Dress code on request (formal suit or smart casual)',
+        'Smooth support for a packed meeting schedule',
+      ],
+    },
   },
   {
-    title: 'Корпоративное обслуживание',
-    subtitle: 'B2B Fleet',
-    price: 'Индивидуальный тариф',
     icon: Building2,
-    details: [
-      'Фиксированный тариф без учёта пробок и праздничных наценок',
-      'Полный электронный документооборот для бухгалтерии',
-      'Подменный автомобиль в течение часа',
-      'Персональный менеджер с круглосуточной поддержкой',
-      'Приоритетное бронирование для компаний и посольств'
-    ]
+    title: {
+      ru: 'Корпоративное обслуживание',
+      kk: 'Корпоративтік қызмет',
+      en: 'Corporate Service',
+    },
+    subtitle: {
+      ru: 'Корпоративный автопарк',
+      kk: 'B2B автопаркі',
+      en: 'B2B Fleet',
+    },
+    price: {
+      ru: 'Индивидуальный тариф',
+      kk: 'Жеке тариф',
+      en: 'Custom pricing',
+    },
+    details: {
+      ru: [
+        'Фиксированный тариф без учета пробок и праздничных наценок',
+        'Полный электронный документооборот для бухгалтерии',
+        'Подменный автомобиль в течение часа',
+        'Персональный менеджер с круглосуточной поддержкой',
+        'Приоритетное бронирование для компаний и посольств',
+      ],
+      kk: [
+        'Кептеліс пен мерекелік үстемесіз бекітілген тариф',
+        'Бухгалтерия үшін толық электрондық құжат айналымы',
+        'Бір сағат ішінде алмастыру көлігі',
+        '24/7 қолдауы бар жеке менеджер',
+        'Компаниялар мен елшіліктерге басым брондау',
+      ],
+      en: [
+        'Fixed pricing without traffic or holiday surcharges',
+        'Full digital document flow for accounting',
+        'Replacement vehicle within one hour',
+        'Dedicated manager with 24/7 support',
+        'Priority booking for companies and embassies',
+      ],
+    },
   },
   {
-    title: 'Премиальный Межгород',
-    subtitle: 'Travel Class',
-    price: 'По запросу',
     icon: MapPin,
-    details: [
-      'Маршруты: Боровое, Щучинск, Караганда, Павлодар',
-      'Wi-Fi и климат-контроль на протяжении всего пути',
-      'Остановки по желанию на лучших локациях',
-      'Техническая проверка перед каждым выездом',
-      'Безопасность: соблюдение скоростного режима (110-120 км/ч)'
-    ]
+    title: {
+      ru: 'Премиальный Межгород',
+      kk: 'Премиум Қалааралық',
+      en: 'Premium Intercity',
+    },
+    subtitle: {
+      ru: 'Комфортные дальние поездки',
+      kk: 'Ыңғайлы алыс сапарлар',
+      en: 'Travel Class',
+    },
+    price: {
+      ru: 'По запросу',
+      kk: 'Сұраныс бойынша',
+      en: 'On request',
+    },
+    details: {
+      ru: [
+        'Маршруты: Боровое, Щучинск, Караганда, Павлодар',
+        'Wi-Fi и климат-контроль на протяжении всего пути',
+        'Остановки по желанию на лучших локациях',
+        'Техническая проверка перед каждым выездом',
+        'Безопасность: соблюдение скоростного режима (110-120 км/ч)',
+      ],
+      kk: [
+        'Бағыттар: Бурабай, Щучинск, Қарағанды, Павлодар',
+        'Сапар бойы Wi-Fi және климат-бақылау',
+        'Қалауыңыз бойынша үздік орындарда тоқтау',
+        'Әр сапар алдында техникалық тексеріс',
+        'Қауіпсіздік: жылдамдық режимін сақтау (110-120 км/сағ)',
+      ],
+      en: [
+        'Routes: Burabay, Shchuchinsk, Karaganda, Pavlodar',
+        'Wi-Fi and climate control throughout the trip',
+        'Optional stops at top locations',
+        'Technical inspection before every departure',
+        'Safety-first speed policy (110-120 km/h)',
+      ],
+    },
   },
   {
-    title: 'Другое',
-    subtitle: 'Custom Services',
-    price: 'Уточняйте',
     icon: HelpCircle,
-    details: [
-      'Вам нужен нестандартный сервис?',
-      'Специальные требования к маршруту?',
-      'Особые пожелания к авто или водителю?',
-      'Свяжитесь с нами напрямую в WhatsApp',
-      'Мы найдём идеальное решение для вас'
-    ]
+    title: {
+      ru: 'Другое',
+      kk: 'Басқа қызметтер',
+      en: 'Other Requests',
+    },
+    subtitle: {
+      ru: 'Индивидуальные решения',
+      kk: 'Жеке шешімдер',
+      en: 'Custom Services',
+    },
+    price: {
+      ru: 'Уточняйте',
+      kk: 'Нақтылаңыз',
+      en: 'Ask for quote',
+    },
+    details: {
+      ru: [
+        'Вам нужен нестандартный сервис?',
+        'Специальные требования к маршруту?',
+        'Особые пожелания к авто или водителю?',
+        'Свяжитесь с нами напрямую в WhatsApp',
+        'Мы найдем идеальное решение для вас',
+      ],
+      kk: [
+        'Стандарттан тыс қызмет керек пе?',
+        'Маршрутқа арнайы талаптарыңыз бар ма?',
+        'Көлікке немесе жүргізушіге ерекше тілек бар ма?',
+        'WhatsApp арқылы тікелей бізге жазыңыз',
+        'Сізге ең тиімді шешімді ұсынамыз',
+      ],
+      en: [
+        'Need a non-standard service?',
+        'Special route requirements?',
+        'Specific requests for vehicle or driver?',
+        'Contact us directly on WhatsApp',
+        'We will tailor the best solution for you',
+      ],
+    },
   },
 ]
 
-const standards = [
-  { title: 'Идеальная чистота', icon: Sparkles, desc: 'Автомобиль подается после комплексной мойки и химчистки салона.' },
-  { title: 'Дресс-код и этикет', icon: Crown, desc: 'Водители в строгих костюмах, соблюдение протокола тишины и профессиональная вежливость.' },
-  { title: 'Напитки на борту', icon: Droplets, desc: 'Свежая питьевая вода в каждой поездке.' },
-  { title: 'Энергия для гаджетов', icon: Battery, desc: 'Зарядные устройства для всех типов смартфонов (Type-C, Lightning).' },
-  { title: 'Опытные водители', icon: UserCheck, desc: 'Профессиональный и безаварийный многолетний стаж.' },
-  { title: 'Полная страховка', icon: Award, desc: 'Страховое покрытие пассажира, водителя и автомобиля.' },
-]
+const getServices = (language) => serviceCatalog.map((service) => ({
+  icon: service.icon,
+  title: service.title[language],
+  subtitle: service.subtitle[language],
+  price: service.price[language],
+  details: service.details[language],
+}))
 
-const quickScenarios = [
-  { label: 'Аэропорт', service: 'VIP Meeting — Аэропорт-Город', address: 'Аэропорт Астана' },
-  { label: 'Детский маршрут', service: 'Smart Parents — Развозка детей', address: 'Школа / дом' },
-  { label: 'Бизнес-день', service: 'Бизнес-сопровождение', address: 'Офис / встречи' },
-]
+const getStandards = (language) => {
+  const standardsByLanguage = {
+    ru: [
+      { title: 'Идеальная чистота', icon: Sparkles, desc: 'Автомобиль подается после комплексной мойки и химчистки салона.' },
+      { title: 'Дресс-код и этикет', icon: Crown, desc: 'Водители в строгих костюмах, соблюдение протокола тишины и профессиональная вежливость.' },
+      { title: 'Напитки на борту', icon: Droplets, desc: 'Свежая питьевая вода в каждой поездке.' },
+      { title: 'Энергия для гаджетов', icon: Battery, desc: 'Зарядные устройства для всех типов смартфонов (Type-C, Lightning).' },
+      { title: 'Опытные водители', icon: UserCheck, desc: 'Профессиональный и безаварийный многолетний стаж.' },
+      { title: 'Полная страховка', icon: Award, desc: 'Страховое покрытие пассажира, водителя и автомобиля.' },
+    ],
+    kk: [
+      { title: 'Мінсіз тазалық', icon: Sparkles, desc: 'Көлік кешенді жуу және салонды химиялық тазалаудан кейін беріледі.' },
+      { title: 'Дресс-код және этикет', icon: Crown, desc: 'Жүргізушілер қатаң костюммен, тыныштық протоколын және кәсіби сыпайылықты сақтайды.' },
+      { title: 'Жолдағы сусындар', icon: Droplets, desc: 'Әр сапарда таза ауыз су ұсынылады.' },
+      { title: 'Гаджеттерге қуат', icon: Battery, desc: 'Смартфондардың барлық түріне арналған қуаттағыштар (Type-C, Lightning).' },
+      { title: 'Тәжірибелі жүргізушілер', icon: UserCheck, desc: 'Көпжылдық тәжірибесі бар кәсіби және апатсыз жүргізушілер.' },
+      { title: 'Толық сақтандыру', icon: Award, desc: 'Жолаушы, жүргізуші және көлік толық сақтандырылған.' },
+    ],
+    en: [
+      { title: 'Spotless Cleanliness', icon: Sparkles, desc: 'Each vehicle is delivered after a full exterior wash and interior detailing.' },
+      { title: 'Dress Code & Etiquette', icon: Crown, desc: 'Drivers wear formal suits, follow silence protocol, and maintain professional courtesy.' },
+      { title: 'On-Board Refreshments', icon: Droplets, desc: 'Fresh drinking water is provided on every trip.' },
+      { title: 'Power for Devices', icon: Battery, desc: 'Charging cables for all major smartphone types (Type-C, Lightning).' },
+      { title: 'Experienced Drivers', icon: UserCheck, desc: 'Professional, safety-focused drivers with long-term experience.' },
+      { title: 'Full Insurance', icon: Award, desc: 'Comprehensive coverage for passenger, driver, and vehicle.' },
+    ],
+  }
 
-const reviews = [
-  {
-    author: 'Алия К.',
-    text: 'Всегда вовремя, салон чистый, водитель вежливый. Для аэропорта — лучший вариант.',
-  },
-  {
-    author: 'N. Consulting',
-    text: 'Используем для корпоративных гостей. Сервис стабильный, отчётность и коммуникация на уровне.',
-  },
-  {
-    author: 'Руслан М.',
-    text: 'Быстро подтвердили заказ в WhatsApp и сразу закрыли вопрос с маршрутом.',
-  },
-]
+  return standardsByLanguage[language] || standardsByLanguage.ru
+}
+
+const getQuickScenarios = (language) => {
+  const services = getServices(language)
+  const quickScenariosByLanguage = {
+    ru: [
+      { label: 'Аэропорт', serviceIndex: 0, address: 'Аэропорт Астана' },
+      { label: 'Детский маршрут', serviceIndex: 1, address: 'Школа / дом' },
+      { label: 'Бизнес-день', serviceIndex: 2, address: 'Офис / встречи' },
+    ],
+    kk: [
+      { label: 'Әуежай', serviceIndex: 0, address: 'Астана әуежайы' },
+      { label: 'Балалар маршруты', serviceIndex: 1, address: 'Мектеп / үй' },
+      { label: 'Бизнес-күн', serviceIndex: 2, address: 'Кеңсе / кездесулер' },
+    ],
+    en: [
+      { label: 'Airport', serviceIndex: 0, address: 'Astana Airport' },
+      { label: 'Kids Route', serviceIndex: 1, address: 'School / home' },
+      { label: 'Business Day', serviceIndex: 2, address: 'Office / meetings' },
+    ],
+  }
+
+  return (quickScenariosByLanguage[language] || quickScenariosByLanguage.ru).map((scenario) => ({
+    ...scenario,
+    service: services[scenario.serviceIndex]?.title || services[0]?.title || '',
+  }))
+}
+
+const getReviews = (language) => {
+  const reviewsByLanguage = {
+    ru: [
+      {
+        author: 'Алия К.',
+        text: 'Всегда вовремя, салон чистый, водитель вежливый. Для аэропорта - лучший вариант.',
+      },
+      {
+        author: 'N. Consulting',
+        text: 'Используем для корпоративных гостей. Сервис стабильный, отчетность и коммуникация на уровне.',
+      },
+      {
+        author: 'Руслан М.',
+        text: 'Быстро подтвердили заказ в WhatsApp и сразу закрыли вопрос с маршрутом.',
+      },
+    ],
+    kk: [
+      {
+        author: 'Алия К.',
+        text: 'Әрдайым уақытында келеді, салон таза, жүргізуші сыпайы. Әуежайға өте ыңғайлы.',
+      },
+      {
+        author: 'N. Consulting',
+        text: 'Корпоративтік қонақтар үшін қолданамыз. Сервис тұрақты, есеп пен байланыс жоғары деңгейде.',
+      },
+      {
+        author: 'Руслан М.',
+        text: 'WhatsApp арқылы тапсырысты тез растады және маршрутты бірден шешті.',
+      },
+    ],
+    en: [
+      {
+        author: 'Aliya K.',
+        text: 'Always on time, clean cabin, polite driver. Best option for airport rides.',
+      },
+      {
+        author: 'N. Consulting',
+        text: 'We use TransferPro for corporate guests. Reliable service and excellent communication.',
+      },
+      {
+        author: 'Ruslan M.',
+        text: 'They confirmed my WhatsApp booking quickly and handled route details right away.',
+      },
+    ],
+  }
+
+  return reviewsByLanguage[language] || reviewsByLanguage.ru
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -699,6 +973,10 @@ function App() {
   const [mobileTab, setMobileTab] = useState('home')
   const [desktopTab, setDesktopTab] = useState('home')
   const [language, setLanguage] = useState(() => getStoredValue('language', 'ru'))
+  const services = useMemo(() => getServices(language), [language])
+  const standards = useMemo(() => getStandards(language), [language])
+  const quickScenarios = useMemo(() => getQuickScenarios(language), [language])
+  const reviews = useMemo(() => getReviews(language), [language])
   const [rememberDataOnDevice, setRememberDataOnDevice] = useState(() => getStoredValue('privacyRememberData', '0') === '1')
   const [privacyConsentChecked, setPrivacyConsentChecked] = useState(false)
   const [includeSensitiveInMessage, setIncludeSensitiveInMessage] = useState(false)
@@ -727,6 +1005,7 @@ function App() {
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
   const role = DEMO_STAFF_ENABLED ? (staffSession?.role || 'client') : 'client'
+  const legalPageQuery = `?lang=${language}`
   
   const [formData, setFormData] = useState(() => {
     const defaultFormData = {
@@ -1467,7 +1746,7 @@ function App() {
                   </button>
                 </div>
                 <div className="flex items-center justify-between text-xs text-white/55 px-1">
-                  <span>от 10 000 ₸ за поездку</span>
+                  <span>{t.priceFromTrip}</span>
                   <span>{t.legalDisclaimer}</span>
                 </div>
               </div>
@@ -1537,7 +1816,7 @@ function App() {
                           </li>
                         ))}
                         {service.details.length > 3 && (
-                          <li className="text-accent/80 italic pt-1">+ {service.details.length - 3} ещё...</li>
+                          <li className="text-accent/80 italic pt-1">+ {service.details.length - 3} {t.moreItems}...</li>
                         )}
                       </ul>
                     </button>
@@ -1847,8 +2126,8 @@ function App() {
                   </label>
                   <p className="text-[11px] text-white/60">{t.rememberDataHint}</p>
                   <div className="flex flex-wrap gap-3 text-[11px] text-accent">
-                    <a href="privacy.html" className="underline underline-offset-2">{t.privacyPolicyLabel}</a>
-                    <a href="terms.html" className="underline underline-offset-2">{t.termsLabel}</a>
+                    <a href={`privacy.html${legalPageQuery}`} className="underline underline-offset-2">{t.privacyPolicyLabel}</a>
+                    <a href={`terms.html${legalPageQuery}`} className="underline underline-offset-2">{t.termsLabel}</a>
                   </div>
                   <button
                     type="button"
@@ -1935,7 +2214,7 @@ function App() {
             >
               {t.booking}
             </button>
-            <a href="tel:+77781556699" className="flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg bg-white/10 text-white text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-white/15 active:scale-95 transition shadow-md" aria-label="Позвонить">
+            <a href="tel:+77781556699" className="flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg bg-white/10 text-white text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-white/15 active:scale-95 transition shadow-md" aria-label={t.callAriaLabel}>
                 <Phone className="w-4 h-4" />
             </a>
             <div className="relative">
@@ -1989,7 +2268,7 @@ function App() {
                     </button>
                   </div>
                   <div className="text-sm text-white/60 space-y-0.5">
-                    <p>от 10 000 ₸ за поездку</p>
+                    <p>{t.priceFromTrip}</p>
                     <p className="text-accent/80">{t.legalDisclaimer}</p>
                   </div>
                 </div>
@@ -2313,8 +2592,8 @@ function App() {
                     </label>
                     <p className="text-[11px] text-white/60">{t.rememberDataHint}</p>
                     <div className="flex flex-wrap gap-3 text-xs text-accent">
-                      <a href="privacy.html" className="underline underline-offset-2">{t.privacyPolicyLabel}</a>
-                      <a href="terms.html" className="underline underline-offset-2">{t.termsLabel}</a>
+                      <a href={`privacy.html${legalPageQuery}`} className="underline underline-offset-2">{t.privacyPolicyLabel}</a>
+                      <a href={`terms.html${legalPageQuery}`} className="underline underline-offset-2">{t.termsLabel}</a>
                     </div>
                     <button
                       type="button"
@@ -2347,15 +2626,15 @@ function App() {
         <div className="hidden md:block fixed bottom-0 left-0 right-0 z-30 bg-black/95 backdrop-blur-xl border-t border-accent/25 py-3 px-8">
           <div className="mx-auto max-w-6xl flex items-center justify-between gap-4">
             <div>
-              <p className="text-xs text-white/50 uppercase tracking-wider">Transfer Pro · Астана</p>
+              <p className="text-xs text-white/50 uppercase tracking-wider">{t.bottomBrand}</p>
               <p className="text-sm font-semibold">
-                <span className="text-white">от 10 000 ₸ за поездку</span>
+                <span className="text-white">{t.priceFromTrip}</span>
                 <span className="text-accent/80"> · {t.legalDisclaimer}</span>
               </p>
             </div>
             <div className="flex gap-3 items-center">
               <a href="tel:+77781556699" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/8 border border-white/15 text-white text-sm font-semibold hover:bg-white/12 transition">
-                <Phone className="w-3.5 h-3.5" /> Позвонить
+                <Phone className="w-3.5 h-3.5" /> {t.supportCall}
               </a>
               <div className="relative">
                 <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
@@ -2363,7 +2642,7 @@ function App() {
                   onClick={() => setDesktopTab('booking')}
                   className="relative px-6 py-2 rounded-lg bg-accent text-black font-bold text-sm hover:bg-accent/90 transition shadow-lg shadow-accent/25"
                 >
-                  Заказать сейчас →
+                  {t.orderNowCta}
                 </button>
               </div>
             </div>
@@ -2416,7 +2695,7 @@ function App() {
                       {driverAccounts.map((driver) => (
                         <div key={driver.id} className="rounded-lg border border-white/10 bg-black/30 px-3 py-2">
                           <p className="text-sm text-white">{driver.login}</p>
-                          <p className="text-xs text-white/50">Offline demo</p>
+                          <p className="text-xs text-white/50">{t.offlineDemo}</p>
                         </div>
                       ))}
                     </div>
@@ -2649,7 +2928,7 @@ function App() {
                               type="button"
                               onClick={() => removeTransfer(transfer.id)}
                               className="rounded-lg border border-white/15 bg-white/5 p-2 text-white/70 hover:bg-white/10"
-                              aria-label="Delete transfer"
+                              aria-label={t.deleteTransferAria}
                             >
                               <Trash2 size={16} />
                             </button>
@@ -2724,10 +3003,10 @@ function App() {
 
       <footer className="border-t border-white/10 px-4 py-6 text-center text-xs text-white/60 md:px-8 md:translate-y-0">
         <div className="space-y-2">
-          <p>© {new Date().getFullYear()} TransferPro · Premium transfer in Astana</p>
+          <p>© {new Date().getFullYear()} TransferPro · {t.footerTagline}</p>
           <div className="flex items-center justify-center gap-4">
-            <a href="privacy.html" className="text-accent/90 hover:text-accent underline underline-offset-2">{t.privacyPolicyLabel}</a>
-            <a href="terms.html" className="text-accent/90 hover:text-accent underline underline-offset-2">{t.termsLabel}</a>
+            <a href={`privacy.html${legalPageQuery}`} className="text-accent/90 hover:text-accent underline underline-offset-2">{t.privacyPolicyLabel}</a>
+            <a href={`terms.html${legalPageQuery}`} className="text-accent/90 hover:text-accent underline underline-offset-2">{t.termsLabel}</a>
           </div>
         </div>
       </footer>

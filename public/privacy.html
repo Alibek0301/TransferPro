@@ -27,6 +27,20 @@
         margin: 0 auto;
         padding: 32px 20px 56px;
       }
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .lang {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        border-radius: 8px;
+        padding: 6px 8px;
+      }
       .card {
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
         border: 1px solid rgba(255, 255, 255, 0.12);
@@ -52,42 +66,151 @@
       a { color: var(--accent); }
       .top-link {
         display: inline-block;
-        margin-bottom: 14px;
       }
     </style>
   </head>
   <body>
     <main class="wrap">
-      <a class="top-link" href="./">← На главную</a>
+      <div class="toolbar">
+        <a id="top-link" class="top-link" href="./">← На главную</a>
+        <select id="lang-switch" class="lang" aria-label="Language switcher">
+          <option value="ru">RU</option>
+          <option value="kk">KK</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
       <section class="card">
-        <h1>Политика конфиденциальности</h1>
-        <p>Проект TransferPro принадлежит ИП M.M.AUTO и обрабатывает только те данные, которые необходимы для подтверждения и исполнения вашей заявки.</p>
+        <h1 id="title"></h1>
+        <p id="intro"></p>
 
-        <h2>1. Какие данные мы используем</h2>
+        <h2 id="s1"></h2>
         <ul>
-          <li>Имя и телефон для связи с клиентом.</li>
-          <li>Параметры поездки: услуга, дата, адрес и комментарий (если вы их указываете).</li>
+          <li id="s1li1"></li>
+          <li id="s1li2"></li>
         </ul>
 
-        <h2>2. Как используются данные</h2>
+        <h2 id="s2"></h2>
         <ul>
-          <li>Для подтверждения заказа и связи по поездке.</li>
-          <li>Для подбора автомобиля и водителя под ваш запрос.</li>
+          <li id="s2li1"></li>
+          <li id="s2li2"></li>
         </ul>
 
-        <h2>3. Локальное хранение в браузере</h2>
+        <h2 id="s3"></h2>
         <ul>
-          <li>По умолчанию данные сохраняются только в рамках текущей сессии браузера.</li>
-          <li>При включении опции "Запомнить данные" часть данных может сохраняться на устройстве.</li>
-          <li>Вы можете удалить локальные данные кнопкой "Удалить мои данные" в форме заявки.</li>
+          <li id="s3li1"></li>
+          <li id="s3li2"></li>
+          <li id="s3li3"></li>
         </ul>
 
-        <h2>4. Передача данных в сторонние сервисы</h2>
-        <p>Если вы выбираете отправку заявки через WhatsApp, данные передаются в WhatsApp по вашему действию. Адрес и комментарий отправляются только при отдельном подтверждении в форме.</p>
+        <h2 id="s4"></h2>
+        <p id="s4p"></p>
 
-        <h2>5. Контакты</h2>
-        <p>Актуальные контакты для связи и вопросов по обработке данных размещены на основном сайте TransferPro.</p>
+        <h2 id="s5"></h2>
+        <p id="s5p"></p>
       </section>
     </main>
+
+    <script>
+      const i18n = {
+        ru: {
+          pageTitle: 'TransferPro - Политика конфиденциальности',
+          pageDescription: 'Политика конфиденциальности TransferPro',
+          topLink: '← На главную',
+          title: 'Политика конфиденциальности',
+          intro: 'Проект TransferPro принадлежит ИП M.M.AUTO и обрабатывает только те данные, которые необходимы для подтверждения и исполнения вашей заявки.',
+          s1: '1. Какие данные мы используем',
+          s1li1: 'Имя и телефон для связи с клиентом.',
+          s1li2: 'Параметры поездки: услуга, дата, адрес и комментарий (если вы их указываете).',
+          s2: '2. Как используются данные',
+          s2li1: 'Для подтверждения заказа и связи по поездке.',
+          s2li2: 'Для подбора автомобиля и водителя под ваш запрос.',
+          s3: '3. Локальное хранение в браузере',
+          s3li1: 'По умолчанию данные сохраняются только в рамках текущей сессии браузера.',
+          s3li2: 'При включении опции "Запомнить данные" часть данных может сохраняться на устройстве.',
+          s3li3: 'Вы можете удалить локальные данные кнопкой "Удалить мои данные" в форме заявки.',
+          s4: '4. Передача данных в сторонние сервисы',
+          s4p: 'Если вы выбираете отправку заявки через WhatsApp, данные передаются в WhatsApp по вашему действию. Адрес и комментарий отправляются только при отдельном подтверждении в форме.',
+          s5: '5. Контакты',
+          s5p: 'Актуальные контакты для связи и вопросов по обработке данных размещены на основном сайте TransferPro.',
+        },
+        kk: {
+          pageTitle: 'TransferPro - Құпиялылық саясаты',
+          pageDescription: 'TransferPro құпиялылық саясаты',
+          topLink: '← Басты бетке',
+          title: 'Құпиялылық саясаты',
+          intro: 'TransferPro жобасы ЖК M.M.AUTO-ға тиесілі және өтініміңізді растау мен орындау үшін қажетті деректерді ғана өңдейді.',
+          s1: '1. Қандай деректерді қолданамыз',
+          s1li1: 'Клиентпен байланысу үшін аты-жөні мен телефон нөмірі.',
+          s1li2: 'Сапар параметрлері: қызмет, күн, мекенжай және пікір (егер көрсетсеңіз).',
+          s2: '2. Деректер қалай қолданылады',
+          s2li1: 'Тапсырысты растау және сапар бойынша байланыс үшін.',
+          s2li2: 'Сұранысыңызға сай көлік пен жүргізушіні таңдау үшін.',
+          s3: '3. Браузерде жергілікті сақтау',
+          s3li1: 'Әдетте деректер тек ағымдағы браузер сессиясында сақталады.',
+          s3li2: '"Деректерді сақтау" опциясы қосылса, деректердің бір бөлігі құрылғыда сақталуы мүмкін.',
+          s3li3: 'Өтінім формасындағы "Менің деректерімді өшіру" батырмасы арқылы жергілікті деректерді өшіре аласыз.',
+          s4: '4. Үшінші тарап сервистеріне деректерді беру',
+          s4p: 'Егер өтінімді WhatsApp арқылы жіберуді таңдасаңыз, деректер WhatsApp-қа сіздің әрекетіңізбен жіберіледі. Мекенжай мен пікір тек формада қосымша растаудан кейін жіберіледі.',
+          s5: '5. Байланыс',
+          s5p: 'Байланысқа шығу және деректерді өңдеу сұрақтары бойынша өзекті байланыстар TransferPro негізгі сайтында жарияланған.',
+        },
+        en: {
+          pageTitle: 'TransferPro - Privacy Policy',
+          pageDescription: 'TransferPro privacy policy',
+          topLink: '← Back to home',
+          title: 'Privacy Policy',
+          intro: 'The TransferPro project belongs to IE M.M.AUTO and processes only the data required to confirm and fulfill your booking request.',
+          s1: '1. What data we use',
+          s1li1: 'Name and phone number to contact the client.',
+          s1li2: 'Trip details: service, date, address, and comment (if you provide them).',
+          s2: '2. How data is used',
+          s2li1: 'To confirm your order and communicate about the trip.',
+          s2li2: 'To match a suitable vehicle and driver for your request.',
+          s3: '3. Local browser storage',
+          s3li1: 'By default, data is stored only for the current browser session.',
+          s3li2: 'If you enable the "Remember data" option, part of the data may be saved on your device.',
+          s3li3: 'You can remove local data using the "Delete my data" button in the booking form.',
+          s4: '4. Data transfer to third-party services',
+          s4p: 'If you choose to send a request through WhatsApp, data is transferred to WhatsApp by your action. Address and comment are sent only after separate confirmation in the form.',
+          s5: '5. Contacts',
+          s5p: 'Current contacts for communication and data processing questions are available on the main TransferPro website.',
+        },
+      }
+
+      const allowed = ['ru', 'kk', 'en']
+      const params = new URLSearchParams(window.location.search)
+      const fromQuery = params.get('lang')
+      const fromStorage = localStorage.getItem('language')
+      const fromNavigator = navigator.language ? navigator.language.slice(0, 2).toLowerCase() : 'ru'
+      const initialLanguage = allowed.includes(fromQuery) ? fromQuery : (allowed.includes(fromStorage) ? fromStorage : (allowed.includes(fromNavigator) ? fromNavigator : 'ru'))
+
+      const applyLanguage = (language) => {
+        const lang = allowed.includes(language) ? language : 'ru'
+        const t = i18n[lang]
+
+        document.documentElement.lang = lang
+        document.title = t.pageTitle
+        document.querySelector('meta[name="description"]').setAttribute('content', t.pageDescription)
+        document.getElementById('lang-switch').value = lang
+        document.getElementById('top-link').textContent = t.topLink
+        document.getElementById('top-link').href = `./?lang=${lang}`
+
+        Object.keys(t).forEach((key) => {
+          if (['pageTitle', 'pageDescription', 'topLink'].includes(key)) return
+          const node = document.getElementById(key)
+          if (node) node.textContent = t[key]
+        })
+
+        localStorage.setItem('language', lang)
+        params.set('lang', lang)
+        history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
+      }
+
+      document.getElementById('lang-switch').addEventListener('change', (event) => {
+        applyLanguage(event.target.value)
+      })
+
+      applyLanguage(initialLanguage)
+    </script>
   </body>
 </html>
