@@ -2121,7 +2121,7 @@ function App() {
                       type="checkbox"
                       checked={privacyConsentChecked}
                       onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                      className="consent-checkbox mt-0.5 shrink-0"
                     />
                     <span>{t.privacyConsentLabel}</span>
                   </label>
@@ -2130,7 +2130,7 @@ function App() {
                       type="checkbox"
                       checked={includeSensitiveInMessage}
                       onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                      className="consent-checkbox mt-0.5 shrink-0"
                     />
                     <span>{t.waIncludeSensitive}</span>
                   </label>
@@ -2140,7 +2140,7 @@ function App() {
                       type="checkbox"
                       checked={rememberDataOnDevice}
                       onChange={(event) => setRememberDataOnDevice(event.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                      className="consent-checkbox mt-0.5 shrink-0"
                     />
                     <span>{t.rememberDataLabel}</span>
                   </label>
@@ -2589,7 +2589,7 @@ function App() {
                         type="checkbox"
                         checked={privacyConsentChecked}
                         onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                        className="consent-checkbox mt-0.5 shrink-0"
                       />
                       <span>{t.privacyConsentLabel}</span>
                     </label>
@@ -2598,7 +2598,7 @@ function App() {
                         type="checkbox"
                         checked={includeSensitiveInMessage}
                         onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                        className="consent-checkbox mt-0.5 shrink-0"
                       />
                       <span>{t.waIncludeSensitive}</span>
                     </label>
@@ -2608,7 +2608,7 @@ function App() {
                         type="checkbox"
                         checked={rememberDataOnDevice}
                         onChange={(event) => setRememberDataOnDevice(event.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                        className="consent-checkbox mt-0.5 shrink-0"
                       />
                       <span>{t.rememberDataLabel}</span>
                     </label>

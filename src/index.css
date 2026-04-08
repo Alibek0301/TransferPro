@@ -98,6 +98,50 @@ button {
   touch-action: manipulation;
 }
 
+.consent-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 0.375rem;
+  border: 2px solid rgba(255, 255, 255, 0.62);
+  background-color: rgba(7, 11, 16, 0.75);
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.consent-checkbox::after {
+  content: '';
+  width: 0.3rem;
+  height: 0.56rem;
+  border: solid #0a0f14;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transform-origin: center;
+  transition: transform 120ms ease;
+}
+
+.consent-checkbox:hover {
+  border-color: rgba(245, 200, 106, 0.8);
+}
+
+.consent-checkbox:checked {
+  background-color: #f5c86a;
+  border-color: #f5c86a;
+  box-shadow: 0 0 0 2px rgba(245, 200, 106, 0.35);
+}
+
+.consent-checkbox:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.consent-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(245, 200, 106, 0.35), 0 0 0 4px rgba(245, 200, 106, 0.18);
+}
+
 .accent-glow {
   @apply text-accent shadow-glow;
   text-shadow: 0 0 10px rgba(245, 200, 106, 0.58), 0 0 20px rgba(245, 200, 106, 0.24);
