@@ -2108,7 +2108,7 @@ function App() {
                         value={formData.comment} 
                         onChange={updateField} 
                         onFocus={closeMobileMenu} 
-                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition resize-none placeholder-white/40 shadow-md" 
+                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium text-white caret-accent outline-none focus:border-accent focus:bg-black/80 transition resize-none placeholder-white/55 shadow-md" 
                         rows="4" 
                       />
                     </div>

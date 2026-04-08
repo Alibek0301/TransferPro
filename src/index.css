@@ -116,7 +116,7 @@ button {
   content: '';
   width: 0.3rem;
   height: 0.56rem;
-  border: solid #0a0f14;
+  border: solid #f5c86a;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg) scale(0);
   transform-origin: center;
@@ -128,9 +128,9 @@ button {
 }
 
 .consent-checkbox:checked {
-  background-color: #f5c86a;
+  background-color: rgba(7, 11, 16, 0.92);
   border-color: #f5c86a;
-  box-shadow: 0 0 0 2px rgba(245, 200, 106, 0.35);
+  box-shadow: 0 0 0 2px rgba(245, 200, 106, 0.45), inset 0 0 0 1px rgba(245, 200, 106, 0.28);
 }
 
 .consent-checkbox:checked::after {
