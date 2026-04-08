@@ -2121,19 +2121,16 @@ function App() {
                       type="checkbox"
                       checked={privacyConsentChecked}
                       onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                     />
-                    <span>
-                      <span className="mr-1.5 font-semibold text-accent" aria-hidden="true">{privacyConsentChecked ? '☑' : '☐'}</span>
-                      {t.privacyConsentLabel}
-                    </span>
+                    <span>{t.privacyConsentLabel}</span>
                   </label>
                   <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={includeSensitiveInMessage}
                       onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                     />
                     <span>{t.waIncludeSensitive}</span>
                   </label>
@@ -2143,7 +2140,7 @@ function App() {
                       type="checkbox"
                       checked={rememberDataOnDevice}
                       onChange={(event) => setRememberDataOnDevice(event.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                     />
                     <span>{t.rememberDataLabel}</span>
                   </label>
@@ -2592,19 +2589,16 @@ function App() {
                         type="checkbox"
                         checked={privacyConsentChecked}
                         onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                       />
-                      <span>
-                        <span className="mr-1.5 font-semibold text-accent" aria-hidden="true">{privacyConsentChecked ? '☑' : '☐'}</span>
-                        {t.privacyConsentLabel}
-                      </span>
+                      <span>{t.privacyConsentLabel}</span>
                     </label>
                     <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={includeSensitiveInMessage}
                         onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                       />
                       <span>{t.waIncludeSensitive}</span>
                     </label>
@@ -2614,7 +2608,7 @@ function App() {
                         type="checkbox"
                         checked={rememberDataOnDevice}
                         onChange={(event) => setRememberDataOnDevice(event.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
+                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                       />
                       <span>{t.rememberDataLabel}</span>
                     </label>
