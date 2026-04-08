@@ -137,6 +137,10 @@ button.bg-accent:active {
   transform: translateY(1px) scale(0.98);
 }
 
+.mobile-submit-dock {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
 @supports (scrollbar-gutter: stable) {
   html {
     scrollbar-gutter: stable;

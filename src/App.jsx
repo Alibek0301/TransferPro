@@ -1784,7 +1784,7 @@ function App() {
 
               <div className="space-y-2">
                 <p className="text-sm text-accent font-semibold">{t.quickScenarios}</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {quickScenarios.map((scenario) => (
                     <button
                       key={scenario.label}
@@ -1982,7 +1982,7 @@ function App() {
                 </div>
               </div>
 
-              <form className="space-y-3.5 sm:space-y-4" onSubmit={handleSubmit}>
+              <form className="space-y-3.5 pb-24 sm:space-y-4 sm:pb-4" onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="name_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.nameLabel}</label>
                   <div className="relative">
@@ -1990,6 +1990,8 @@ function App() {
                     <input 
                       id="name_mobile" 
                       name="name" 
+                      autoComplete="name"
+                      enterKeyHint="next"
                       placeholder={t.namePlaceholder} 
                       value={formData.name} 
                       onChange={updateField} 
@@ -2008,6 +2010,8 @@ function App() {
                       name="phone" 
                       type="tel" 
                       inputMode="tel" 
+                      autoComplete="tel-national"
+                      enterKeyHint="next"
                       placeholder={t.phonePlaceholder} 
                       value={formData.phone} 
                       onChange={updateField} 
@@ -2074,6 +2078,8 @@ function App() {
                       <input
                         id="address_mobile"
                         name="address"
+                        autoComplete="street-address"
+                        enterKeyHint="next"
                         placeholder={t.addressPlaceholder}
                         value={formData.address}
                         onChange={updateField}
@@ -2097,6 +2103,7 @@ function App() {
                       <textarea 
                         id="comment_mobile"
                         name="comment" 
+                        enterKeyHint="done"
                         placeholder={t.commentPlaceholder} 
                         value={formData.comment} 
                         onChange={updateField} 
@@ -2152,17 +2159,19 @@ function App() {
                 </div>
               
 
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className={`w-full rounded-xl px-4 sm:px-5 py-4 sm:py-4.5 font-bold text-lg sm:text-xl transition active:scale-95 shadow-lg ${
-                  canSubmit
-                    ? 'bg-gradient-to-r from-accent to-accent/90 text-black hover:from-accent/95 hover:to-accent/85 cursor-pointer'
-                    : 'bg-accent/40 text-black/60 cursor-not-allowed'
-                }`}
-              >
-                {canSubmit ? t.submitNow : (privacyConsentChecked ? t.fillForm : t.submitConsentRequired)}
-              </button>
+                <div className="mobile-submit-dock sticky bottom-2 z-20 rounded-2xl border border-white/15 bg-black/75 p-2 shadow-2xl backdrop-blur-md sm:static sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none">
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className={`w-full rounded-xl px-4 sm:px-5 py-4 sm:py-4.5 font-bold text-lg sm:text-xl transition active:scale-95 shadow-lg ${
+                      canSubmit
+                        ? 'bg-gradient-to-r from-accent to-accent/90 text-black hover:from-accent/95 hover:to-accent/85 cursor-pointer'
+                        : 'bg-accent/40 text-black/60 cursor-not-allowed'
+                    }`}
+                  >
+                    {canSubmit ? t.submitNow : (privacyConsentChecked ? t.fillForm : t.submitConsentRequired)}
+                  </button>
+                </div>
               </form>
             </motion.div>
           )}
