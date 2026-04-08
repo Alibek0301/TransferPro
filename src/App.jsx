@@ -1996,7 +1996,7 @@ function App() {
                       value={formData.name} 
                       onChange={updateField} 
                       onFocus={closeMobileMenu} 
-                      className="w-full rounded-xl border-2 border-white/20 bg-black/60 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md" 
+                      className="w-full rounded-xl border-2 border-accent/35 bg-slate-900/90 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-slate-900 transition placeholder-white/55 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]" 
                     />
                   </div>
                 </div>
@@ -2019,8 +2019,8 @@ function App() {
                       className={`w-full rounded-xl border-2 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none transition ${
                         formData.phone.length > 2 && !isValidPhone(formData.phone)
                           ? 'border-red-500/60 bg-red-500/10 focus:border-red-500/80 focus:bg-red-500/15'
-                          : 'border-white/20 bg-black/60 focus:border-accent focus:bg-black/80'
-                      } placeholder-white/40 shadow-md`}
+                          : 'border-accent/35 bg-slate-900/90 focus:border-accent focus:bg-slate-900'
+                      } placeholder-white/55 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]`}
                     />
                   </div>
                   {formData.phone.length > 2 && !isValidPhone(formData.phone) && (
@@ -2036,7 +2036,7 @@ function App() {
                     value={formData.service} 
                     onChange={updateField} 
                     onFocus={closeMobileMenu} 
-                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md"
+                    className="w-full rounded-xl border-2 border-accent/35 bg-slate-900/90 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-slate-900 transition shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]"
                   >
                     {services.map((service) => (
                       <option key={service.title} value={service.title}>{service.title}</option>
@@ -2518,7 +2518,7 @@ function App() {
                     <label htmlFor="name_desktop" className="text-sm font-semibold text-white">{t.nameLabel}</label>
                     <div className="relative mt-1">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
-                      <input id="name_desktop" name="name" required placeholder={t.namePlaceholder} value={formData.name} onChange={updateField} className="w-full rounded-lg border border-white/30 bg-white/10 pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                      <input id="name_desktop" name="name" required placeholder={t.namePlaceholder} value={formData.name} onChange={updateField} className="w-full rounded-lg border border-accent/35 bg-slate-900/85 pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-slate-900 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_20px_rgba(0,0,0,0.28)]" />
                     </div>
                   </div>
                   <div>
@@ -2528,8 +2528,8 @@ function App() {
                       <input id="phone_desktop" name="phone" type="tel" inputMode="tel" required placeholder={t.phonePlaceholder} value={formData.phone} onChange={updateField} className={`w-full rounded-lg border pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition ${
                         formData.phone.length > 2 && !isValidPhone(formData.phone)
                           ? 'border-red-500/50 bg-red-500/10 focus:bg-red-500/15 focus:border-red-500'
-                          : 'border-white/30 bg-white/10 focus:border-accent focus:bg-white/15'
-                      }`} />
+                          : 'border-accent/35 bg-slate-900/85 focus:border-accent focus:bg-slate-900'
+                      } shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_20px_rgba(0,0,0,0.28)]`} />
                     </div>
                     {formData.phone.length > 2 && !isValidPhone(formData.phone) && (
                       <p className="mt-1 text-xs text-red-400">{t.phoneInvalid}</p>
@@ -2537,7 +2537,7 @@ function App() {
                   </div>
                   <div>
                     <label htmlFor="service_desktop" className="text-sm font-semibold text-white">{t.serviceLabel}</label>
-                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15">
+                    <select id="service_desktop" name="service" value={formData.service} onChange={updateField} className="mt-1 w-full rounded-lg border border-accent/35 bg-slate-900/85 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-slate-900 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_20px_rgba(0,0,0,0.28)]">
                       {services.map((service) => (
                         <option key={service.title} value={service.title} className="text-black">{service.title}</option>
                       ))}
