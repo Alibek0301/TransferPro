@@ -1,0 +1,13 @@
+User-Agent: *
+Disallow: /admin
+Disallow: /api
+Disallow: /private
+
+Allow: /
+
+# Crawl delay for polite crawling
+Crawl-delay: 1
+Request-rate: 30/1m
+
+# Feed advertiser
+Advertise-in: /sitemap.xml

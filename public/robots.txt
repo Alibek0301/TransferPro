@@ -1,5 +1,27 @@
+# robots.txt для TransferPro
+# Инструкции для поисковых ботов
+
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
 
-# Update the domain after deployment.
-Sitemap: https://example.com/TransferPro/sitemap.xml
+# Скорость краулинга (макс. 5 запросов в секунду)
+Crawl-delay: 0.2
+
+# Специально для Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Специально для Yandex
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 0.1
+
+# Ссылка на sitemap
+# ВАЖНО: После деплоя замените пример домена на реальный!
+# Для GitHub Pages: https://Alibek0301.github.io/TransferPro/sitemap.xml
+# Для собственного домена: https://transferpro.kz/sitemap.xml
+Sitemap: https://transferpro.kz/sitemap.xml

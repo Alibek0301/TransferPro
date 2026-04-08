@@ -1101,7 +1101,7 @@ function App() {
     if (!services.some((service) => service.title === formData.service)) {
       setFormData((prev) => ({ ...prev, service: services[0]?.title || '' }))
     }
-  }, [formData.service])
+  }, [formData.service, services])
 
   function getTodayDate() {
     // Keep date inputs aligned with local calendar day instead of UTC day.
@@ -1555,14 +1555,28 @@ function App() {
   const updateField = (event) => {
     const { name, value } = event.target
     if (name === 'phone') {
-      const digits = value.replace(/\D/g, '').slice(0, 11)
+      const digits = value.replace(/\D/g, '')
       let normalized = digits
+      
+      // Handle empty input
+      if (!digits) {
+        setFormData((prev) => ({ ...prev, phone: '+7' }))
+        return
+      }
+      
+      // Convert leading 8 to 7 (old format)
       if (digits.startsWith('8')) {
         normalized = `7${digits.slice(1)}`
-      } else if (!digits.startsWith('7')) {
-        normalized = `7${digits}`.slice(0, 11)
+      } 
+      // If doesn't start with 7, prepend it
+      else if (!digits.startsWith('7')) {
+        normalized = `7${digits}`
       }
-      const formatted = `+${normalized}`
+      
+      // Limit to 11 digits and ensure format is correct
+      const sliced = normalized.slice(0, 11)
+      const formatted = `+${sliced}`
+      
       setFormData((prev) => ({ ...prev, phone: formatted }))
       return
     }
@@ -1994,7 +2008,6 @@ function App() {
                       name="phone" 
                       type="tel" 
                       inputMode="tel" 
-                      pattern="\\+7[0-9]{10}" 
                       placeholder={t.phonePlaceholder} 
                       value={formData.phone} 
                       onChange={updateField} 
@@ -2503,7 +2516,7 @@ function App() {
                     <label htmlFor="phone_desktop" className="text-sm font-semibold text-white">{t.phoneLabel}</label>
                     <div className="relative mt-1">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
-                      <input id="phone_desktop" name="phone" type="tel" inputMode="tel" pattern="\+7[0-9]{10}" required placeholder={t.phonePlaceholder} value={formData.phone} onChange={updateField} className={`w-full rounded-lg border pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition ${
+                      <input id="phone_desktop" name="phone" type="tel" inputMode="tel" required placeholder={t.phonePlaceholder} value={formData.phone} onChange={updateField} className={`w-full rounded-lg border pl-10 pr-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition ${
                         formData.phone.length > 2 && !isValidPhone(formData.phone)
                           ? 'border-red-500/50 bg-red-500/10 focus:bg-red-500/15 focus:border-red-500'
                           : 'border-white/30 bg-white/10 focus:border-accent focus:bg-white/15'

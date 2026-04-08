@@ -1,0 +1,86 @@
+<!-- TransferPro Open Graph и Schema.org Структурированные данные для услуг -->
+
+<!-- Service 1: VIP Airport Transfer -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "VIP Meet & Greet - Airport to City",
+  "description": "Встреча из аэропорта с именной табличкой, помощь с багажом, полное сопровождение пассажира",
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "TransferPro",
+    "image": "/og-image.svg",
+    "telephone": "+7 778 155 6699"
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "Astana"
+  },
+  "priceRange": "$$",
+  "availableLanguage": ["ru", "kk", "en"],
+  "potentialAction": {
+    "@type": "ReserveAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://transferpro.kz/?tab=booking&service=VIP+Airport",
+      "actionPlatform": ["DesktopWebPlatform", "MobileWebPlatform"]
+    }
+  }
+}
+</script>
+
+<!-- Aggregate Rating -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "TransferPro",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "120",
+    "ratingExplanation": "На основе отзывов клиентов TransferPro о качестве сервиса, пунктуальности и безопасности"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Алия К."
+      },
+      "datePublished": "2026-03-15",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Всегда вовремя, салон чистый, водитель вежливый. Для аэропорта - лучший вариант."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Organization",
+        "name": "N. Consulting"
+      },
+      "datePublished": "2026-02-20",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Используем для корпоративных гостей. Сервис стабильный, отчетность и коммуникация на уровне."
+    }
+  ]
+}
+</script>
+
+<!-- Event untuk promo atau special offers -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SpecialAnnouncement",
+  "name": "TransferPro 24/7 Service",
+  "text": "Премиальный трансфер в Астане доступен 24/7. Встреча из аэропорта, корпоративное обслуживание, персональный водитель.",
+  "category": "https://www.wikidata.org/wiki/Q8436",
+  "datePosted": "2026-01-01"
+}
+</script>
