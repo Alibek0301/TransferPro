@@ -2084,7 +2084,7 @@ function App() {
                         value={formData.address}
                         onChange={updateField}
                         onFocus={closeMobileMenu}
-                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/40 shadow-md"
+                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium text-white caret-accent outline-none focus:border-accent focus:bg-black/80 transition placeholder-white/55 shadow-md"
                       />
                       <button
                         type="button"
@@ -2121,16 +2121,19 @@ function App() {
                       type="checkbox"
                       checked={privacyConsentChecked}
                       onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
-                      className="mt-0.5"
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                     />
-                    <span>{t.privacyConsentLabel}</span>
+                    <span>
+                      <span className="mr-1.5 font-semibold text-accent" aria-hidden="true">{privacyConsentChecked ? '☑' : '☐'}</span>
+                      {t.privacyConsentLabel}
+                    </span>
                   </label>
                   <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={includeSensitiveInMessage}
                       onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
-                      className="mt-0.5"
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                     />
                     <span>{t.waIncludeSensitive}</span>
                   </label>
@@ -2140,7 +2143,7 @@ function App() {
                       type="checkbox"
                       checked={rememberDataOnDevice}
                       onChange={(event) => setRememberDataOnDevice(event.target.checked)}
-                      className="mt-0.5"
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                     />
                     <span>{t.rememberDataLabel}</span>
                   </label>
@@ -2564,7 +2567,7 @@ function App() {
                     <>
                       <div>
                         <label htmlFor="address_desktop" className="text-sm font-semibold text-white">{t.addressLabel}</label>
-                        <input id="address_desktop" name="address" placeholder={t.addressPlaceholder} value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                        <input id="address_desktop" name="address" placeholder={t.addressPlaceholder} value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white caret-accent placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
                         <button
                           type="button"
                           onClick={addFavorite}
@@ -2589,16 +2592,19 @@ function App() {
                         type="checkbox"
                         checked={privacyConsentChecked}
                         onChange={(event) => setPrivacyConsentChecked(event.target.checked)}
-                        className="mt-0.5"
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                       />
-                      <span>{t.privacyConsentLabel}</span>
+                      <span>
+                        <span className="mr-1.5 font-semibold text-accent" aria-hidden="true">{privacyConsentChecked ? '☑' : '☐'}</span>
+                        {t.privacyConsentLabel}
+                      </span>
                     </label>
                     <label className="flex items-start gap-2 text-xs text-white/75 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={includeSensitiveInMessage}
                         onChange={(event) => setIncludeSensitiveInMessage(event.target.checked)}
-                        className="mt-0.5"
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                       />
                       <span>{t.waIncludeSensitive}</span>
                     </label>
@@ -2608,7 +2614,7 @@ function App() {
                         type="checkbox"
                         checked={rememberDataOnDevice}
                         onChange={(event) => setRememberDataOnDevice(event.target.checked)}
-                        className="mt-0.5"
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded border border-white/45 bg-black/55 accent-[#f5c86a]"
                       />
                       <span>{t.rememberDataLabel}</span>
                     </label>
