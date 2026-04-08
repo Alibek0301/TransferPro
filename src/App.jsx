@@ -1996,7 +1996,7 @@ function App() {
                       value={formData.name} 
                       onChange={updateField} 
                       onFocus={closeMobileMenu} 
-                      className="w-full rounded-xl border-2 border-accent/35 bg-slate-900/90 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-slate-900 transition placeholder-white/55 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]" 
+                      className="w-full rounded-xl border-2 border-accent/35 bg-slate-900/90 pl-11 pr-4 py-3 sm:py-3.5 text-base text-white caret-accent sm:text-lg font-medium outline-none focus:border-accent focus:bg-slate-900 transition placeholder-white/55 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]" 
                     />
                   </div>
                 </div>
@@ -2016,7 +2016,7 @@ function App() {
                       value={formData.phone} 
                       onChange={updateField} 
                       onFocus={closeMobileMenu} 
-                      className={`w-full rounded-xl border-2 pl-11 pr-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none transition ${
+                      className={`w-full rounded-xl border-2 pl-11 pr-4 py-3 sm:py-3.5 text-base text-white caret-accent sm:text-lg font-medium outline-none transition ${
                         formData.phone.length > 2 && !isValidPhone(formData.phone)
                           ? 'border-red-500/60 bg-red-500/10 focus:border-red-500/80 focus:bg-red-500/15'
                           : 'border-accent/35 bg-slate-900/90 focus:border-accent focus:bg-slate-900'
@@ -2036,7 +2036,7 @@ function App() {
                     value={formData.service} 
                     onChange={updateField} 
                     onFocus={closeMobileMenu} 
-                    className="w-full rounded-xl border-2 border-accent/35 bg-slate-900/90 px-4 sm:px-5 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-slate-900 transition shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]"
+                    className="w-full rounded-xl border-2 border-accent/35 bg-slate-900/90 px-4 sm:px-5 py-3 sm:py-3.5 text-base text-white caret-accent sm:text-lg font-medium outline-none focus:border-accent focus:bg-slate-900 transition shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.35)]"
                   >
                     {services.map((service) => (
                       <option key={service.title} value={service.title}>{service.title}</option>
