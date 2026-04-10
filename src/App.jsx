@@ -1,6 +1,8 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2, Phone, User, CalendarDays } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2, Phone, User, CalendarDays, X, MessageCircle, Copy } from 'lucide-react'
+import * as QRCode from 'qrcode'
+
 
 const whatsappNumber = '77781556699'
 
@@ -967,6 +969,214 @@ const normalizeBufferMinutes = (value) => {
   return Math.min(120, Math.max(0, Math.round(parsed)))
 }
 
+// 🎯 УЛУЧШЕНИЕ 5: Таймер срочного предложения
+const UrgentOfferTimer = ({ t = {} }) => {
+  const [timeLeft, setTimeLeft] = useState('')
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date()
+      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0)
+      const diff = endOfDay - now
+
+      if (diff <= 0) {
+        setTimeLeft('Истекло')
+        return
+      }
+
+      const hours = Math.floor(diff / 3600000)
+      const minutes = Math.floor((diff % 3600000) / 60000)
+      setTimeLeft(`${hours}ч ${minutes}м`)
+    }
+
+    updateTimer()
+    const interval = setInterval(updateTimer, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-950/40 border border-red-500/30 text-red-400 text-xs font-semibold">
+      ⏰ Спецпредложение: {timeLeft}
+    </div>
+  )
+}
+
+// 🎯 УЛУЧШЕНИЕ 4: Счетчик активных клиентов
+const ActiveClientsCounter = ({ count = 0 }) => {
+  if (count < 1) return null
+  return (
+    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-950/40 border border-green-500/30 text-green-400 text-xs font-semibold animate-pulse">
+      🟢 {count} клиент{count === 1 ? '' : count < 5 ? 'а' : 'ов'} сейчас используют TransferPro
+    </div>
+  )
+}
+
+// 🎯 УЛУЧШЕНИЕ 1: Быстрый звонок в один клик
+const CallButton = ({ phoneNumber = '77781556699', label = '☎️', className = '' }) => (
+  <a
+    href={`tel:+${phoneNumber}`}
+    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-black font-bold hover:bg-accent/90 transition shadow-lg ${className}`}
+  >
+    <Phone size={18} />
+    {label}
+  </a>
+)
+
+// 🎯 УЛУЧШЕНИЕ 2: WhatsApp QR-код модал
+const WhatsAppQRModal = ({ isOpen, onClose, whatsappNumber }) => {
+  const qrValue = `https://wa.me/${whatsappNumber}`
+  const [copied, setCopied] = useState(false)
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    if (isOpen && canvasRef.current) {
+      QRCode.toCanvas(canvasRef.current, qrValue, { width: 220, margin: 1, color: { dark: '#000', light: '#fff' } })
+        .catch(() => {
+          // fallback if QR generation fails
+        })
+    }
+  }, [isOpen, qrValue])
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(qrValue)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
+        className="bg-gray-900 rounded-lg p-8 max-w-sm w-full mx-4 border border-white/20"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-white">WhatsApp</h3>
+          <button onClick={onClose} className="p-1 hover:bg-white/10 rounded transition">
+            <X size={24} className="text-white" />
+          </button>
+        </div>
+
+        <div className="flex justify-center mb-6 bg-white p-4 rounded-lg">
+          <canvas ref={canvasRef} />
+        </div>
+
+        <p className="text-center text-gray-300 text-sm mb-4">
+          Отсканируйте QR-кодом или нажмите кнопку ниже
+        </p>
+
+        <div className="flex gap-3">
+          <a
+            href={qrValue}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-500 text-white font-bold hover:bg-green-600 transition"
+          >
+            <MessageCircle size={18} />
+            Открыть
+          </a>
+          <button
+            onClick={handleCopy}
+            className="px-4 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition flex items-center justify-center gap-2"
+          >
+            <Copy size={18} />
+            {copied ? '✓' : 'Копировать'}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// 🎯 УЛУЧШЕНИЕ 3: Exit-Intent Popup
+const ExitIntentPopup = ({ isOpen, onClose, t }) => {
+  if (!isOpen) return null
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="w-full max-w-md bg-gradient-to-b from-gray-900 to-black border-t border-accent/30 p-6 rounded-t-2xl"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-lg font-bold text-accent">⏰ Не уходите!</h3>
+          <button onClick={onClose} className="p-1">
+            <X size={20} className="text-gray-400 hover:text-white" />
+          </button>
+        </div>
+
+        <p className="text-white mb-6">
+          Не нашли ответ на вопрос? Спросите нашего менеджера в WhatsApp — ответ за 30 секунд!
+        </p>
+
+        <div className="flex gap-3">
+          <a
+            href={`https://wa.me/77781556699?text=${encodeURIComponent('Привет! 👋 У меня есть вопрос...')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-500 text-white font-bold hover:bg-green-600 transition"
+          >
+            <MessageCircle size={18} />
+            WhatsApp
+          </a>
+          <button
+            onClick={onClose}
+            className="px-4 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition"
+          >
+            Закрыть
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// 🎯 УЛУЧШЕНИЕ 4: Счетчик активности
+const ActivityCounter = {
+  increment: () => {
+    try {
+      const count = parseInt(sessionStorage.getItem('activeClientsSession') || '0', 10)
+      sessionStorage.setItem('activeClientsSession', String(count + 1))
+      return count + 1
+    } catch (error) {
+      return 0
+    }
+  },
+  get: () => {
+    try {
+      return parseInt(sessionStorage.getItem('activeClientsSession') || Math.floor(Math.random() * 5 + 3), 10)
+    } catch (error) {
+      return Math.floor(Math.random() * 5 + 3)
+    }
+  },
+  reset: () => {
+    try {
+      sessionStorage.removeItem('activeClientsSession')
+    } catch (error) {
+      // no-op
+    }
+  },
+}
+
 function App() {
   const prefersReducedMotion = useReducedMotion()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -1001,6 +1211,13 @@ function App() {
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
   const [notificationsAllowed, setNotificationsAllowed] = useState(() => (typeof Notification !== 'undefined' && Notification.permission === 'granted'))
   const [notificationHint, setNotificationHint] = useState('')
+  
+  // 🎯 НОВЫЕ СОСТОЯНИЯ ДЛЯ УЛУЧШЕНИЙ
+  const [showQRModal, setShowQRModal] = useState(false)
+  const [showExitIntent, setShowExitIntent] = useState(false)
+  const [activeClientsCount, setActiveClientsCount] = useState(() => ActivityCounter.get())
+  const [exitIntentShownInSession, setExitIntentShownInSession] = useState(false)
+  const [promoCopied, setPromoCopied] = useState(false)
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -1102,6 +1319,27 @@ function App() {
       setFormData((prev) => ({ ...prev, service: services[0]?.title || '' }))
     }
   }, [formData.service, services])
+
+  // 🎯 УЛУЧШЕНИЕ 3: Exit-Intent Detection
+  useEffect(() => {
+    const handleMouseLeave = (event) => {
+      // Проверяем если мышь выходит из верхней границы окна
+      if (event.clientY <= 0 && !exitIntentShownInSession) {
+        setShowExitIntent(true)
+        setExitIntentShownInSession(true)
+        // Показать popup максимум 1 раз в сессию
+      }
+    }
+
+    document.addEventListener('mouseleave', handleMouseLeave)
+    return () => document.removeEventListener('mouseleave', handleMouseLeave)
+  }, [exitIntentShownInSession])
+
+  // 🎯 УЛУЧШЕНИЕ 4: Increment Active Clients Counter при загрузке
+  useEffect(() => {
+    const count = ActivityCounter.increment()
+    setActiveClientsCount(count)
+  }, [])
 
   function getTodayDate() {
     // Keep date inputs aligned with local calendar day instead of UTC day.
@@ -1228,6 +1466,42 @@ function App() {
   const statusSteps = ['new', 'confirmed', 'on_way', 'completed']
   const latestOrder = orderHistory[0]
   const currentStatusIndex = latestOrder ? statusSteps.indexOf(latestOrder.status || 'new') : -1
+
+  const repeatDiscount = useMemo(() => {
+    if (!latestOrder?.id) {
+      return { eligible: false, code: '' }
+    }
+
+    const lastOrderTs = Number(latestOrder.id)
+    if (!Number.isFinite(lastOrderTs)) {
+      return { eligible: false, code: '' }
+    }
+
+    const daysSinceLastOrder = (Date.now() - lastOrderTs) / (1000 * 60 * 60 * 24)
+    if (daysSinceLastOrder < 5) {
+      return { eligible: false, code: '' }
+    }
+
+    const code = `RETURN10-${new Date(lastOrderTs).toISOString().slice(0, 10).replace(/-/g, '')}`
+    return { eligible: true, code }
+  }, [latestOrder])
+
+  const copyPromoCode = async () => {
+    if (!repeatDiscount.code) return
+    try {
+      await navigator.clipboard.writeText(repeatDiscount.code)
+      setPromoCopied(true)
+      setTimeout(() => setPromoCopied(false), 1800)
+      setFormData((prev) => ({
+        ...prev,
+        comment: prev.comment?.includes(repeatDiscount.code)
+          ? prev.comment
+          : `${prev.comment ? `${prev.comment} | ` : ''}Промокод: ${repeatDiscount.code}`,
+      }))
+    } catch (error) {
+      // ignore clipboard errors
+    }
+  }
 
   const activeOrdersCount = orderHistory.filter((order) => !['completed', 'canceled'].includes(order.status || 'new')).length
   const completedOrdersCount = orderHistory.filter((order) => (order.status || 'new') === 'completed').length
@@ -1585,6 +1859,10 @@ function App() {
 
   return (
     <div className="dark app-shell">
+      {/* 🎯 Компоненты улучшений */}
+      <WhatsAppQRModal isOpen={showQRModal} onClose={() => setShowQRModal(false)} whatsappNumber={whatsappNumber} />
+      <ExitIntentPopup isOpen={showExitIntent} onClose={() => setShowExitIntent(false)} t={t} />
+
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/75 backdrop-blur-xl supports-[backdrop-filter]:bg-black/50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
           <a href="#top" className="font-serif text-lg tracking-[0.2em] text-accent drop-shadow-[0_0_10px_rgba(245,200,106,0.35)]">TRANSFER PRO</a>
@@ -1614,6 +1892,20 @@ function App() {
                   {t.signOut}
                 </button>
               ) : null}
+              
+              {/* 🎯 Быстрый звонок и QR-код */}
+              {role === 'client' && (
+                <>
+                  <a href={`tel:+${whatsappNumber}`} className="flex items-center gap-1 px-3 py-1.5 bg-accent text-black text-xs font-bold rounded hover:bg-accent/90 transition">
+                    <Phone size={16} />
+                    <span className="hidden sm:inline">Звонок</span>
+                  </a>
+                  <button onClick={() => setShowQRModal(true)} className="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white text-xs font-bold rounded hover:bg-green-600 transition">
+                    <MessageCircle size={16} />
+                    <span className="hidden sm:inline">QR</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -1677,6 +1969,28 @@ function App() {
                     </button>
                   </>
                 )}
+                
+                {/* 🎯 Быстрая связь в мобильном меню */}
+                {role === 'client' && (
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    <a 
+                      href={`tel:+${whatsappNumber}`} 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-accent text-black text-xs font-bold rounded hover:bg-accent/90 transition"
+                    >
+                      <Phone size={14} />
+                      {t.supportCall}
+                    </a>
+                    <button 
+                      onClick={() => { setShowQRModal(true); setMobileMenuOpen(false) }}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-500 text-white text-xs font-bold rounded hover:bg-green-600 transition"
+                    >
+                      <MessageCircle size={14} />
+                      WhatsApp
+                    </button>
+                  </div>
+                )}
+                
                 <select value={language} onChange={(e) => setLanguage(e.target.value)} className="mt-2 w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs cursor-pointer hover:border-accent transition">
                   <option value="ru">РУ</option>
                   <option value="kk">KK</option>
@@ -1703,6 +2017,24 @@ function App() {
           </div>
         )}
       </header>
+
+      {role === 'client' && repeatDiscount.eligible && (
+        <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-6xl rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-4 py-3">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-emerald-100">
+              Для вас доступна скидка 10% на повторный заказ. Используйте промокод:
+              <span className="ml-2 rounded-md bg-black/40 px-2 py-1 font-semibold text-emerald-300">{repeatDiscount.code}</span>
+            </p>
+            <button
+              type="button"
+              onClick={copyPromoCode}
+              className="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-black hover:bg-emerald-400 transition"
+            >
+              {promoCopied ? '✓ Скопировано' : 'Скопировать и добавить в комментарий'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {showStaffAuth && DEMO_STAFF_ENABLED && (
         <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
@@ -1736,6 +2068,11 @@ function App() {
             <motion.div className="w-full space-y-5 sm:space-y-6 bg-gradient-to-b from-black/70 via-amber-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <div className="border-l-2 border-accent pl-4 sm:pl-5">
                 <p className="text-accent text-sm sm:text-base font-bold tracking-wide">{t.heroBadge}</p>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <UrgentOfferTimer t={t} />
+                <ActiveClientsCounter count={activeClientsCount} />
               </div>
               
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight text-white">{t.heroTitle}</h1>
@@ -2266,6 +2603,11 @@ function App() {
               <motion.div className="space-y-6 bg-gradient-to-br from-black/80 via-amber-950/28 to-black/65 rounded-2xl p-12 border border-white/10 shadow-2xl" {...sectionMotionProps}>
                 <div className="border-l-4 border-accent pl-6">
                   <p className="text-accent text-sm font-semibold">{t.heroBadge}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <UrgentOfferTimer t={t} />
+                  <ActiveClientsCounter count={activeClientsCount} />
                 </div>
                 
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">{t.heroTitle}</h1>
@@ -3034,14 +3376,28 @@ function App() {
       </footer>
 
       {role === 'client' && (
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noreferrer"
-          className="hidden md:flex fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full bg-accent text-black font-bold shadow-lg hover:bg-accent/90 transition"
-        >
-          {t.whatsapp}
-        </a>
+        <div className="hidden md:flex fixed bottom-6 right-6 z-50 flex-col gap-2">
+          <button
+            onClick={() => setShowQRModal(true)}
+            className="px-4 py-2 rounded-full bg-green-500 text-white font-bold shadow-lg hover:bg-green-600 transition"
+          >
+            QR WhatsApp
+          </button>
+          <a
+            href={`tel:+${whatsappNumber}`}
+            className="px-4 py-2 rounded-full bg-white/90 text-black font-bold shadow-lg hover:bg-white transition text-center"
+          >
+            {t.supportCall}
+          </a>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noreferrer"
+            className="px-5 py-3 rounded-full bg-accent text-black font-bold shadow-lg hover:bg-accent/90 transition text-center"
+          >
+            {t.whatsapp}
+          </a>
+        </div>
       )}
     </div>
   )
