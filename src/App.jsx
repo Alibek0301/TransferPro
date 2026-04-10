@@ -23,6 +23,9 @@ const translations = {
     whatsapp: 'WhatsApp',
     continueDraft: 'Продолжить заявку',
     startOrder: 'Начать заказ',
+    startOrderAlt: 'Получить цену за 30 секунд',
+    draftReminder: 'У вас есть незавершенная заявка',
+    continueDraftShort: 'Продолжить',
     quickScenarios: 'Быстрые сценарии',
     quickChoice: 'Быстрый выбор',
     reviews: 'Отзывы клиентов',
@@ -106,6 +109,18 @@ const translations = {
     referralShare: 'Скопировать текст для WhatsApp',
     referralCopied: 'Текст скопирован',
     monthOrders: 'заказов',
+    monthCompleted: 'завершено',
+    monthActive: 'активно',
+    monthTopService: 'топ услуга',
+    referralAfterOrder: 'Поделитесь реферальным кодом и получите бонус на следующий заказ.',
+    analyticsTitle: 'CTA аналитика (локально)',
+    analyticsVariant: 'Вариант',
+    analyticsOpens: 'Открытия бронирования',
+    analyticsSubmits: 'Отправки заявки',
+    analyticsConversion: 'Конверсия',
+    analyticsReset: 'Сбросить',
+    analyticsTopSource: 'Лучший источник',
+    analyticsInsufficient: 'Недостаточно данных для вывода',
     markConfirmed: 'Подтвердить',
     markOnWay: 'Отметить: в пути',
     markCompleted: 'Отметить: завершён',
@@ -212,6 +227,9 @@ const translations = {
     whatsapp: 'WhatsApp',
     continueDraft: 'Өтінімді жалғастыру',
     startOrder: 'Тапсырысты бастау',
+    startOrderAlt: '30 секундта баға алу',
+    draftReminder: 'Сізде аяқталмаған өтінім бар',
+    continueDraftShort: 'Жалғастыру',
     quickScenarios: 'Жылдам сценарийлер',
     quickChoice: 'Жылдам таңдау',
     reviews: 'Клиент пікірлері',
@@ -295,6 +313,18 @@ const translations = {
     referralShare: 'WhatsApp мәтінін көшіру',
     referralCopied: 'Мәтін көшірілді',
     monthOrders: 'тапсырыс',
+    monthCompleted: 'аяқталған',
+    monthActive: 'белсенді',
+    monthTopService: 'топ қызмет',
+    referralAfterOrder: 'Реферал кодын бөлісіп, келесі тапсырысқа бонус алыңыз.',
+    analyticsTitle: 'CTA аналитикасы (локалды)',
+    analyticsVariant: 'Нұсқа',
+    analyticsOpens: 'Брондау ашылуы',
+    analyticsSubmits: 'Өтінім жіберілді',
+    analyticsConversion: 'Конверсия',
+    analyticsReset: 'Тазалау',
+    analyticsTopSource: 'Ең тиімді арна',
+    analyticsInsufficient: 'Қорытындыға дерек аз',
     markConfirmed: 'Растау',
     markOnWay: 'Белгілеу: жолда',
     markCompleted: 'Белгілеу: аяқталды',
@@ -401,6 +431,9 @@ const translations = {
     whatsapp: 'WhatsApp',
     continueDraft: 'Continue request',
     startOrder: 'Start booking',
+    startOrderAlt: 'Get price in 30 seconds',
+    draftReminder: 'You have an unfinished booking',
+    continueDraftShort: 'Continue',
     quickScenarios: 'Quick scenarios',
     quickChoice: 'Quick choice',
     reviews: 'Client reviews',
@@ -484,6 +517,18 @@ const translations = {
     referralShare: 'Copy WhatsApp text',
     referralCopied: 'Text copied',
     monthOrders: 'orders',
+    monthCompleted: 'completed',
+    monthActive: 'active',
+    monthTopService: 'top service',
+    referralAfterOrder: 'Share your referral code and get a bonus on your next booking.',
+    analyticsTitle: 'CTA analytics (local)',
+    analyticsVariant: 'Variant',
+    analyticsOpens: 'Booking opens',
+    analyticsSubmits: 'Submitted orders',
+    analyticsConversion: 'Conversion',
+    analyticsReset: 'Reset',
+    analyticsTopSource: 'Top source',
+    analyticsInsufficient: 'Not enough data yet',
     markConfirmed: 'Confirm',
     markOnWay: 'Mark: on the way',
     markCompleted: 'Mark: completed',
@@ -1294,6 +1339,10 @@ function App() {
   const [promoCopied, setPromoCopied] = useState(false)
   const [birthdayBonusYear, setBirthdayBonusYear] = useState(() => getStoredValue('birthdayBonusYear', ''))
   const [referralCopied, setReferralCopied] = useState(false)
+  const [showReferralNudge, setShowReferralNudge] = useState(false)
+  const [ctaVariant, setCtaVariant] = useState(() => getStoredValue('ctaVariant', ''))
+  const [ctaMetrics, setCtaMetrics] = useState(() => getStoredValue('ctaMetrics', {}))
+  const [ctaVariantAssignedAt, setCtaVariantAssignedAt] = useState(() => getStoredValue('ctaVariantAssignedAt', ''))
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -1380,6 +1429,26 @@ function App() {
       setNotificationsAllowed(true)
     }
   }, [])
+
+  useEffect(() => {
+    const now = Date.now()
+    const assignedAtTs = Number(ctaVariantAssignedAt || 0)
+    const shouldRotate = assignedAtTs > 0 && now - assignedAtTs > 7 * 24 * 60 * 60 * 1000
+
+    if (!ctaVariant || shouldRotate) {
+      const picked = Math.random() >= 0.5 ? 'A' : 'B'
+      setCtaVariant(picked)
+      setCtaVariantAssignedAt(String(now))
+      localStorage.setItem('ctaVariant', picked)
+      localStorage.setItem('ctaVariantAssignedAt', String(now))
+      return
+    }
+
+    if (!ctaVariantAssignedAt) {
+      setCtaVariantAssignedAt(String(now))
+      localStorage.setItem('ctaVariantAssignedAt', String(now))
+    }
+  }, [ctaVariant, ctaVariantAssignedAt])
 
   useEffect(() => {
     if (!DEMO_STAFF_ENABLED && staffSession) {
@@ -1492,6 +1561,18 @@ function App() {
   const progressPercent = Math.round((completedSteps / 3) * 100)
   const hasDraft = formData.name.trim() || formData.date || formData.birthDate || formData.address.trim() || formData.comment.trim()
   const trustPoints = [t.trustNoHiddenFees, t.trustNda, t.trustInsured]
+  const primaryStartCta = ctaVariant === 'B' ? t.startOrderAlt : t.startOrder
+  const bookingOpens = Object.entries(ctaMetrics || {}).reduce((sum, [key, value]) => (
+    key.startsWith('open_booking_') ? sum + Number(value || 0) : sum
+  ), 0)
+  const submittedOrders = Number(ctaMetrics?.submit_order || 0)
+  const ctaConversion = bookingOpens > 0 ? Math.round((submittedOrders / bookingOpens) * 100) : 0
+  const bookingOpenSources = Object.entries(ctaMetrics || {})
+    .filter(([key]) => key.startsWith('open_booking_'))
+    .map(([key, value]) => ({ source: key.replace('open_booking_', ''), count: Number(value || 0) }))
+    .sort((a, b) => b.count - a.count)
+  const topBookingSource = bookingOpenSources[0]?.source || '-'
+  const hasEnoughAnalyticsData = bookingOpens >= 8
 
   const maskPhone = (phone) => {
     const digits = (phone || '').replace(/\D/g, '')
@@ -1591,6 +1672,7 @@ function App() {
   }, [formData.name, formData.phone])
 
   const copyReferralText = async () => {
+    trackCtaClick('copy_referral_text')
     const referralMessage = [
       'TransferPro — премиальный трансфер в Астане',
       `Промокод друга: ${referralCode}`,
@@ -1656,6 +1738,14 @@ function App() {
       .sort((a, b) => (a < b ? 1 : -1))
       .map((key) => {
         const group = byMonth[key]
+        const completed = group.orders.filter((order) => (order.status || 'new') === 'completed').length
+        const active = group.orders.filter((order) => !['completed', 'canceled'].includes(order.status || 'new')).length
+        const serviceCounts = group.orders.reduce((acc, order) => {
+          const serviceName = order.service || '-'
+          acc[serviceName] = (acc[serviceName] || 0) + 1
+          return acc
+        }, {})
+        const topService = Object.entries(serviceCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '-'
         return {
           key,
           label: group.date.toLocaleDateString(language === 'en' ? 'en-US' : language === 'kk' ? 'kk-KZ' : 'ru-RU', {
@@ -1663,6 +1753,7 @@ function App() {
             year: 'numeric',
           }),
           orders: group.orders,
+          stats: { completed, active, topService },
         }
       })
   }, [orderHistory, language])
@@ -1853,6 +1944,33 @@ function App() {
     setTransferFilters((prev) => ({ ...prev, [field]: value }))
   }
 
+  const trackCtaClick = (key) => {
+    setCtaMetrics((prev) => {
+      const next = { ...prev, [key]: (prev?.[key] || 0) + 1 }
+      try {
+        localStorage.setItem('ctaMetrics', JSON.stringify(next))
+      } catch (error) {
+        // ignore storage errors
+      }
+      return next
+    })
+  }
+
+  const goToBooking = (source = 'unknown') => {
+    trackCtaClick(`open_booking_${source}`)
+    setMobileTab('booking')
+    setDesktopTab('booking')
+  }
+
+  const resetCtaMetrics = () => {
+    setCtaMetrics({})
+    try {
+      localStorage.removeItem('ctaMetrics')
+    } catch (error) {
+      // ignore storage errors
+    }
+  }
+
   const clearTransferFilters = () => setTransferFilters({ date: '', driver: '', vehicle: '', query: '' })
 
   const createTransfer = (event) => {
@@ -1992,6 +2110,7 @@ function App() {
       return
     }
     if (!canSubmit) return
+    trackCtaClick('submit_order')
     addToHistory()
     const popup = window.open(whatsappHref, '_blank', 'noopener,noreferrer')
     if (!popup) {
@@ -1999,7 +2118,9 @@ function App() {
       return
     }
     setSubmitNotice(t.submitSuccess)
+    setShowReferralNudge(true)
     setTimeout(() => setSubmitNotice(''), 3500)
+    setTimeout(() => setShowReferralNudge(false), 8000)
     pushLocalNotification(t.notifyTitle, `${t.notifyBody}: ${formData.service || ''}`)
   }
 
@@ -2218,6 +2339,21 @@ function App() {
         </div>
       )}
 
+      {role === 'client' && hasDraft && mobileTab !== 'booking' && desktopTab !== 'booking' && (
+        <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-6xl rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-3">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-amber-100">{t.draftReminder}</p>
+            <button
+              type="button"
+              onClick={() => goToBooking('draft_reminder')}
+              className="rounded-lg bg-amber-400 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-300 transition"
+            >
+              {t.continueDraftShort}
+            </button>
+          </div>
+        </div>
+      )}
+
       {showStaffAuth && DEMO_STAFF_ENABLED && (
         <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
           <form onSubmit={handleStaffLogin} className="w-full max-w-md rounded-2xl border border-white/15 bg-black p-5 space-y-4">
@@ -2281,6 +2417,20 @@ function App() {
                     {referralCopied ? t.referralCopied : t.referralShare}
                   </button>
                 </div>
+                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-cyan-100 font-semibold">{t.analyticsTitle}</p>
+                    <button type="button" onClick={resetCtaMetrics} className="rounded-md bg-cyan-400 px-2 py-1 text-[10px] font-semibold text-black hover:bg-cyan-300 transition">{t.analyticsReset}</button>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-cyan-100/90">
+                    <p>{t.analyticsVariant}: {ctaVariant || 'A'}</p>
+                    <p>{t.analyticsConversion}: {ctaConversion}%</p>
+                    <p>{t.analyticsOpens}: {bookingOpens}</p>
+                    <p>{t.analyticsSubmits}: {submittedOrders}</p>
+                  </div>
+                  <p className="mt-2 text-[11px] text-cyan-100/85">{t.analyticsTopSource}: {topBookingSource}</p>
+                  {!hasEnoughAnalyticsData && <p className="mt-1 text-[10px] text-cyan-100/65">{t.analyticsInsufficient}</p>}
+                </div>
               </div>
               
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight text-white">{t.heroTitle}</h1>
@@ -2298,10 +2448,10 @@ function App() {
                 <div className="relative">
                   <div className="absolute inset-0 rounded-xl bg-accent/30 animate-ping pointer-events-none" />
                   <button
-                    onClick={() => setMobileTab('booking')}
+                    onClick={() => goToBooking('hero_mobile')}
                     className="relative w-full py-3.5 sm:py-4 rounded-xl bg-accent text-black font-bold text-base sm:text-lg hover:bg-accent/90 active:scale-95 transition shadow-lg"
                   >
-                    {t.startOrder}
+                    {primaryStartCta}
                   </button>
                 </div>
                 <div className="flex items-center justify-between text-xs text-white/55 px-1">
@@ -2312,7 +2462,7 @@ function App() {
 
               {hasDraft && (
                 <button
-                  onClick={() => setMobileTab('booking')}
+                  onClick={() => goToBooking('continue_draft_mobile')}
                   className="w-full py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/15 transition"
                 >
                   {t.continueDraft}
@@ -2433,6 +2583,14 @@ function App() {
               </div>
 
               {submitNotice && <p className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-300">{submitNotice}</p>}
+              {showReferralNudge && (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
+                  <p>{t.referralAfterOrder}</p>
+                  <button type="button" onClick={copyReferralText} className="mt-2 rounded-md bg-emerald-500 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-400 transition">
+                    {referralCopied ? t.referralCopied : t.referralShare}
+                  </button>
+                </div>
+              )}
 
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                 <div className="flex items-center justify-between text-xs text-white/70 mb-2">
@@ -2761,6 +2919,11 @@ function App() {
                         <p className="text-sm font-semibold text-accent capitalize">{monthGroup.label}</p>
                         <span className="text-[11px] text-white/70">{monthGroup.orders.length} {t.monthOrders}</span>
                       </div>
+                      <div className="mb-2 flex flex-wrap gap-2 text-[10px]">
+                        <span className="rounded-md bg-white/10 px-2 py-1 text-white/80">{t.monthCompleted}: {monthGroup.stats.completed}</span>
+                        <span className="rounded-md bg-white/10 px-2 py-1 text-white/80">{t.monthActive}: {monthGroup.stats.active}</span>
+                        <span className="rounded-md bg-accent/15 px-2 py-1 text-accent">{t.monthTopService}: {monthGroup.stats.topService}</span>
+                      </div>
                       <div className="space-y-2">
                         {monthGroup.orders.map((order) => (
                           <div key={order.id} className="p-3 bg-black/30 rounded-lg border-l-4 border-accent">
@@ -2807,7 +2970,7 @@ function App() {
         <div className="border-t border-white/10 p-2 sm:p-3 bg-black/90 supports-[backdrop-filter]:bg-black/60 backdrop-blur-xl fixed bottom-0 left-0 right-0 md:hidden">
           <div className="grid grid-cols-3 gap-2 px-2">
             <button
-              onClick={() => setMobileTab('booking')}
+              onClick={() => goToBooking('bottom_nav_mobile')}
               className={`flex items-center justify-center px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap transition active:scale-95 shadow-md ${mobileTab === 'booking' ? 'bg-accent text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
               aria-label={t.booking}
             >
@@ -2818,7 +2981,7 @@ function App() {
             </a>
             <div className="relative">
               <div className="absolute inset-0 rounded-lg bg-accent/30 animate-ping pointer-events-none" />
-              <a href={whatsappHref} target="_blank" rel="noreferrer" className="relative block w-full text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-accent text-black text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-accent/90 active:scale-95 transition shadow-md">{t.whatsapp}</a>
+              <a onClick={() => trackCtaClick('open_whatsapp_mobile_bottom')} href={whatsappHref} target="_blank" rel="noreferrer" className="relative block w-full text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-accent text-black text-xs sm:text-sm font-bold whitespace-nowrap hover:bg-accent/90 active:scale-95 transition shadow-md">{t.whatsapp}</a>
             </div>
           </div>
         </div>
@@ -2879,6 +3042,21 @@ function App() {
                     </button>
                   </div>
                 </div>
+
+                <div className="max-w-3xl rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm text-cyan-100 font-semibold">{t.analyticsTitle}</p>
+                    <button type="button" onClick={resetCtaMetrics} className="rounded-md bg-cyan-400 px-2 py-1 text-[11px] font-semibold text-black hover:bg-cyan-300 transition">{t.analyticsReset}</button>
+                  </div>
+                  <div className="mt-2 grid grid-cols-4 gap-3 text-xs text-cyan-100/90">
+                    <p>{t.analyticsVariant}: {ctaVariant || 'A'}</p>
+                    <p>{t.analyticsOpens}: {bookingOpens}</p>
+                    <p>{t.analyticsSubmits}: {submittedOrders}</p>
+                    <p>{t.analyticsConversion}: {ctaConversion}%</p>
+                  </div>
+                  <p className="mt-2 text-xs text-cyan-100/85">{t.analyticsTopSource}: {topBookingSource}</p>
+                  {!hasEnoughAnalyticsData && <p className="mt-1 text-[11px] text-cyan-100/65">{t.analyticsInsufficient}</p>}
+                </div>
                 
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">{t.heroTitle}</h1>
                 
@@ -2895,10 +3073,10 @@ function App() {
                   <div className="relative">
                     <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
                     <button
-                      onClick={() => setDesktopTab('booking')}
+                      onClick={() => goToBooking('hero_desktop')}
                       className="relative px-8 py-3 rounded-lg bg-accent text-black font-bold text-base hover:bg-accent/90 transition shadow-lg shadow-accent/20"
                     >
-                      {t.startOrder}
+                      {primaryStartCta}
                     </button>
                   </div>
                   <div className="text-sm text-white/60 space-y-0.5">
@@ -2909,7 +3087,7 @@ function App() {
 
                 {hasDraft && (
                   <button
-                    onClick={() => setDesktopTab('booking')}
+                    onClick={() => goToBooking('continue_draft_desktop')}
                     className="mt-2 px-8 py-3 rounded-lg bg-white/10 text-white font-semibold text-base hover:bg-white/15 transition"
                   >
                     {t.continueDraft}
@@ -3031,6 +3209,14 @@ function App() {
                 <p className="mt-3 text-white text-base mb-6">{t.bookingSubtitle}</p>
 
                 {submitNotice && <p className="mb-4 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-300">{submitNotice}</p>}
+                {showReferralNudge && (
+                  <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
+                    <p>{t.referralAfterOrder}</p>
+                    <button type="button" onClick={copyReferralText} className="mt-2 rounded-md bg-emerald-500 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-400 transition">
+                      {referralCopied ? t.referralCopied : t.referralShare}
+                    </button>
+                  </div>
+                )}
 
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4 mb-5">
                   <div className="flex items-center justify-between text-xs text-white/70 mb-2">
@@ -3277,10 +3463,10 @@ function App() {
               <div className="relative">
                 <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
                 <button
-                  onClick={() => setDesktopTab('booking')}
+                  onClick={() => goToBooking('bottom_cta_desktop')}
                   className="relative px-6 py-2 rounded-lg bg-accent text-black font-bold text-sm hover:bg-accent/90 transition shadow-lg shadow-accent/25"
                 >
-                  {t.orderNowCta}
+                  {ctaVariant === 'B' ? primaryStartCta : t.orderNowCta}
                 </button>
               </div>
             </div>
@@ -3664,6 +3850,7 @@ function App() {
             {t.supportCall}
           </a>
           <a
+            onClick={() => trackCtaClick('open_whatsapp_floating_desktop')}
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
