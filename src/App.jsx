@@ -91,6 +91,21 @@ const translations = {
     ordersTotal: 'Всего заказов',
     ordersActive: 'Активные',
     ordersDone: 'Завершённые',
+    loyaltyLevel: 'Уровень клиента',
+    loyaltyBronze: 'Bronze',
+    loyaltySilver: 'Silver',
+    loyaltyGold: 'Gold',
+    loyaltyPoints: 'Баллы',
+    loyaltyNext: 'До следующего уровня',
+    birthdayLabel: 'Дата рождения (опционально)',
+    birthdayBonus: 'Бонус ко дню рождения',
+    birthdayClaim: 'Получить +50 баллов',
+    birthdayClaimed: 'Бонус начислен',
+    referralTitle: 'Реферальная программа',
+    referralHint: 'Пригласите друга и получите 5% скидку на следующий заказ.',
+    referralShare: 'Скопировать текст для WhatsApp',
+    referralCopied: 'Текст скопирован',
+    monthOrders: 'заказов',
     markConfirmed: 'Подтвердить',
     markOnWay: 'Отметить: в пути',
     markCompleted: 'Отметить: завершён',
@@ -265,6 +280,21 @@ const translations = {
     ordersTotal: 'Барлық тапсырыс',
     ordersActive: 'Белсенді',
     ordersDone: 'Аяқталған',
+    loyaltyLevel: 'Клиент деңгейі',
+    loyaltyBronze: 'Bronze',
+    loyaltySilver: 'Silver',
+    loyaltyGold: 'Gold',
+    loyaltyPoints: 'Ұпайлар',
+    loyaltyNext: 'Келесі деңгейге дейін',
+    birthdayLabel: 'Туған күн (міндетті емес)',
+    birthdayBonus: 'Туған күн бонусы',
+    birthdayClaim: '+50 ұпай алу',
+    birthdayClaimed: 'Бонус қосылды',
+    referralTitle: 'Реферал бағдарлама',
+    referralHint: 'Досыңызды шақырып, келесі тапсырысқа 5% жеңілдік алыңыз.',
+    referralShare: 'WhatsApp мәтінін көшіру',
+    referralCopied: 'Мәтін көшірілді',
+    monthOrders: 'тапсырыс',
     markConfirmed: 'Растау',
     markOnWay: 'Белгілеу: жолда',
     markCompleted: 'Белгілеу: аяқталды',
@@ -439,6 +469,21 @@ const translations = {
     ordersTotal: 'Total orders',
     ordersActive: 'Active',
     ordersDone: 'Completed',
+    loyaltyLevel: 'Client level',
+    loyaltyBronze: 'Bronze',
+    loyaltySilver: 'Silver',
+    loyaltyGold: 'Gold',
+    loyaltyPoints: 'Points',
+    loyaltyNext: 'To next level',
+    birthdayLabel: 'Birthday (optional)',
+    birthdayBonus: 'Birthday bonus',
+    birthdayClaim: 'Claim +50 points',
+    birthdayClaimed: 'Bonus claimed',
+    referralTitle: 'Referral program',
+    referralHint: 'Invite a friend and get 5% off your next booking.',
+    referralShare: 'Copy WhatsApp text',
+    referralCopied: 'Text copied',
+    monthOrders: 'orders',
     markConfirmed: 'Confirm',
     markOnWay: 'Mark: on the way',
     markCompleted: 'Mark: completed',
@@ -1011,6 +1056,35 @@ const ActiveClientsCounter = ({ count = 0 }) => {
   )
 }
 
+const LoyaltyCard = ({ t, level, points, nextLevelOrders, progressPercent }) => {
+  const levelColor = level.key === 'gold'
+    ? 'from-amber-500/30 to-yellow-500/20 border-amber-400/40 text-amber-100'
+    : level.key === 'silver'
+      ? 'from-slate-400/25 to-slate-500/20 border-slate-300/35 text-slate-100'
+      : 'from-orange-700/30 to-amber-700/20 border-orange-400/35 text-orange-100'
+
+  const levelLabel = level.key === 'gold'
+    ? t.loyaltyGold
+    : level.key === 'silver'
+      ? t.loyaltySilver
+      : t.loyaltyBronze
+
+  return (
+    <div className={`rounded-xl border bg-gradient-to-r px-4 py-3 ${levelColor}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-semibold">{t.loyaltyLevel}: {levelLabel}</p>
+        <p className="text-xs opacity-90">{t.loyaltyPoints}: {points}</p>
+      </div>
+      <div className="mt-2 h-2 w-full rounded-full bg-black/35">
+        <div className="h-full rounded-full bg-accent transition-all duration-500" style={{ width: `${progressPercent}%` }} />
+      </div>
+      <p className="mt-1 text-xs opacity-90">
+        {nextLevelOrders > 0 ? `${t.loyaltyNext}: ${nextLevelOrders}` : `${t.loyaltyGold} max`}
+      </p>
+    </div>
+  )
+}
+
 // 🎯 УЛУЧШЕНИЕ 1: Быстрый звонок в один клик
 const CallButton = ({ phoneNumber = '77781556699', label = '☎️', className = '' }) => (
   <a
@@ -1218,6 +1292,8 @@ function App() {
   const [activeClientsCount, setActiveClientsCount] = useState(() => ActivityCounter.get())
   const [exitIntentShownInSession, setExitIntentShownInSession] = useState(false)
   const [promoCopied, setPromoCopied] = useState(false)
+  const [birthdayBonusYear, setBirthdayBonusYear] = useState(() => getStoredValue('birthdayBonusYear', ''))
+  const [referralCopied, setReferralCopied] = useState(false)
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -1230,6 +1306,7 @@ function App() {
       phone: '+7',
       service: services[0]?.title || '',
       date: '',
+      birthDate: '',
       comment: '',
       address: '',
     }
@@ -1289,6 +1366,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('transferBuffer', String(bufferMinutes || 0))
   }, [bufferMinutes])
+
+  useEffect(() => {
+    localStorage.setItem('birthdayBonusYear', birthdayBonusYear || '')
+  }, [birthdayBonusYear])
 
   useEffect(() => {
     document.documentElement.style.colorScheme = 'dark'
@@ -1409,7 +1490,7 @@ function App() {
   const thirdStepComplete = true
   const completedSteps = [primaryStepComplete, secondStepComplete, thirdStepComplete].filter(Boolean).length
   const progressPercent = Math.round((completedSteps / 3) * 100)
-  const hasDraft = formData.name.trim() || formData.date || formData.address.trim() || formData.comment.trim()
+  const hasDraft = formData.name.trim() || formData.date || formData.birthDate || formData.address.trim() || formData.comment.trim()
   const trustPoints = [t.trustNoHiddenFees, t.trustNda, t.trustInsured]
 
   const maskPhone = (phone) => {
@@ -1423,6 +1504,7 @@ function App() {
       id: Date.now(),
       service: formData.service,
       date: formData.date,
+      birthDate: formData.birthDate,
       name: formData.name.trim(),
       phone: formData.phone,
       phoneMasked: maskPhone(formData.phone),
@@ -1485,6 +1567,105 @@ function App() {
     const code = `RETURN10-${new Date(lastOrderTs).toISOString().slice(0, 10).replace(/-/g, '')}`
     return { eligible: true, code }
   }, [latestOrder])
+
+  const isBirthdayToday = useMemo(() => {
+    if (!formData.birthDate) return false
+    const today = new Date()
+    const birthDate = new Date(formData.birthDate)
+    if (Number.isNaN(birthDate.getTime())) return false
+    return today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()
+  }, [formData.birthDate])
+
+  const currentYear = String(new Date().getFullYear())
+  const birthdayBonusClaimed = birthdayBonusYear === currentYear
+
+  const claimBirthdayBonus = () => {
+    if (!isBirthdayToday || birthdayBonusClaimed) return
+    setBirthdayBonusYear(currentYear)
+  }
+
+  const referralCode = useMemo(() => {
+    const suffix = (formData.phone || '').replace(/\D/g, '').slice(-4) || '0000'
+    const namePart = (formData.name || 'TP').trim().slice(0, 2).toUpperCase() || 'TP'
+    return `REF-${namePart}${suffix}`
+  }, [formData.name, formData.phone])
+
+  const copyReferralText = async () => {
+    const referralMessage = [
+      'TransferPro — премиальный трансфер в Астане',
+      `Промокод друга: ${referralCode}`,
+      'Скажите этот код менеджеру в WhatsApp и получите скидку 5%',
+      `https://wa.me/${whatsappNumber}`,
+    ].join('\n')
+
+    try {
+      await navigator.clipboard.writeText(referralMessage)
+      setReferralCopied(true)
+      setTimeout(() => setReferralCopied(false), 1800)
+    } catch (error) {
+      // ignore clipboard errors
+    }
+  }
+
+  const loyaltyStats = useMemo(() => {
+    const ordersCount = orderHistory.length
+    const points = ordersCount * 10 + (birthdayBonusClaimed ? 50 : 0)
+    const levels = [
+      { key: 'bronze', minOrders: 1, nextAt: 3 },
+      { key: 'silver', minOrders: 3, nextAt: 10 },
+      { key: 'gold', minOrders: 10, nextAt: 10 },
+    ]
+
+    let currentLevel = { key: 'bronze', minOrders: 1, nextAt: 3 }
+    if (ordersCount >= 10) {
+      currentLevel = levels[2]
+    } else if (ordersCount >= 3) {
+      currentLevel = levels[1]
+    }
+
+    const nextLevelOrders = currentLevel.key === 'gold'
+      ? 0
+      : Math.max(0, currentLevel.nextAt - ordersCount)
+
+    const progressPercent = currentLevel.key === 'gold'
+      ? 100
+      : Math.min(100, Math.round((ordersCount / currentLevel.nextAt) * 100))
+
+    return {
+      ordersCount,
+      points,
+      level: currentLevel,
+      nextLevelOrders,
+      progressPercent,
+    }
+  }, [orderHistory, birthdayBonusClaimed])
+
+  const monthlyOrders = useMemo(() => {
+    const byMonth = orderHistory.reduce((acc, order) => {
+      const timestamp = Number(order.id)
+      const date = Number.isFinite(timestamp) ? new Date(timestamp) : new Date()
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+      if (!acc[key]) {
+        acc[key] = { date, orders: [] }
+      }
+      acc[key].orders.push(order)
+      return acc
+    }, {})
+
+    return Object.keys(byMonth)
+      .sort((a, b) => (a < b ? 1 : -1))
+      .map((key) => {
+        const group = byMonth[key]
+        return {
+          key,
+          label: group.date.toLocaleDateString(language === 'en' ? 'en-US' : language === 'kk' ? 'kk-KZ' : 'ru-RU', {
+            month: 'long',
+            year: 'numeric',
+          }),
+          orders: group.orders,
+        }
+      })
+  }, [orderHistory, language])
 
   const copyPromoCode = async () => {
     if (!repeatDiscount.code) return
@@ -1586,6 +1767,7 @@ function App() {
       phone: order.phone || '+7',
       service: order.service || services[0]?.title || '',
       date: getTodayDate(),
+      birthDate: order.birthDate || formData.birthDate || '',
       comment: order.comment || '',
       address: order.address || '',
     })
@@ -1614,7 +1796,7 @@ function App() {
 
   const clearSessionSensitiveState = () => {
     const defaultService = services[0]?.title || ''
-    setFormData({ name: '', phone: '+7', service: defaultService, date: '', comment: '', address: '' })
+    setFormData({ name: '', phone: '+7', service: defaultService, date: '', birthDate: '', comment: '', address: '' })
     setOrderHistory([])
     setFavorites([])
     setStaffSession(null)
@@ -1625,7 +1807,7 @@ function App() {
 
   const clearSensitiveData = () => {
     const defaultService = services[0]?.title || ''
-    const resetFormData = { name: '', phone: '+7', service: defaultService, date: '', comment: '', address: '' }
+    const resetFormData = { name: '', phone: '+7', service: defaultService, date: '', birthDate: '', comment: '', address: '' }
     setFormData(resetFormData)
     setOrderHistory([])
     setFavorites([])
@@ -2073,6 +2255,32 @@ function App() {
               <div className="flex flex-col gap-3">
                 <UrgentOfferTimer t={t} />
                 <ActiveClientsCounter count={activeClientsCount} />
+                <LoyaltyCard
+                  t={t}
+                  level={loyaltyStats.level}
+                  points={loyaltyStats.points}
+                  nextLevelOrders={loyaltyStats.nextLevelOrders}
+                  progressPercent={loyaltyStats.progressPercent}
+                />
+                <div className="rounded-xl border border-white/12 bg-white/5 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs text-accent font-semibold">{t.birthdayBonus}</p>
+                    {isBirthdayToday && !birthdayBonusClaimed ? (
+                      <button type="button" onClick={claimBirthdayBonus} className="rounded-lg bg-accent px-2 py-1 text-[11px] font-semibold text-black hover:bg-accent/90 transition">
+                        {t.birthdayClaim}
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-white/70">{birthdayBonusClaimed ? t.birthdayClaimed : '—'}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+                  <p className="text-xs text-emerald-100 font-semibold">{t.referralTitle}</p>
+                  <p className="mt-1 text-[11px] text-emerald-100/80">{t.referralHint}</p>
+                  <button type="button" onClick={copyReferralText} className="mt-2 rounded-lg bg-emerald-500 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-400 transition">
+                    {referralCopied ? t.referralCopied : t.referralShare}
+                  </button>
+                </div>
               </div>
               
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight text-white">{t.heroTitle}</h1>
@@ -2399,6 +2607,19 @@ function App() {
                 </div>
 
                 <div>
+                  <label htmlFor="birth_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.birthdayLabel}</label>
+                  <input
+                    id="birth_mobile"
+                    name="birthDate"
+                    type="date"
+                    value={formData.birthDate}
+                    onChange={updateField}
+                    onFocus={closeMobileMenu}
+                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md"
+                  />
+                </div>
+
+                <div>
                   <button
                     type="button"
                     onClick={() => setShowMobileDetails((prev) => !prev)}
@@ -2521,18 +2742,37 @@ function App() {
                   <button type="button" onClick={clearHistory} className="text-xs px-3 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition">{t.clearHistory}</button>
                 )}
               </div>
+
+              <LoyaltyCard
+                t={t}
+                level={loyaltyStats.level}
+                points={loyaltyStats.points}
+                nextLevelOrders={loyaltyStats.nextLevelOrders}
+                progressPercent={loyaltyStats.progressPercent}
+              />
+
               {orderHistory.length === 0 ? (
                 <p className="text-white/60 text-center py-8">{t.noOrders}</p>
               ) : (
-                <div className="space-y-2">
-                  {orderHistory.map((order) => (
-                    <div key={order.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent">
-                      <p className="text-sm text-white/80">{order.service}</p>
-                      <p className="text-xs text-white/60">{order.name || '—'} • {order.createdAt}</p>
-                      <p className="text-xs text-accent mt-1">{t.orderStatus}: {getStatusLabel(order.status || 'new')}</p>
-                      <button onClick={() => repeatOrder(order)} className="text-xs mt-2 px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
-                        {t.repeat}
-                      </button>
+                <div className="space-y-3">
+                  {monthlyOrders.map((monthGroup) => (
+                    <div key={monthGroup.key} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-sm font-semibold text-accent capitalize">{monthGroup.label}</p>
+                        <span className="text-[11px] text-white/70">{monthGroup.orders.length} {t.monthOrders}</span>
+                      </div>
+                      <div className="space-y-2">
+                        {monthGroup.orders.map((order) => (
+                          <div key={order.id} className="p-3 bg-black/30 rounded-lg border-l-4 border-accent">
+                            <p className="text-sm text-white/80">{order.service}</p>
+                            <p className="text-xs text-white/60">{order.name || '—'} • {order.createdAt}</p>
+                            <p className="text-xs text-accent mt-1">{t.orderStatus}: {getStatusLabel(order.status || 'new')}</p>
+                            <button onClick={() => repeatOrder(order)} className="text-xs mt-2 px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
+                              {t.repeat}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -2608,6 +2848,36 @@ function App() {
                 <div className="flex flex-wrap gap-3">
                   <UrgentOfferTimer t={t} />
                   <ActiveClientsCounter count={activeClientsCount} />
+                </div>
+
+                <LoyaltyCard
+                  t={t}
+                  level={loyaltyStats.level}
+                  points={loyaltyStats.points}
+                  nextLevelOrders={loyaltyStats.nextLevelOrders}
+                  progressPercent={loyaltyStats.progressPercent}
+                />
+
+                <div className="grid grid-cols-2 gap-3 max-w-3xl">
+                  <div className="rounded-xl border border-white/12 bg-white/5 p-3">
+                    <p className="text-xs text-accent font-semibold">{t.birthdayBonus}</p>
+                    <div className="mt-2">
+                      {isBirthdayToday && !birthdayBonusClaimed ? (
+                        <button type="button" onClick={claimBirthdayBonus} className="rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-black hover:bg-accent/90 transition">
+                          {t.birthdayClaim}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-white/70">{birthdayBonusClaimed ? t.birthdayClaimed : '—'}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+                    <p className="text-xs text-emerald-100 font-semibold">{t.referralTitle}</p>
+                    <p className="mt-1 text-[11px] text-emerald-100/80">{t.referralHint}</p>
+                    <button type="button" onClick={copyReferralText} className="mt-2 rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-black hover:bg-emerald-400 transition">
+                      {referralCopied ? t.referralCopied : t.referralShare}
+                    </button>
+                  </div>
                 </div>
                 
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">{t.heroTitle}</h1>
@@ -2891,6 +3161,10 @@ function App() {
                       <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/35 pointer-events-none" />
                       <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="w-full rounded-lg border border-white/30 bg-white/10 pl-10 pr-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
                     </div>
+                  </div>
+                  <div>
+                    <label htmlFor="birth_desktop" className="text-sm font-semibold text-white">{t.birthdayLabel}</label>
+                    <input id="birth_desktop" name="birthDate" type="date" value={formData.birthDate} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
                   </div>
                   <div>
                     <button
