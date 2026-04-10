@@ -2391,46 +2391,6 @@ function App() {
               <div className="flex flex-col gap-3">
                 <UrgentOfferTimer t={t} />
                 <ActiveClientsCounter count={activeClientsCount} />
-                <LoyaltyCard
-                  t={t}
-                  level={loyaltyStats.level}
-                  points={loyaltyStats.points}
-                  nextLevelOrders={loyaltyStats.nextLevelOrders}
-                  progressPercent={loyaltyStats.progressPercent}
-                />
-                <div className="rounded-xl border border-white/12 bg-white/5 p-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-xs text-accent font-semibold">{t.birthdayBonus}</p>
-                    {isBirthdayToday && !birthdayBonusClaimed ? (
-                      <button type="button" onClick={claimBirthdayBonus} className="rounded-lg bg-accent px-2 py-1 text-[11px] font-semibold text-black hover:bg-accent/90 transition">
-                        {t.birthdayClaim}
-                      </button>
-                    ) : (
-                      <span className="text-[11px] text-white/70">{birthdayBonusClaimed ? t.birthdayClaimed : '—'}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-                  <p className="text-xs text-emerald-100 font-semibold">{t.referralTitle}</p>
-                  <p className="mt-1 text-[11px] text-emerald-100/80">{t.referralHint}</p>
-                  <button type="button" onClick={copyReferralText} className="mt-2 rounded-lg bg-emerald-500 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-400 transition">
-                    {referralCopied ? t.referralCopied : t.referralShare}
-                  </button>
-                </div>
-                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs text-cyan-100 font-semibold">{t.analyticsTitle}</p>
-                    <button type="button" onClick={resetCtaMetrics} className="rounded-md bg-cyan-400 px-2 py-1 text-[10px] font-semibold text-black hover:bg-cyan-300 transition">{t.analyticsReset}</button>
-                  </div>
-                  <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-cyan-100/90">
-                    <p>{t.analyticsVariant}: {ctaVariant || 'A'}</p>
-                    <p>{t.analyticsConversion}: {ctaConversion}%</p>
-                    <p>{t.analyticsOpens}: {bookingOpens}</p>
-                    <p>{t.analyticsSubmits}: {submittedOrders}</p>
-                  </div>
-                  <p className="mt-2 text-[11px] text-cyan-100/85">{t.analyticsTopSource}: {topBookingSource}</p>
-                  {!hasEnoughAnalyticsData && <p className="mt-1 text-[10px] text-cyan-100/65">{t.analyticsInsufficient}</p>}
-                </div>
               </div>
               
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight text-white">{t.heroTitle}</h1>
@@ -2583,14 +2543,6 @@ function App() {
               </div>
 
               {submitNotice && <p className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-300">{submitNotice}</p>}
-              {showReferralNudge && (
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
-                  <p>{t.referralAfterOrder}</p>
-                  <button type="button" onClick={copyReferralText} className="mt-2 rounded-md bg-emerald-500 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-400 transition">
-                    {referralCopied ? t.referralCopied : t.referralShare}
-                  </button>
-                </div>
-              )}
 
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                 <div className="flex items-center justify-between text-xs text-white/70 mb-2">
