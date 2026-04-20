@@ -112,6 +112,10 @@ const translations = {
     monthCompleted: 'завершено',
     monthActive: 'активно',
     monthTopService: 'топ услуга',
+    priceEstimateLabel: 'Ориентировочная стоимость',
+    summaryTotalSpent: 'Потрачено всего',
+    summaryAvgCheck: 'Средний чек',
+    summaryFavService: 'Любимая услуга',
     referralAfterOrder: 'Поделитесь реферальным кодом и получите бонус на следующий заказ.',
     analyticsTitle: 'CTA аналитика (локально)',
     analyticsVariant: 'Вариант',
@@ -316,6 +320,10 @@ const translations = {
     monthCompleted: 'аяқталған',
     monthActive: 'белсенді',
     monthTopService: 'топ қызмет',
+    priceEstimateLabel: 'Шамаланған құны',
+    summaryTotalSpent: 'Жалпы шығын',
+    summaryAvgCheck: 'Орташа чек',
+    summaryFavService: 'Таңдаулы қызмет',
     referralAfterOrder: 'Реферал кодын бөлісіп, келесі тапсырысқа бонус алыңыз.',
     analyticsTitle: 'CTA аналитикасы (локалды)',
     analyticsVariant: 'Нұсқа',
@@ -520,6 +528,10 @@ const translations = {
     monthCompleted: 'completed',
     monthActive: 'active',
     monthTopService: 'top service',
+    priceEstimateLabel: 'Estimated price',
+    summaryTotalSpent: 'Total spent',
+    summaryAvgCheck: 'Average check',
+    summaryFavService: 'Favorite service',
     referralAfterOrder: 'Share your referral code and get a bonus on your next booking.',
     analyticsTitle: 'CTA analytics (local)',
     analyticsVariant: 'Variant',
@@ -1562,6 +1574,20 @@ function App() {
   const hasDraft = formData.name.trim() || formData.date || formData.birthDate || formData.address.trim() || formData.comment.trim()
   const trustPoints = [t.trustNoHiddenFees, t.trustNda, t.trustInsured]
   const primaryStartCta = ctaVariant === 'B' ? t.startOrderAlt : t.startOrder
+  const serviceBasePriceByIndex = [15000, 100000, 10000, 18000, 25000, 12000]
+  const resolveServiceBasePrice = (serviceName) => {
+    const serviceIndex = services.findIndex((service) => service.title === serviceName)
+    return serviceBasePriceByIndex[serviceIndex] || 10000
+  }
+  const estimatePriceKzt = (serviceName, dateValue) => {
+    const base = resolveServiceBasePrice(serviceName)
+    if (!dateValue) return base
+    const tripDate = new Date(dateValue)
+    const isWeekend = tripDate.getDay() === 0 || tripDate.getDay() === 6
+    const surcharge = isWeekend ? 0.15 : 0
+    return Math.round(base * (1 + surcharge))
+  }
+  const estimatedPriceKzt = estimatePriceKzt(formData.service, formData.date)
   const bookingOpens = Object.entries(ctaMetrics || {}).reduce((sum, [key, value]) => (
     key.startsWith('open_booking_') ? sum + Number(value || 0) : sum
   ), 0)
@@ -1586,6 +1612,7 @@ function App() {
       service: formData.service,
       date: formData.date,
       birthDate: formData.birthDate,
+      estimatedPriceKzt,
       name: formData.name.trim(),
       phone: formData.phone,
       phoneMasked: maskPhone(formData.phone),
@@ -1757,6 +1784,27 @@ function App() {
         }
       })
   }, [orderHistory, language])
+
+  const historyFinancialSummary = useMemo(() => {
+    if (!orderHistory.length) {
+      return { totalSpent: 0, avgCheck: 0, favoriteService: '-' }
+    }
+
+    const totalSpent = orderHistory.reduce((sum, order) => {
+      const orderPrice = Number(order.estimatedPriceKzt || 0) || estimatePriceKzt(order.service, order.date)
+      return sum + orderPrice
+    }, 0)
+
+    const avgCheck = Math.round(totalSpent / orderHistory.length)
+    const serviceCounter = orderHistory.reduce((acc, order) => {
+      const key = order.service || '-'
+      acc[key] = (acc[key] || 0) + 1
+      return acc
+    }, {})
+    const favoriteService = Object.entries(serviceCounter).sort((a, b) => b[1] - a[1])[0]?.[0] || '-'
+
+    return { totalSpent, avgCheck, favoriteService }
+  }, [orderHistory])
 
   const copyPromoCode = async () => {
     if (!repeatDiscount.code) return
@@ -2729,6 +2777,10 @@ function App() {
                   />
                 </div>
 
+                <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-white/85">
+                  {t.priceEstimateLabel}: <span className="text-accent font-semibold">{estimatedPriceKzt.toLocaleString()} ₸</span>
+                </div>
+
                 <div>
                   <button
                     type="button"
@@ -2860,6 +2912,12 @@ function App() {
                 nextLevelOrders={loyaltyStats.nextLevelOrders}
                 progressPercent={loyaltyStats.progressPercent}
               />
+
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3 grid grid-cols-1 gap-2 text-xs">
+                <p className="text-white/80">{t.summaryTotalSpent}: <span className="text-accent font-semibold">{historyFinancialSummary.totalSpent.toLocaleString()} ₸</span></p>
+                <p className="text-white/80">{t.summaryAvgCheck}: <span className="text-accent font-semibold">{historyFinancialSummary.avgCheck.toLocaleString()} ₸</span></p>
+                <p className="text-white/80">{t.summaryFavService}: <span className="text-accent font-semibold">{historyFinancialSummary.favoriteService}</span></p>
+              </div>
 
               {orderHistory.length === 0 ? (
                 <p className="text-white/60 text-center py-8">{t.noOrders}</p>
@@ -3303,6 +3361,9 @@ function App() {
                   <div>
                     <label htmlFor="birth_desktop" className="text-sm font-semibold text-white">{t.birthdayLabel}</label>
                     <input id="birth_desktop" name="birthDate" type="date" value={formData.birthDate} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
+                  </div>
+                  <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-white/85">
+                    {t.priceEstimateLabel}: <span className="text-accent font-semibold">{estimatedPriceKzt.toLocaleString()} ₸</span>
                   </div>
                   <div>
                     <button
