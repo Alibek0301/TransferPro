@@ -218,6 +218,14 @@ const translations = {
     offlineDemo: 'Оффлайн демо',
     deleteTransferAria: 'Удалить трансфер',
     footerTagline: 'Премиальный трансфер в Астане',
+    favNoteEdit: 'Заметка',
+    favNotePlaceholder: 'Например: паркинг слева',
+    reactivationTitle: 'Давно не заказывали?',
+    reactivationHint: 'Вернитесь и получите скидку 5% на следующую поездку — введите промокод',
+    reactivationCode: 'WELCOME5',
+    reactivationDismiss: 'Не сейчас',
+    reactivationOrder: 'Заказать со скидкой',
+    historyAutoCleanedNotice: 'Старые заказы (>90 дней) автоматически удалены для вашей конфиденциальности.',
   },
   kk: {
     home: 'Басты бет',
@@ -430,6 +438,14 @@ const translations = {
     offlineDemo: 'Офлайн демо',
     deleteTransferAria: 'Трансферді жою',
     footerTagline: 'Астанадағы премиум трансфер',
+    favNoteEdit: 'Ескертпе',
+    favNotePlaceholder: 'Мысалы: сол жақта тұрақ',
+    reactivationTitle: 'Дұрыс тапсырыс етпедіңіз бе?',
+    reactivationHint: 'Оралыңыз және келіңіз — промокодпен 5% жеңілдік алыңыз',
+    reactivationCode: 'WELCOME5',
+    reactivationDismiss: 'Қазір емес',
+    reactivationOrder: 'Жеңілікпен тапсырис беру',
+    historyAutoCleanedNotice: 'Ескі тапсырыстар (>90 күн) конфиденциалдылық ушін автоматты жойылды.',
   },
   en: {
     home: 'Home',
@@ -642,6 +658,14 @@ const translations = {
     offlineDemo: 'Offline demo',
     deleteTransferAria: 'Delete transfer',
     footerTagline: 'Premium transfer in Astana',
+    favNoteEdit: 'Note',
+    favNotePlaceholder: 'E.g.: parking on the left',
+    reactivationTitle: "Haven't ordered in a while?",
+    reactivationHint: 'Come back and get 5% off your next trip with promo code',
+    reactivationCode: 'WELCOME5',
+    reactivationDismiss: 'Not now',
+    reactivationOrder: 'Book with discount',
+    historyAutoCleanedNotice: 'Old orders (>90 days) were auto-removed for your privacy.',
   },
 }
 
@@ -1383,6 +1407,11 @@ function App() {
   const [notificationHint, setNotificationHint] = useState('')
   
   // 🎯 НОВЫЕ СОСТОЯНИЯ ДЛЯ УЛУЧШЕНИЙ
+  const [editingFavNoteId, setEditingFavNoteId] = useState(null)
+  const [favNoteDraft, setFavNoteDraft] = useState('')
+  const [historyAutoCleanNotice, setHistoryAutoCleanNotice] = useState('')
+  const [showReactivationNudge, setShowReactivationNudge] = useState(false)
+  const [reactivationCopied, setReactivationCopied] = useState(false)
   const [showQRModal, setShowQRModal] = useState(false)
   const [showExitIntent, setShowExitIntent] = useState(false)
   const [activeClientsCount, setActiveClientsCount] = useState(() => ActivityCounter.get())
@@ -1579,6 +1608,48 @@ function App() {
   useEffect(() => {
     const count = ActivityCounter.increment()
     setActiveClientsCount(count)
+  }, [])
+
+  // 🎯 Автоочистка истории старше 90 дней
+  useEffect(() => {
+    const ninety = 90 * 24 * 60 * 60 * 1000
+    const threshold = Date.now() - ninety
+    const filtered = orderHistory.filter((order) => {
+      const ts = order.createdAt ? new Date(order.createdAt).getTime() : Date.now()
+      return ts >= threshold
+    })
+    if (filtered.length < orderHistory.length) {
+      setOrderHistory(filtered)
+      writeScopedValue('orderHistory', filtered, rememberDataOnDevice)
+      setHistoryAutoCleanNotice('auto-cleaned')
+      const t2 = setTimeout(() => setHistoryAutoCleanNotice(''), 5000)
+      return () => clearTimeout(t2)
+    }
+    return undefined
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // 🎯 Реактивация: показать баннер если нет новых заказов 7+ дней
+  useEffect(() => {
+    if (orderHistory.length === 0) return
+    const REACTIVATION_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
+    try {
+      const installedFlag = localStorage.getItem('installPromptInstalled')
+      if (installedFlag === '1') return // уже установлено — не бомбардировать
+      const dismissedAt = Number(localStorage.getItem('reactivationDismissedAt') || '0')
+      if (Date.now() - dismissedAt < REACTIVATION_COOLDOWN_MS) return
+
+      const lastOrderTime = orderHistory.reduce((max, order) => {
+        const ts = order.createdAt ? new Date(order.createdAt).getTime() : 0
+        return ts > max ? ts : max
+      }, 0)
+      if (lastOrderTime > 0 && Date.now() - lastOrderTime >= REACTIVATION_COOLDOWN_MS) {
+        setShowReactivationNudge(true)
+      }
+    } catch (error) {
+      // ignore storage errors
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function getTodayDate() {
@@ -2127,6 +2198,39 @@ function App() {
 
   const clearTransferFilters = () => setTransferFilters({ date: '', driver: '', vehicle: '', query: '' })
 
+  const dismissReactivationNudge = () => {
+    setShowReactivationNudge(false)
+    try {
+      localStorage.setItem('reactivationDismissedAt', String(Date.now()))
+    } catch (error) {
+      // ignore
+    }
+  }
+
+  const copyReactivationCode = () => {
+    const t = translations[language]
+    try {
+      navigator.clipboard.writeText(t.reactivationCode || 'WELCOME5')
+    } catch (error) {
+      // ignore
+    }
+    setReactivationCopied(true)
+    setTimeout(() => setReactivationCopied(false), 2000)
+  }
+
+  const saveFavNote = (favId) => {
+    const updated = favorites.map((fav) => fav.id === favId ? { ...fav, note: favNoteDraft.trim() } : fav)
+    setFavorites(updated)
+    writeScopedValue('favorites', updated, rememberDataOnDevice)
+    setEditingFavNoteId(null)
+    setFavNoteDraft('')
+  }
+
+  const startEditFavNote = (fav) => {
+    setEditingFavNoteId(fav.id)
+    setFavNoteDraft(fav.note || '')
+  }
+
   const createTransfer = (event) => {
     event.preventDefault()
     const conflictMessage = findTransferConflict(transferDraft)
@@ -2527,6 +2631,31 @@ function App() {
                 className="rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 transition"
               >
                 {t.installAppLater}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {role === 'client' && showReactivationNudge && (
+        <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-6xl rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-3">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-semibold text-amber-200">{t.reactivationTitle}</p>
+            <p className="text-xs text-amber-100/85">{t.reactivationHint}: <span className="font-mono font-bold">{t.reactivationCode}</span></p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => { copyReactivationCode(); goToBooking('reactivation_nudge') }}
+                className="rounded-lg bg-amber-400 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-300 transition"
+              >
+                {reactivationCopied ? '✓ Скопировано' : t.reactivationOrder}
+              </button>
+              <button
+                type="button"
+                onClick={dismissReactivationNudge}
+                className="rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 transition"
+              >
+                {t.reactivationDismiss}
               </button>
             </div>
           </div>
@@ -3036,6 +3165,10 @@ function App() {
                 )}
               </div>
 
+              {historyAutoCleanNotice === 'auto-cleaned' && (
+                <p className="text-[11px] text-white/50 italic">{t.historyAutoCleanedNotice}</p>
+              )}
+
               <LoyaltyCard
                 t={t}
                 level={loyaltyStats.level}
@@ -3092,14 +3225,38 @@ function App() {
               ) : (
                 <div className="space-y-2">
                   {favorites.map((fav) => (
-                    <div key={fav.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-accent">{fav.name}</p>
-                        <p className="text-xs text-white/60">{fav.address}</p>
+                    <div key={fav.id} className="p-3 bg-white/5 rounded-lg border-l-4 border-accent">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-accent">{fav.name}</p>
+                          <p className="text-xs text-white/60 truncate">{fav.address}</p>
+                          {editingFavNoteId === fav.id ? (
+                            <div className="mt-1 flex gap-1">
+                              <input
+                                autoFocus
+                                value={favNoteDraft}
+                                onChange={(e) => setFavNoteDraft(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter') saveFavNote(fav.id); if (e.key === 'Escape') setEditingFavNoteId(null) }}
+                                placeholder={t.favNotePlaceholder}
+                                className="flex-1 rounded border border-white/20 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-accent"
+                              />
+                              <button type="button" onClick={() => saveFavNote(fav.id)} className="rounded bg-accent px-2 py-1 text-xs font-bold text-black">✓</button>
+                              <button type="button" onClick={() => setEditingFavNoteId(null)} className="rounded bg-white/10 px-2 py-1 text-xs text-white">✕</button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => startEditFavNote(fav)}
+                              className="mt-1 text-[10px] text-white/40 hover:text-accent transition"
+                            >
+                              {fav.note ? `📝 ${fav.note}` : `+ ${t.favNoteEdit}`}
+                            </button>
+                          )}
+                        </div>
+                        <button onClick={() => removeFavorite(fav.id)} className="text-red-400 hover:text-red-500 shrink-0" aria-label={`${t.removeFavoriteAria}: ${fav.name}`}>
+                          <Trash2 size={16} />
+                        </button>
                       </div>
-                      <button onClick={() => removeFavorite(fav.id)} className="text-red-400 hover:text-red-500" aria-label={`${t.removeFavoriteAria}: ${fav.name}`}>
-                        <Trash2 size={16} />
-                      </button>
                     </div>
                   ))}
                 </div>
