@@ -26,6 +26,10 @@ const translations = {
     startOrderAlt: 'Получить цену за 30 секунд',
     draftReminder: 'У вас есть незавершенная заявка',
     continueDraftShort: 'Продолжить',
+    installAppTitle: 'Установите приложение TransferPro',
+    installAppHint: 'Открывайте быстрее и работайте даже при слабом интернете.',
+    installAppButton: 'Установить',
+    installAppLater: 'Позже',
     quickScenarios: 'Быстрые сценарии',
     quickChoice: 'Быстрый выбор',
     reviews: 'Отзывы клиентов',
@@ -234,6 +238,10 @@ const translations = {
     startOrderAlt: '30 секундта баға алу',
     draftReminder: 'Сізде аяқталмаған өтінім бар',
     continueDraftShort: 'Жалғастыру',
+    installAppTitle: 'TransferPro қолданбасын орнатыңыз',
+    installAppHint: 'Тезірек ашылады және интернет әлсіз кезде де қолжетімді.',
+    installAppButton: 'Орнату',
+    installAppLater: 'Кейінірек',
     quickScenarios: 'Жылдам сценарийлер',
     quickChoice: 'Жылдам таңдау',
     reviews: 'Клиент пікірлері',
@@ -442,6 +450,10 @@ const translations = {
     startOrderAlt: 'Get price in 30 seconds',
     draftReminder: 'You have an unfinished booking',
     continueDraftShort: 'Continue',
+    installAppTitle: 'Install TransferPro app',
+    installAppHint: 'Open faster and use it even with weak internet.',
+    installAppButton: 'Install',
+    installAppLater: 'Later',
     quickScenarios: 'Quick scenarios',
     quickChoice: 'Quick choice',
     reviews: 'Client reviews',
@@ -1008,6 +1020,7 @@ const DEMO_STAFF_ENABLED = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DE
 const SENSITIVE_STORAGE_KEYS = ['staffSession', 'driverAccounts', 'transfers', 'formData', 'orderHistory', 'favorites']
 const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000
 const ACTIVITY_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'mousemove', 'scroll']
+const INSTALL_PROMPT_RESHOW_MS = 7 * 24 * 60 * 60 * 1000
 
 const parseStoredJson = (rawValue, fallback) => {
   if (!rawValue) return fallback
@@ -1028,6 +1041,32 @@ const getStoredValue = (key, fallback) => {
     return parseStoredJson(stored, fallback)
   } catch (error) {
     return fallback
+  }
+}
+
+const shouldShowInstallPromptBanner = () => {
+  try {
+    if (localStorage.getItem('installPromptInstalled') === '1') {
+      return false
+    }
+
+    const dismissedAtRaw = localStorage.getItem('installPromptDismissedAt')
+    const legacyDismissed = localStorage.getItem('installPromptDismissed') === '1'
+
+    if (!dismissedAtRaw) {
+      if (legacyDismissed) {
+        localStorage.setItem('installPromptDismissedAt', String(Date.now()))
+        return false
+      }
+      return true
+    }
+
+    const dismissedAt = Number(dismissedAtRaw)
+    if (!Number.isFinite(dismissedAt)) return true
+
+    return Date.now() - dismissedAt >= INSTALL_PROMPT_RESHOW_MS
+  } catch (error) {
+    return true
   }
 }
 
@@ -1355,6 +1394,8 @@ function App() {
   const [ctaVariant, setCtaVariant] = useState(() => getStoredValue('ctaVariant', ''))
   const [ctaMetrics, setCtaMetrics] = useState(() => getStoredValue('ctaMetrics', {}))
   const [ctaVariantAssignedAt, setCtaVariantAssignedAt] = useState(() => getStoredValue('ctaVariantAssignedAt', ''))
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null)
+  const [showInstallBanner, setShowInstallBanner] = useState(() => shouldShowInstallPromptBanner())
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -1461,6 +1502,43 @@ function App() {
       localStorage.setItem('ctaVariantAssignedAt', String(now))
     }
   }, [ctaVariant, ctaVariantAssignedAt])
+
+  useEffect(() => {
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+    if (standalone) {
+      setShowInstallBanner(false)
+      try {
+        localStorage.setItem('installPromptInstalled', '1')
+      } catch (error) {
+        // ignore storage errors
+      }
+      return undefined
+    }
+
+    const handleBeforeInstallPrompt = (event) => {
+      event.preventDefault()
+      setDeferredInstallPrompt(event)
+      setShowInstallBanner(shouldShowInstallPromptBanner())
+    }
+
+    const handleAppInstalled = () => {
+      setShowInstallBanner(false)
+      setDeferredInstallPrompt(null)
+      try {
+        localStorage.setItem('installPromptInstalled', '1')
+      } catch (error) {
+        // ignore storage errors
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('appinstalled', handleAppInstalled)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
+  }, [])
 
   useEffect(() => {
     if (!DEMO_STAFF_ENABLED && staffSession) {
@@ -2019,6 +2097,34 @@ function App() {
     }
   }
 
+  const dismissInstallBanner = () => {
+    setShowInstallBanner(false)
+    try {
+      localStorage.setItem('installPromptDismissed', '1')
+      localStorage.setItem('installPromptDismissedAt', String(Date.now()))
+    } catch (error) {
+      // ignore storage errors
+    }
+  }
+
+  const installApp = async () => {
+    if (!deferredInstallPrompt) return
+    try {
+      deferredInstallPrompt.prompt()
+      const choiceResult = await deferredInstallPrompt.userChoice
+      if (choiceResult?.outcome === 'accepted') {
+        setShowInstallBanner(false)
+      } else {
+        setShowInstallBanner(false)
+        localStorage.setItem('installPromptDismissed', '1')
+        localStorage.setItem('installPromptDismissedAt', String(Date.now()))
+      }
+    } catch (error) {
+      // ignore prompt errors
+    }
+    setDeferredInstallPrompt(null)
+  }
+
   const clearTransferFilters = () => setTransferFilters({ date: '', driver: '', vehicle: '', query: '' })
 
   const createTransfer = (event) => {
@@ -2398,6 +2504,31 @@ function App() {
             >
               {t.continueDraftShort}
             </button>
+          </div>
+        </div>
+      )}
+
+      {role === 'client' && showInstallBanner && deferredInstallPrompt && (
+        <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-6xl rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-4 py-3 md:hidden">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-semibold text-cyan-100">{t.installAppTitle}</p>
+            <p className="text-xs text-cyan-100/85">{t.installAppHint}</p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={installApp}
+                className="rounded-lg bg-cyan-400 px-3 py-2 text-xs font-semibold text-black hover:bg-cyan-300 transition"
+              >
+                {t.installAppButton}
+              </button>
+              <button
+                type="button"
+                onClick={dismissInstallBanner}
+                className="rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15 transition"
+              >
+                {t.installAppLater}
+              </button>
+            </div>
           </div>
         </div>
       )}
