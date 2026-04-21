@@ -190,6 +190,10 @@ const translations = {
     supportCall: 'Позвонить',
     supportEmail: 'Написать на почту',
     supportWhatsapp: 'Открыть WhatsApp',
+    preferredContactTitle: 'Предпочитаемый канал',
+    preferCall: 'Звонок',
+    preferWhatsapp: 'WhatsApp',
+    primaryCtaCall: 'Позвонить сейчас',
     receiptEmailButton: 'Квитанция на email',
     receiptPrompt: 'Введите email для квитанции',
     receiptInvalid: 'Введите корректный email адрес',
@@ -421,6 +425,10 @@ const translations = {
     supportCall: 'Қоңырау шалу',
     supportEmail: 'Поштаға жазу',
     supportWhatsapp: 'WhatsApp ашу',
+    preferredContactTitle: 'Қалаулы байланыс арнасы',
+    preferCall: 'Қоңырау',
+    preferWhatsapp: 'WhatsApp',
+    primaryCtaCall: 'Қазір қоңырау шалу',
     receiptEmailButton: 'Квитанцияны email-ға',
     receiptPrompt: 'Квитанция үшін email енгізіңіз',
     receiptInvalid: 'Дұрыс email мекенжайын енгізіңіз',
@@ -652,6 +660,10 @@ const translations = {
     supportCall: 'Call',
     supportEmail: 'Email',
     supportWhatsapp: 'Open WhatsApp',
+    preferredContactTitle: 'Preferred contact',
+    preferCall: 'Call',
+    preferWhatsapp: 'WhatsApp',
+    primaryCtaCall: 'Call now',
     receiptEmailButton: 'Email receipt',
     receiptPrompt: 'Enter email for receipt',
     receiptInvalid: 'Enter a valid email address',
@@ -1453,6 +1465,10 @@ function App() {
   const [birthdayBonusYear, setBirthdayBonusYear] = useState(() => getStoredValue('birthdayBonusYear', ''))
   const [referralCopied, setReferralCopied] = useState(false)
   const [showReferralNudge, setShowReferralNudge] = useState(false)
+  const [preferredContact, setPreferredContact] = useState(() => {
+    const stored = getStoredValue('preferredContact', 'whatsapp')
+    return stored === 'call' ? 'call' : 'whatsapp'
+  })
   const [ctaVariant, setCtaVariant] = useState(() => getStoredValue('ctaVariant', ''))
   const [ctaMetrics, setCtaMetrics] = useState(() => getStoredValue('ctaMetrics', {}))
   const [funnelMetrics, setFunnelMetrics] = useState(() => getStoredValue('formFunnelMetrics', { step1: 0, step2: 0, step3: 0, submit: 0 }))
@@ -1757,7 +1773,9 @@ function App() {
   const progressPercent = Math.round((completedSteps / 3) * 100)
   const hasDraft = formData.name.trim() || formData.date || formData.birthDate || formData.address.trim() || formData.comment.trim()
   const trustPoints = [t.trustNoHiddenFees, t.trustNda, t.trustInsured]
-  const primaryStartCta = ctaVariant === 'B' ? t.startOrderAlt : t.startOrder
+  const primaryStartCta = preferredContact === 'call'
+    ? t.primaryCtaCall
+    : (ctaVariant === 'B' ? t.startOrderAlt : t.startOrder)
   const serviceBasePriceByIndex = [15000, 100000, 10000, 18000, 25000, 12000]
   const resolveServiceBasePrice = (serviceName) => {
     const serviceIndex = services.findIndex((service) => service.title === serviceName)
@@ -2274,6 +2292,26 @@ function App() {
     trackCtaClick(`open_booking_${source}`)
     setMobileTab('booking')
     setDesktopTab('booking')
+  }
+
+  const setPreferredContactChannel = (channel) => {
+    const next = channel === 'call' ? 'call' : 'whatsapp'
+    setPreferredContact(next)
+    trackCtaClick(`preferred_contact_${next}`)
+    try {
+      localStorage.setItem('preferredContact', next)
+    } catch (error) {
+      // ignore storage errors
+    }
+  }
+
+  const handlePrimaryCta = (source = 'unknown') => {
+    if (preferredContact === 'call') {
+      trackCtaClick(`open_call_${source}`)
+      window.location.href = `tel:+${whatsappNumber}`
+      return
+    }
+    goToBooking(source)
   }
 
   const resetCtaMetrics = () => {
@@ -2841,11 +2879,31 @@ function App() {
                 <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP3}</motion.p>
               </motion.div>
 
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="text-xs text-white/65 mb-2">{t.preferredContactTitle}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreferredContactChannel('call')}
+                    className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${preferredContact === 'call' ? 'bg-accent text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
+                  >
+                    {t.preferCall}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreferredContactChannel('whatsapp')}
+                    className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${preferredContact === 'whatsapp' ? 'bg-accent text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
+                  >
+                    {t.preferWhatsapp}
+                  </button>
+                </div>
+              </div>
+
               <div className="mt-5 sm:mt-6 space-y-2">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-xl bg-accent/30 animate-ping pointer-events-none" />
                   <button
-                    onClick={() => goToBooking('hero_mobile')}
+                    onClick={() => handlePrimaryCta('hero_mobile')}
                     className="relative w-full py-3.5 sm:py-4 rounded-xl bg-accent text-black font-bold text-base sm:text-lg hover:bg-accent/90 active:scale-95 transition shadow-lg"
                   >
                     {primaryStartCta}
@@ -3520,12 +3578,32 @@ function App() {
                   <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP2}</motion.p>
                   <motion.p variants={prefersReducedMotion ? {} : fadeUp} transition={{ duration: 0.5 }}>{t.heroP3}</motion.p>
                 </motion.div>
+
+                <div className="max-w-3xl rounded-xl border border-white/10 bg-white/5 p-3">
+                  <p className="text-xs text-white/65 mb-2">{t.preferredContactTitle}</p>
+                  <div className="grid grid-cols-2 gap-2 max-w-sm">
+                    <button
+                      type="button"
+                      onClick={() => setPreferredContactChannel('call')}
+                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${preferredContact === 'call' ? 'bg-accent text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
+                    >
+                      {t.preferCall}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreferredContactChannel('whatsapp')}
+                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${preferredContact === 'whatsapp' ? 'bg-accent text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
+                    >
+                      {t.preferWhatsapp}
+                    </button>
+                  </div>
+                </div>
                 
                 <div className="mt-6 flex items-center gap-5 flex-wrap">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
                     <button
-                      onClick={() => goToBooking('hero_desktop')}
+                      onClick={() => handlePrimaryCta('hero_desktop')}
                       className="relative px-8 py-3 rounded-lg bg-accent text-black font-bold text-base hover:bg-accent/90 transition shadow-lg shadow-accent/20"
                     >
                       {primaryStartCta}
@@ -3921,10 +3999,10 @@ function App() {
               <div className="relative">
                 <div className="absolute inset-0 rounded-lg bg-accent/25 animate-ping pointer-events-none" />
                 <button
-                  onClick={() => goToBooking('bottom_cta_desktop')}
+                  onClick={() => handlePrimaryCta('bottom_cta_desktop')}
                   className="relative px-6 py-2 rounded-lg bg-accent text-black font-bold text-sm hover:bg-accent/90 transition shadow-lg shadow-accent/25"
                 >
-                  {ctaVariant === 'B' ? primaryStartCta : t.orderNowCta}
+                  {preferredContact === 'call' ? t.primaryCtaCall : (ctaVariant === 'B' ? primaryStartCta : t.orderNowCta)}
                 </button>
               </div>
             </div>
