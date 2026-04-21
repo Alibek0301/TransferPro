@@ -129,6 +129,13 @@ const translations = {
     analyticsReset: 'Сбросить',
     analyticsTopSource: 'Лучший источник',
     analyticsInsufficient: 'Недостаточно данных для вывода',
+    funnelTitle: 'Воронка формы (локально)',
+    funnelStep1: 'Шаг 1: контакты',
+    funnelStep2: 'Шаг 2: услуга и дата',
+    funnelStep3: 'Шаг 3: детали',
+    funnelSubmit: 'Отправлено',
+    funnelConversion: 'Конверсия формы',
+    funnelReset: 'Сбросить воронку',
     markConfirmed: 'Подтвердить',
     markOnWay: 'Отметить: в пути',
     markCompleted: 'Отметить: завершён',
@@ -353,6 +360,13 @@ const translations = {
     analyticsReset: 'Тазалау',
     analyticsTopSource: 'Ең тиімді арна',
     analyticsInsufficient: 'Қорытындыға дерек аз',
+    funnelTitle: 'Форма воронкасы (локалды)',
+    funnelStep1: '1-қадам: байланыс',
+    funnelStep2: '2-қадам: қызмет және күн',
+    funnelStep3: '3-қадам: детальдар',
+    funnelSubmit: 'Жіберілді',
+    funnelConversion: 'Форма конверсиясы',
+    funnelReset: 'Воронканы тазалау',
     markConfirmed: 'Растау',
     markOnWay: 'Белгілеу: жолда',
     markCompleted: 'Белгілеу: аяқталды',
@@ -577,6 +591,13 @@ const translations = {
     analyticsReset: 'Reset',
     analyticsTopSource: 'Top source',
     analyticsInsufficient: 'Not enough data yet',
+    funnelTitle: 'Form funnel (local)',
+    funnelStep1: 'Step 1: contacts',
+    funnelStep2: 'Step 2: service and date',
+    funnelStep3: 'Step 3: details',
+    funnelSubmit: 'Submitted',
+    funnelConversion: 'Form conversion',
+    funnelReset: 'Reset funnel',
     markConfirmed: 'Confirm',
     markOnWay: 'Mark: on the way',
     markCompleted: 'Mark: completed',
@@ -1434,9 +1455,11 @@ function App() {
   const [showReferralNudge, setShowReferralNudge] = useState(false)
   const [ctaVariant, setCtaVariant] = useState(() => getStoredValue('ctaVariant', ''))
   const [ctaMetrics, setCtaMetrics] = useState(() => getStoredValue('ctaMetrics', {}))
+  const [funnelMetrics, setFunnelMetrics] = useState(() => getStoredValue('formFunnelMetrics', { step1: 0, step2: 0, step3: 0, submit: 0 }))
   const [ctaVariantAssignedAt, setCtaVariantAssignedAt] = useState(() => getStoredValue('ctaVariantAssignedAt', ''))
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null)
   const [showInstallBanner, setShowInstallBanner] = useState(() => shouldShowInstallPromptBanner())
+  const funnelTrackedRef = useRef({ step1: false, step2: false, step3: false })
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -1760,6 +1783,27 @@ function App() {
     .sort((a, b) => b.count - a.count)
   const topBookingSource = bookingOpenSources[0]?.source || '-'
   const hasEnoughAnalyticsData = bookingOpens >= 8
+  const funnelStep1Count = Number(funnelMetrics?.step1 || 0)
+  const funnelStep2Count = Number(funnelMetrics?.step2 || 0)
+  const funnelStep3Count = Number(funnelMetrics?.step3 || 0)
+  const funnelSubmitCount = Number(funnelMetrics?.submit || 0)
+  const funnelConversionPercent = funnelStep1Count > 0 ? Math.round((funnelSubmitCount / funnelStep1Count) * 100) : 0
+
+  useEffect(() => {
+    if (primaryStepComplete && !funnelTrackedRef.current.step1) {
+      funnelTrackedRef.current.step1 = true
+      trackFunnelMetric('step1')
+    }
+    if (secondStepComplete && !funnelTrackedRef.current.step2) {
+      funnelTrackedRef.current.step2 = true
+      trackFunnelMetric('step2')
+    }
+    if (thirdStepComplete && !funnelTrackedRef.current.step3) {
+      funnelTrackedRef.current.step3 = true
+      trackFunnelMetric('step3')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [primaryStepComplete, secondStepComplete, thirdStepComplete])
 
   const maskPhone = (phone) => {
     const digits = (phone || '').replace(/\D/g, '')
@@ -2213,6 +2257,19 @@ function App() {
     })
   }
 
+  const trackFunnelMetric = (key) => {
+    setFunnelMetrics((prev) => {
+      const safePrev = (prev && typeof prev === 'object') ? prev : { step1: 0, step2: 0, step3: 0, submit: 0 }
+      const next = { ...safePrev, [key]: Number(safePrev[key] || 0) + 1 }
+      try {
+        localStorage.setItem('formFunnelMetrics', JSON.stringify(next))
+      } catch (error) {
+        // ignore storage errors
+      }
+      return next
+    })
+  }
+
   const goToBooking = (source = 'unknown') => {
     trackCtaClick(`open_booking_${source}`)
     setMobileTab('booking')
@@ -2223,6 +2280,17 @@ function App() {
     setCtaMetrics({})
     try {
       localStorage.removeItem('ctaMetrics')
+    } catch (error) {
+      // ignore storage errors
+    }
+  }
+
+  const resetFunnelMetrics = () => {
+    const resetValue = { step1: 0, step2: 0, step3: 0, submit: 0 }
+    setFunnelMetrics(resetValue)
+    funnelTrackedRef.current = { step1: false, step2: false, step3: false }
+    try {
+      localStorage.setItem('formFunnelMetrics', JSON.stringify(resetValue))
     } catch (error) {
       // ignore storage errors
     }
@@ -2429,6 +2497,7 @@ function App() {
     }
     if (!canSubmit) return
     trackCtaClick('submit_order')
+    trackFunnelMetric('submit')
     addToHistory()
     const popup = window.open(whatsappHref, '_blank', 'noopener,noreferrer')
     if (!popup) {
@@ -3425,6 +3494,20 @@ function App() {
                   </div>
                   <p className="mt-2 text-xs text-cyan-100/85">{t.analyticsTopSource}: {topBookingSource}</p>
                   {!hasEnoughAnalyticsData && <p className="mt-1 text-[11px] text-cyan-100/65">{t.analyticsInsufficient}</p>}
+                </div>
+
+                <div className="max-w-3xl rounded-xl border border-sky-500/30 bg-sky-500/10 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm text-sky-100 font-semibold">{t.funnelTitle}</p>
+                    <button type="button" onClick={resetFunnelMetrics} className="rounded-md bg-sky-400 px-2 py-1 text-[11px] font-semibold text-black hover:bg-sky-300 transition">{t.funnelReset}</button>
+                  </div>
+                  <div className="mt-2 grid grid-cols-5 gap-3 text-xs text-sky-100/90">
+                    <p>{t.funnelStep1}: {funnelStep1Count}</p>
+                    <p>{t.funnelStep2}: {funnelStep2Count}</p>
+                    <p>{t.funnelStep3}: {funnelStep3Count}</p>
+                    <p>{t.funnelSubmit}: {funnelSubmitCount}</p>
+                    <p>{t.funnelConversion}: {funnelConversionPercent}%</p>
+                  </div>
                 </div>
                 
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">{t.heroTitle}</h1>
