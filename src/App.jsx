@@ -183,6 +183,10 @@ const translations = {
     supportCall: 'Позвонить',
     supportEmail: 'Написать на почту',
     supportWhatsapp: 'Открыть WhatsApp',
+    receiptEmailButton: 'Квитанция на email',
+    receiptPrompt: 'Введите email для квитанции',
+    receiptInvalid: 'Введите корректный email адрес',
+    receiptOpened: 'Черновик письма с квитанцией открыт',
     lastOrderTitle: 'Последняя заявка',
     lastOrderEmpty: 'У вас пока нет заявок',
     statusTimeline: 'Этапы',
@@ -403,6 +407,10 @@ const translations = {
     supportCall: 'Қоңырау шалу',
     supportEmail: 'Поштаға жазу',
     supportWhatsapp: 'WhatsApp ашу',
+    receiptEmailButton: 'Квитанцияны email-ға',
+    receiptPrompt: 'Квитанция үшін email енгізіңіз',
+    receiptInvalid: 'Дұрыс email мекенжайын енгізіңіз',
+    receiptOpened: 'Квитанция бар хат жобасы ашылды',
     lastOrderTitle: 'Соңғы өтінім',
     lastOrderEmpty: 'Өтінімдер әлі жоқ',
     statusTimeline: 'Кезеңдер',
@@ -623,6 +631,10 @@ const translations = {
     supportCall: 'Call',
     supportEmail: 'Email',
     supportWhatsapp: 'Open WhatsApp',
+    receiptEmailButton: 'Email receipt',
+    receiptPrompt: 'Enter email for receipt',
+    receiptInvalid: 'Enter a valid email address',
+    receiptOpened: 'Receipt email draft was opened',
     lastOrderTitle: 'Last request',
     lastOrderEmpty: 'No requests yet',
     statusTimeline: 'Steps',
@@ -2063,6 +2075,54 @@ function App() {
     setDesktopTab('booking')
   }
 
+  const sendReceiptByEmail = (order) => {
+    const savedEmail = getStoredValue('receiptEmail', '')
+    const rawEmail = window.prompt(t.receiptPrompt, savedEmail)
+    if (rawEmail === null) return
+
+    const email = rawEmail.trim()
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setSubmitNotice(t.receiptInvalid)
+      setTimeout(() => setSubmitNotice(''), 2500)
+      return
+    }
+
+    const orderPrice = Number(order.estimatedPriceKzt || 0) || estimatePriceKzt(order.service, order.date)
+    const subject = `TransferPro - ${order.service || '-'} - ${order.createdAt || ''}`
+    const body = [
+      'TransferPro',
+      `${t.waService}: ${order.service || '-'}`,
+      `${t.waDate}: ${order.date || '-'}`,
+      `${t.waName}: ${order.name || '-'}`,
+      `${t.waPhone}: ${order.phoneMasked || order.phone || '-'}`,
+      `${t.waAddress}: ${order.address || '-'}`,
+      `${t.priceEstimateLabel}: ${Number(orderPrice).toLocaleString()} KZT`,
+      `${t.orderStatus}: ${getStatusLabel(order.status || 'new')}`,
+      `${t.orderCreated}: ${order.createdAt || '-'}`,
+    ].join('\n')
+
+    const mailto = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    window.location.href = mailto
+
+    try {
+      if (email) {
+        localStorage.setItem('receiptEmail', email)
+      }
+    } catch (error) {
+      // ignore storage errors
+    }
+
+    const updatedOrders = orderHistory.map((item) => (
+      item.id === order.id
+        ? { ...item, receiptEmail: email || item.receiptEmail || '', receiptSentAt: new Date().toLocaleString() }
+        : item
+    ))
+    setOrderHistory(updatedOrders)
+    writeScopedValue('orderHistory', updatedOrders, rememberDataOnDevice)
+    setSubmitNotice(t.receiptOpened)
+    setTimeout(() => setSubmitNotice(''), 2500)
+  }
+
   const addFavorite = () => {
     const normalizedAddress = formData.address.trim()
     if (!normalizedAddress) return
@@ -2908,7 +2968,10 @@ function App() {
                     </div>
                     <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
                       <span className="line-clamp-1">{latestOrder.address || t.waAddress}</span>
-                      <button onClick={() => repeatOrder(latestOrder)} className="px-2 py-1 rounded-lg bg-accent/15 text-accent hover:bg-accent/25 transition">{t.repeat}</button>
+                      <div className="flex gap-2">
+                        <button onClick={() => repeatOrder(latestOrder)} className="px-2 py-1 rounded-lg bg-accent/15 text-accent hover:bg-accent/25 transition">{t.repeat}</button>
+                        <button onClick={() => sendReceiptByEmail(latestOrder)} className="px-2 py-1 rounded-lg bg-white/10 text-white hover:bg-white/15 transition">{t.receiptEmailButton}</button>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -3204,9 +3267,17 @@ function App() {
                             <p className="text-sm text-white/80">{order.service}</p>
                             <p className="text-xs text-white/60">{order.name || '—'} • {order.createdAt}</p>
                             <p className="text-xs text-accent mt-1">{t.orderStatus}: {getStatusLabel(order.status || 'new')}</p>
-                            <button onClick={() => repeatOrder(order)} className="text-xs mt-2 px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
-                              {t.repeat}
-                            </button>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <button onClick={() => repeatOrder(order)} className="text-xs px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30 transition">
+                                {t.repeat}
+                              </button>
+                              <button onClick={() => sendReceiptByEmail(order)} className="text-xs px-3 py-1 bg-white/10 text-white rounded hover:bg-white/15 transition">
+                                {t.receiptEmailButton}
+                              </button>
+                            </div>
+                            {order.receiptSentAt && (
+                              <p className="mt-1 text-[10px] text-white/45">email: {order.receiptEmail || '-'} • {order.receiptSentAt}</p>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -3572,7 +3643,10 @@ function App() {
                       </div>
                       <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
                         <span className="line-clamp-1">{latestOrder.address || t.waAddress}</span>
-                        <button onClick={() => repeatOrder(latestOrder)} className="px-3 py-1 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition">{t.repeat}</button>
+                        <div className="flex gap-2">
+                          <button onClick={() => repeatOrder(latestOrder)} className="px-3 py-1 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition">{t.repeat}</button>
+                          <button onClick={() => sendReceiptByEmail(latestOrder)} className="px-3 py-1 rounded-lg bg-white/10 text-white hover:bg-white/15 transition">{t.receiptEmailButton}</button>
+                        </div>
                       </div>
                     </div>
                   ) : (
