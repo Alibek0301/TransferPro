@@ -215,6 +215,12 @@ const translations = {
     routeToPlaceholder: 'Отель',
     driverLoginPlaceholder: 'driver@mail.ru',
     vehiclePlaceholder: 'Mercedes V-class',
+    detectLocation: 'Определить мое место',
+    locating: 'Определяем место...',
+    locationSuccess: 'Адрес подставлен в форму',
+    locationDenied: 'Доступ к геолокации запрещен',
+    locationUnavailable: 'Геолокация недоступна в этом браузере',
+    locationFailed: 'Не удалось определить адрес, проверьте интернет или разрешение',
     trustNoHiddenFees: 'Без скрытых доплат',
     trustNda: 'Конфиденциальность поездок и маршрутов',
     trustInsured: 'Страхование пассажиров и ответственности',
@@ -456,6 +462,12 @@ const translations = {
     routeToPlaceholder: 'Қонақ үй',
     driverLoginPlaceholder: 'driver@mail.ru',
     vehiclePlaceholder: 'Mercedes V-class',
+    detectLocation: 'Менің орнымды анықтау',
+    locating: 'Орын анықталып жатыр...',
+    locationSuccess: 'Мекенжай формаға қойылды',
+    locationDenied: 'Геолокацияға рұқсат берілмеді',
+    locationUnavailable: 'Бұл браузерде геолокация қолжетімсіз',
+    locationFailed: 'Мекенжайды анықтау мүмкін болмады, интернет пен рұқсатты тексеріңіз',
     trustNoHiddenFees: 'Жасырын төлемдер жоқ',
     trustNda: 'Сапар мен маршрут құпиялығы',
     trustInsured: 'Жолаушы және жауапкершілік сақтандырылған',
@@ -697,6 +709,12 @@ const translations = {
     routeToPlaceholder: 'Hotel',
     driverLoginPlaceholder: 'driver@mail.ru',
     vehiclePlaceholder: 'Mercedes V-class',
+    detectLocation: 'Detect my location',
+    locating: 'Detecting location...',
+    locationSuccess: 'Address was added to the form',
+    locationDenied: 'Location access was denied',
+    locationUnavailable: 'Geolocation is not available in this browser',
+    locationFailed: 'Could not resolve address, check internet or permission',
     trustNoHiddenFees: 'No hidden fees',
     trustNda: 'Trip and route confidentiality',
     trustInsured: 'Passenger and liability insurance',
@@ -1468,6 +1486,8 @@ function App() {
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
   const [notificationsAllowed, setNotificationsAllowed] = useState(() => (typeof Notification !== 'undefined' && Notification.permission === 'granted'))
   const [notificationHint, setNotificationHint] = useState('')
+  const [locationLookupInProgress, setLocationLookupInProgress] = useState(false)
+  const [locationNotice, setLocationNotice] = useState('')
   
   // 🎯 НОВЫЕ СОСТОЯНИЯ ДЛЯ УЛУЧШЕНИЙ
   const [editingFavNoteId, setEditingFavNoteId] = useState(null)
@@ -2592,6 +2612,53 @@ function App() {
     }
   }
 
+  const detectCurrentLocation = async () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocationNotice(t.locationUnavailable)
+      return
+    }
+
+    setLocationLookupInProgress(true)
+    setLocationNotice('')
+    trackCtaClick('detect_location')
+
+    const getPosition = () => new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      })
+    })
+
+    try {
+      const position = await getPosition()
+      const { latitude, longitude } = position.coords
+
+      let resolvedAddress = ''
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${language}`)
+        if (response.ok) {
+          const data = await response.json()
+          resolvedAddress = data?.display_name || ''
+        }
+      } catch (error) {
+        // ignore reverse geocoding errors and use coordinates fallback
+      }
+
+      const fallbackAddress = `GPS: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+      setFormData((prev) => ({ ...prev, address: resolvedAddress || fallbackAddress }))
+      setLocationNotice(resolvedAddress ? t.locationSuccess : `${t.locationSuccess} (${fallbackAddress})`)
+    } catch (error) {
+      if (error?.code === 1) {
+        setLocationNotice(t.locationDenied)
+      } else {
+        setLocationNotice(t.locationFailed)
+      }
+    } finally {
+      setLocationLookupInProgress(false)
+    }
+  }
+
   const whatsappHref = useMemo(() => {
     const messageParts = [
       t.waMessageTitle,
@@ -3273,6 +3340,17 @@ function App() {
                       />
                       <button
                         type="button"
+                        onClick={detectCurrentLocation}
+                        disabled={locationLookupInProgress}
+                        className={`mt-2 w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                          locationLookupInProgress ? 'bg-white/5 text-white/50 cursor-wait' : 'bg-white/10 text-white hover:bg-white/15'
+                        }`}
+                      >
+                        {locationLookupInProgress ? t.locating : t.detectLocation}
+                      </button>
+                      {locationNotice && <p className="mt-2 text-[11px] text-white/60">{locationNotice}</p>}
+                      <button
+                        type="button"
                         onClick={addFavorite}
                         disabled={!formData.address}
                         className={`mt-2 w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
@@ -3851,6 +3929,17 @@ function App() {
                       <div>
                         <label htmlFor="address_desktop" className="text-sm font-semibold text-white">{t.addressLabel}</label>
                         <input id="address_desktop" name="address" placeholder={t.addressPlaceholder} value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white caret-accent placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
+                        <button
+                          type="button"
+                          onClick={detectCurrentLocation}
+                          disabled={locationLookupInProgress}
+                          className={`mt-2 w-full rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                            locationLookupInProgress ? 'bg-white/5 text-white/50 cursor-wait' : 'bg-white/10 text-white hover:bg-white/15'
+                          }`}
+                        >
+                          {locationLookupInProgress ? t.locating : t.detectLocation}
+                        </button>
+                        {locationNotice && <p className="mt-2 text-[11px] text-white/60">{locationNotice}</p>}
                         <button
                           type="button"
                           onClick={addFavorite}
