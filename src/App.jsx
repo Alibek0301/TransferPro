@@ -51,6 +51,7 @@ const translations = {
     phoneInvalid: 'Введите корректный номер (+7XXXXXXXXXX)',
     bookingTitle: 'Готовы оценить новый уровень комфорта?',
     bookingSubtitle: 'Закажите разовый трансфер или оформите долгосрочный договор на обслуживание уже сегодня. Наш менеджер на связи 24/7.',
+    bookingSubtitleShort: 'Оставьте контакты и дату. Подтверждаем быстро в WhatsApp или по звонку.',
     heroBadge: 'Астана · Премиальный трансфер',
     heroTitle: 'Ваш персональный автопарк в столице',
     heroP1: 'Мы не просто предоставляем автомобиль с водителем — мы берем на себя полную ответственность за ваш комфорт на дорогах столицы.',
@@ -291,6 +292,7 @@ const translations = {
     phoneInvalid: 'Дұрыс нөмір енгізіңіз (+7XXXXXXXXXX)',
     bookingTitle: 'Жаңа жайлылық деңгейін көргіңіз келе ме?',
     bookingSubtitle: 'Бір реттік трансферге тапсырыс беріңіз немесе ұзақ мерзімді қызмет көрсету келісімін жасаңыз. Менеджер 24/7 байланыста.',
+    bookingSubtitleShort: 'Байланыс пен күнді енгізіңіз. WhatsApp не қоңырау арқылы жылдам растаймыз.',
     heroBadge: 'Астана · Премиум трансфер қызметі',
     heroTitle: 'Елордадағы жеке автопаркіңіз',
     heroP1: 'Біз жай ғана жүргізушісі бар көлік бермейміз — елорда жолдарындағы жайлылығыңыз үшін толық жауапкершілік аламыз.',
@@ -531,6 +533,7 @@ const translations = {
     phoneInvalid: 'Enter a valid number (+7XXXXXXXXXX)',
     bookingTitle: 'Ready for a new level of comfort?',
     bookingSubtitle: 'Book a one-time transfer or set up a long-term service contract today. Our manager is online 24/7.',
+    bookingSubtitleShort: 'Leave contact details and date. We confirm quickly via WhatsApp or phone.',
     heroBadge: 'Astana · Premium Transport Service',
     heroTitle: 'Your personal fleet in the capital',
     heroP1: 'We do more than provide a car with a driver — we take full responsibility for your comfort on city roads.',
@@ -1499,6 +1502,7 @@ function App() {
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
+  const bookingSubtitleCompact = t.bookingSubtitleShort || t.bookingSubtitle
   const role = DEMO_STAFF_ENABLED ? (staffSession?.role || 'client') : 'client'
   const legalPageQuery = `?lang=${language}`
   
@@ -3110,7 +3114,7 @@ function App() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <h2 className="text-2xl sm:text-3xl font-serif text-accent font-bold">{t.bookingTitle}</h2>
-                  <p className="mt-3 text-white/70 text-sm sm:text-base leading-relaxed">{t.bookingSubtitle}</p>
+                  <p className="mt-2 text-white/70 text-sm sm:text-base leading-relaxed">{bookingSubtitleCompact}</p>
                 </div>
                 {savedSince && <span className="text-xs text-green-400 font-semibold whitespace-nowrap mt-1">{t.saved}</span>}
               </div>
@@ -3225,19 +3229,6 @@ function App() {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="birth_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.birthdayLabel}</label>
-                  <input
-                    id="birth_mobile"
-                    name="birthDate"
-                    type="date"
-                    value={formData.birthDate}
-                    onChange={updateField}
-                    onFocus={closeMobileMenu}
-                    className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md"
-                  />
-                </div>
-
                 <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-white/85">
                   {t.priceEstimateLabel}: <span className="text-accent font-semibold">{estimatedPriceKzt.toLocaleString()} ₸</span>
                 </div>
@@ -3254,6 +3245,19 @@ function App() {
 
                 {showMobileDetails && (
                   <>
+                    <div>
+                      <label htmlFor="birth_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.birthdayLabel}</label>
+                      <input
+                        id="birth_mobile"
+                        name="birthDate"
+                        type="date"
+                        value={formData.birthDate}
+                        onChange={updateField}
+                        onFocus={closeMobileMenu}
+                        className="w-full rounded-xl border-2 border-white/20 bg-black/60 px-4 py-3 sm:py-3.5 text-base sm:text-lg font-medium outline-none focus:border-accent focus:bg-black/80 transition shadow-md"
+                      />
+                    </div>
+
                     <div>
                       <label htmlFor="address_mobile" className="block text-xs sm:text-sm font-bold text-white/90 mb-2">{t.addressLabel}</label>
                       <input
@@ -3747,7 +3751,7 @@ function App() {
                 {...(prefersReducedMotion ? {} : { variants: fadeUp, initial: 'hidden', whileInView: 'show', viewport: { once: true, amount: 0.3 } })}
               >
                 <h2 className="section-title text-4xl text-accent">{t.booking}</h2>
-                <p className="mt-3 text-white text-base mb-6">{t.bookingSubtitle}</p>
+                <p className="mt-2 text-white/80 text-sm mb-5">{bookingSubtitleCompact}</p>
 
                 {submitNotice && <p className="mb-4 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-300">{submitNotice}</p>}
                 {showOrderHabitNudge && orderHabitReminder && (
@@ -3824,10 +3828,6 @@ function App() {
                       <input id="date_desktop" name="date" type="date" required min={getTodayDate()} value={formData.date} onChange={updateField} className="w-full rounded-lg border border-white/30 bg-white/10 pl-10 pr-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
                     </div>
                   </div>
-                  <div>
-                    <label htmlFor="birth_desktop" className="text-sm font-semibold text-white">{t.birthdayLabel}</label>
-                    <input id="birth_desktop" name="birthDate" type="date" value={formData.birthDate} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
-                  </div>
                   <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-white/85">
                     {t.priceEstimateLabel}: <span className="text-accent font-semibold">{estimatedPriceKzt.toLocaleString()} ₸</span>
                   </div>
@@ -3843,6 +3843,11 @@ function App() {
 
                   {showDesktopDetails && (
                     <>
+                      <div>
+                        <label htmlFor="birth_desktop" className="text-sm font-semibold text-white">{t.birthdayLabel}</label>
+                        <input id="birth_desktop" name="birthDate" type="date" value={formData.birthDate} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white outline-none transition focus:border-accent focus:bg-white/15" />
+                      </div>
+
                       <div>
                         <label htmlFor="address_desktop" className="text-sm font-semibold text-white">{t.addressLabel}</label>
                         <input id="address_desktop" name="address" placeholder={t.addressPlaceholder} value={formData.address} onChange={updateField} className="mt-1 w-full rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-base font-medium text-white caret-accent placeholder-white/60 outline-none transition focus:border-accent focus:bg-white/15" />
