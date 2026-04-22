@@ -136,6 +136,11 @@ const translations = {
     funnelSubmit: 'Отправлено',
     funnelConversion: 'Конверсия формы',
     funnelReset: 'Сбросить воронку',
+    orderHabitTitle: 'Похоже, у вас есть привычный день заказа',
+    orderHabitHint: 'Чаще всего вы заказываете в',
+    orderHabitAction: 'Поставить дату',
+    orderHabitDismiss: 'Скрыть на 7 дней',
+    orderHabitApplied: 'Дата подставлена в форму',
     markConfirmed: 'Подтвердить',
     markOnWay: 'Отметить: в пути',
     markCompleted: 'Отметить: завершён',
@@ -371,6 +376,11 @@ const translations = {
     funnelSubmit: 'Жіберілді',
     funnelConversion: 'Форма конверсиясы',
     funnelReset: 'Воронканы тазалау',
+    orderHabitTitle: 'Сізде тұрақты тапсырыс күні бар сияқты',
+    orderHabitHint: 'Сіз көбіне мына күні тапсырыс бересіз:',
+    orderHabitAction: 'Күнді қою',
+    orderHabitDismiss: '7 күнге жасыру',
+    orderHabitApplied: 'Күн формаға қойылды',
     markConfirmed: 'Растау',
     markOnWay: 'Белгілеу: жолда',
     markCompleted: 'Белгілеу: аяқталды',
@@ -606,6 +616,11 @@ const translations = {
     funnelSubmit: 'Submitted',
     funnelConversion: 'Form conversion',
     funnelReset: 'Reset funnel',
+    orderHabitTitle: 'You seem to have a usual booking day',
+    orderHabitHint: 'You most often book on',
+    orderHabitAction: 'Set date',
+    orderHabitDismiss: 'Hide for 7 days',
+    orderHabitApplied: 'Date has been set in the form',
     markConfirmed: 'Confirm',
     markOnWay: 'Mark: on the way',
     markCompleted: 'Mark: completed',
@@ -1465,6 +1480,11 @@ function App() {
   const [birthdayBonusYear, setBirthdayBonusYear] = useState(() => getStoredValue('birthdayBonusYear', ''))
   const [referralCopied, setReferralCopied] = useState(false)
   const [showReferralNudge, setShowReferralNudge] = useState(false)
+  const [showOrderHabitNudge, setShowOrderHabitNudge] = useState(() => {
+    const dismissedAt = Number(getStoredValue('orderHabitNudgeDismissedAt', '0'))
+    if (!Number.isFinite(dismissedAt)) return true
+    return Date.now() - dismissedAt >= 7 * 24 * 60 * 60 * 1000
+  })
   const [preferredContact, setPreferredContact] = useState(() => {
     const stored = getStoredValue('preferredContact', 'whatsapp')
     return stored === 'call' ? 'call' : 'whatsapp'
@@ -1898,6 +1918,45 @@ function App() {
     const code = `RETURN10-${new Date(lastOrderTs).toISOString().slice(0, 10).replace(/-/g, '')}`
     return { eligible: true, code }
   }, [latestOrder])
+
+  const orderHabitReminder = useMemo(() => {
+    if (orderHistory.length < 3) return null
+
+    const weekdayCounts = orderHistory.reduce((acc, order) => {
+      const ts = Number(order.id || 0)
+      if (!Number.isFinite(ts) || ts <= 0) return acc
+      const day = new Date(ts).getDay()
+      acc[day] = (acc[day] || 0) + 1
+      return acc
+    }, {})
+
+    const [topDayRaw, topCountRaw] = Object.entries(weekdayCounts).sort((a, b) => b[1] - a[1])[0] || []
+    const topCount = Number(topCountRaw || 0)
+    const topDay = Number(topDayRaw)
+    if (!Number.isFinite(topDay) || topCount < 3) return null
+
+    const today = new Date()
+    const currentDay = today.getDay()
+    let daysUntil = (topDay - currentDay + 7) % 7
+    if (daysUntil === 0) daysUntil = 7
+
+    const nextDate = new Date(today)
+    nextDate.setHours(0, 0, 0, 0)
+    nextDate.setDate(nextDate.getDate() + daysUntil)
+
+    const locale = language === 'kk' ? 'kk-KZ' : (language === 'en' ? 'en-US' : 'ru-RU')
+    const weekdayLabel = nextDate.toLocaleDateString(locale, { weekday: 'long' })
+    const nextDateLabel = nextDate.toLocaleDateString(locale, { day: '2-digit', month: 'long' })
+
+    const inputDate = new Date(nextDate)
+    inputDate.setMinutes(inputDate.getMinutes() - inputDate.getTimezoneOffset())
+
+    return {
+      weekdayLabel,
+      nextDateLabel,
+      nextDateInput: inputDate.toISOString().slice(0, 10),
+    }
+  }, [orderHistory, language])
 
   const isBirthdayToday = useMemo(() => {
     if (!formData.birthDate) return false
@@ -2382,6 +2441,25 @@ function App() {
     }
     setReactivationCopied(true)
     setTimeout(() => setReactivationCopied(false), 2000)
+  }
+
+  const applyOrderHabitDate = () => {
+    if (!orderHabitReminder?.nextDateInput) return
+    setFormData((prev) => ({ ...prev, date: orderHabitReminder.nextDateInput }))
+    setShowOrderHabitNudge(false)
+    trackCtaClick('order_habit_apply_date')
+    setSubmitNotice(t.orderHabitApplied)
+    setTimeout(() => setSubmitNotice(''), 2500)
+  }
+
+  const dismissOrderHabitNudge = () => {
+    setShowOrderHabitNudge(false)
+    trackCtaClick('order_habit_dismiss')
+    try {
+      localStorage.setItem('orderHabitNudgeDismissedAt', String(Date.now()))
+    } catch (error) {
+      // ignore storage errors
+    }
   }
 
   const saveFavNote = (favId) => {
@@ -3038,6 +3116,23 @@ function App() {
               </div>
 
               {submitNotice && <p className="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-300">{submitNotice}</p>}
+
+              {showOrderHabitNudge && orderHabitReminder && (
+                <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-100">
+                  <p className="font-semibold">{t.orderHabitTitle}</p>
+                  <p className="mt-1 text-indigo-100/85">
+                    {t.orderHabitHint} <span className="font-semibold capitalize">{orderHabitReminder.weekdayLabel}</span> ({orderHabitReminder.nextDateLabel})
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button type="button" onClick={applyOrderHabitDate} className="rounded-md bg-indigo-300 px-2 py-1 text-[11px] font-semibold text-black hover:bg-indigo-200 transition">
+                      {t.orderHabitAction}
+                    </button>
+                    <button type="button" onClick={dismissOrderHabitNudge} className="rounded-md bg-white/10 px-2 py-1 text-[11px] text-white hover:bg-white/15 transition">
+                      {t.orderHabitDismiss}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                 <div className="flex items-center justify-between text-xs text-white/70 mb-2">
@@ -3739,6 +3834,22 @@ function App() {
                 <p className="mt-3 text-white text-base mb-6">{t.bookingSubtitle}</p>
 
                 {submitNotice && <p className="mb-4 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-300">{submitNotice}</p>}
+                {showOrderHabitNudge && orderHabitReminder && (
+                  <div className="mb-4 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-100">
+                    <p className="font-semibold">{t.orderHabitTitle}</p>
+                    <p className="mt-1 text-indigo-100/85">
+                      {t.orderHabitHint} <span className="font-semibold capitalize">{orderHabitReminder.weekdayLabel}</span> ({orderHabitReminder.nextDateLabel})
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button type="button" onClick={applyOrderHabitDate} className="rounded-md bg-indigo-300 px-2 py-1 text-[11px] font-semibold text-black hover:bg-indigo-200 transition">
+                        {t.orderHabitAction}
+                      </button>
+                      <button type="button" onClick={dismissOrderHabitNudge} className="rounded-md bg-white/10 px-2 py-1 text-[11px] text-white hover:bg-white/15 transition">
+                        {t.orderHabitDismiss}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {showReferralNudge && (
                   <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
                     <p>{t.referralAfterOrder}</p>
