@@ -3134,101 +3134,17 @@ function App() {
                 </div>
               )}
 
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                <div className="flex items-center justify-between text-xs text-white/70 mb-2">
-                  <span>{t.bookingProgress}</span>
-                  <span>{progressPercent}%</span>
-                </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-accent transition-all" style={{ width: `${progressPercent}%` }} />
-                </div>
-                <div className="mt-2 flex gap-2 text-[11px]">
-                  <span className={primaryStepComplete ? 'text-accent' : 'text-white/40'}>{t.progressStep1}</span>
-                  <span className={secondStepComplete ? 'text-accent' : 'text-white/40'}>{t.progressStep2}</span>
-                  <span className={thirdStepComplete ? 'text-accent' : 'text-white/40'}>{t.progressStep3}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-2">
-                {trustPoints.map((point) => (
-                  <div key={point} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/90">
-                    ✓ {point}
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-accent font-semibold">{t.quickChoice}</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {quickScenarios.map((scenario) => (
-                    <button
-                      key={scenario.label}
-                      type="button"
-                      onClick={() => applyQuickScenario(scenario, 'mobile')}
-                      className="rounded-lg bg-white/8 border border-white/10 px-2 py-2 text-xs font-semibold hover:bg-white/12 transition"
-                    >
-                      {scenario.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {latestOrder ? (
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold text-accent">{t.lastOrderTitle}</p>
-                        <p className="text-xs text-white/60">{latestOrder.service} · {latestOrder.date || '-'}</p>
-                      </div>
-                      <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/80">{getStatusLabel(latestOrder.status || 'new')}</span>
-                    </div>
-                    <div className="mt-2 flex items-center gap-1">
-                      {statusSteps.map((step, idx) => (
-                        <div key={step} className={`h-2 flex-1 rounded-full ${idx <= currentStatusIndex ? 'bg-accent' : 'bg-white/10'}`} />
-                      ))}
-                    </div>
-                    <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
-                      <span className="line-clamp-1">{latestOrder.address || t.waAddress}</span>
-                      <div className="flex gap-2">
-                        <button onClick={() => repeatOrder(latestOrder)} className="px-2 py-1 rounded-lg bg-accent/15 text-accent hover:bg-accent/25 transition">{t.repeat}</button>
-                        <button onClick={() => sendReceiptByEmail(latestOrder)} className="px-2 py-1 rounded-lg bg-white/10 text-white hover:bg-white/15 transition">{t.receiptEmailButton}</button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/70">{t.lastOrderEmpty}</div>
-                )}
-
-                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-accent">{t.notifyLabel}</p>
-                      <p className="text-xs text-white/60">{notificationsAllowed ? t.notifyEnabled : t.notifyEnable}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={requestNotifications}
-                      disabled={notificationsAllowed}
-                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                        notificationsAllowed ? 'bg-white/5 text-white/50 cursor-not-allowed' : 'bg-accent/20 text-accent hover:bg-accent/30'
-                      }`}
-                    >
-                      {notificationsAllowed ? t.notifyEnabled : t.notifyButton}
+              {latestOrder && (
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/75">
+                  <p className="text-white/60">{t.lastOrderTitle}</p>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <p className="line-clamp-1">{latestOrder.service} · {latestOrder.date || '-'}</p>
+                    <button onClick={() => repeatOrder(latestOrder)} className="rounded-md bg-accent/20 px-2 py-1 text-accent hover:bg-accent/30 transition">
+                      {t.repeat}
                     </button>
                   </div>
-                  {notificationHint && <p className="mt-2 text-xs text-white/60">{notificationHint}</p>}
                 </div>
-
-                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
-                  <p className="text-sm font-semibold text-accent">{t.supportCardTitle}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <a href="tel:+77781556699" className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.supportCall}</a>
-                    <a href="mailto:vip.transfer.astana@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
-                    <a href={whatsappHref} target="_blank" rel="noreferrer" className="rounded-lg bg-green-500/20 text-green-200 px-3 py-2 text-xs font-semibold hover:bg-green-500/30 transition">{t.supportWhatsapp}</a>
-                  </div>
-                </div>
-              </div>
+              )}
 
               <form className="space-y-3.5 pb-24 sm:space-y-4 sm:pb-4" onSubmit={handleSubmit}>
                 <div>
@@ -3859,101 +3775,17 @@ function App() {
                   </div>
                 )}
 
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4 mb-5">
-                  <div className="flex items-center justify-between text-xs text-white/70 mb-2">
-                    <span>{t.bookingProgress}</span>
-                    <span>{progressPercent}%</span>
-                  </div>
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-accent transition-all" style={{ width: `${progressPercent}%` }} />
-                  </div>
-                  <div className="mt-2 flex gap-3 text-xs">
-                    <span className={primaryStepComplete ? 'text-accent' : 'text-white/40'}>{t.progressStep1}</span>
-                    <span className={secondStepComplete ? 'text-accent' : 'text-white/40'}>{t.progressStep2}</span>
-                    <span className={thirdStepComplete ? 'text-accent' : 'text-white/40'}>{t.progressStep3}</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 mb-5">
-                  {trustPoints.map((point) => (
-                    <div key={point} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/90">
-                      ✓ {point}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mb-5">
-                  <p className="text-accent font-semibold text-sm mb-2">{t.quickChoice}</p>
-                  <div className="flex gap-2 flex-wrap">
-                    {quickScenarios.map((scenario) => (
-                      <button
-                        key={scenario.label}
-                        type="button"
-                        onClick={() => applyQuickScenario(scenario, 'desktop')}
-                        className="rounded-lg bg-white/8 border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/12 transition"
-                      >
-                        {scenario.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-5">
-                  {latestOrder ? (
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-semibold text-accent">{t.lastOrderTitle}</p>
-                          <p className="text-xs text-white/60">{latestOrder.service} · {latestOrder.date || '-'}</p>
-                        </div>
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/80">{getStatusLabel(latestOrder.status || 'new')}</span>
-                      </div>
-                      <div className="mt-3 flex items-center gap-1">
-                        {statusSteps.map((step, idx) => (
-                          <div key={step} className={`h-2 flex-1 rounded-full ${idx <= currentStatusIndex ? 'bg-accent' : 'bg-white/10'}`} />
-                        ))}
-                      </div>
-                      <div className="mt-2 flex items-center justify-between text-[11px] text-white/60">
-                        <span className="line-clamp-1">{latestOrder.address || t.waAddress}</span>
-                        <div className="flex gap-2">
-                          <button onClick={() => repeatOrder(latestOrder)} className="px-3 py-1 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition">{t.repeat}</button>
-                          <button onClick={() => sendReceiptByEmail(latestOrder)} className="px-3 py-1 rounded-lg bg-white/10 text-white hover:bg-white/15 transition">{t.receiptEmailButton}</button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">{t.lastOrderEmpty}</div>
-                  )}
-
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold text-accent">{t.notifyLabel}</p>
-                        <p className="text-xs text-white/60">{notificationsAllowed ? t.notifyEnabled : t.notifyEnable}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={requestNotifications}
-                        disabled={notificationsAllowed}
-                        className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                          notificationsAllowed ? 'bg-white/5 text-white/50 cursor-not-allowed' : 'bg-accent/20 text-accent hover:bg-accent/30'
-                        }`}
-                      >
-                        {notificationsAllowed ? t.notifyEnabled : t.notifyButton}
+                {latestOrder && (
+                  <div className="mb-5 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/75">
+                    <p className="text-white/60">{t.lastOrderTitle}</p>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="line-clamp-1">{latestOrder.service} · {latestOrder.date || '-'}</p>
+                      <button onClick={() => repeatOrder(latestOrder)} className="rounded-md bg-accent/20 px-2 py-1 text-accent hover:bg-accent/30 transition">
+                        {t.repeat}
                       </button>
                     </div>
-                    {notificationHint && <p className="mt-2 text-xs text-white/60">{notificationHint}</p>}
                   </div>
-
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
-                    <p className="text-sm font-semibold text-accent">{t.supportCardTitle}</p>
-                    <div className="flex flex-wrap gap-2">
-                      <a href="tel:+77781556699" className="rounded-lg bg-accent/20 text-accent px-3 py-2 text-xs font-semibold hover:bg-accent/30 transition">{t.supportCall}</a>
-                      <a href="mailto:vip.transfer.astana@gmail.com" className="rounded-lg bg-white/10 text-white px-3 py-2 text-xs font-semibold hover:bg-white/15 transition">{t.supportEmail}</a>
-                      <a href={whatsappHref} target="_blank" rel="noreferrer" className="rounded-lg bg-green-500/20 text-green-200 px-3 py-2 text-xs font-semibold hover:bg-green-500/30 transition">{t.supportWhatsapp}</a>
-                    </div>
-                  </div>
-                </div>
+                )}
                 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div>
