@@ -125,6 +125,14 @@ const translations = {
     pricingFinalNote: 'Финальную сумму подтверждает менеджер перед поездкой.',
     paymentMethodsTitle: 'Способы оплаты',
     paymentMethodsList: 'Kaspi, Halyk, наличные, счет для компаний',
+    partnerOfferTitle: 'Партнерское предложение',
+    partnerOfferOpen: 'Открыть предложение',
+    partnerOfferHotelTitle: 'Скидка на отель рядом с аэропортом',
+    partnerOfferHotelHint: 'Для маршрутов аэропорт → город доступны спецусловия проживания.',
+    partnerOfferFoodTitle: 'Подборка ресторанов в центре',
+    partnerOfferFoodHint: 'Если едете в центр, посмотрите лучшие места рядом с точкой прибытия.',
+    partnerOfferInsuranceTitle: 'Страховка путешественника',
+    partnerOfferInsuranceHint: 'Для дальних поездок рекомендуем оформить короткий страховой полис.',
     summaryTotalSpent: 'Потрачено всего',
     summaryAvgCheck: 'Средний чек',
     summaryFavService: 'Любимая услуга',
@@ -387,6 +395,14 @@ const translations = {
     pricingFinalNote: 'Соңғы соманы сапар алдында менеджер растайды.',
     paymentMethodsTitle: 'Төлем тәсілдері',
     paymentMethodsList: 'Kaspi, Halyk, қолма-қол, компанияларға шот',
+    partnerOfferTitle: 'Серіктестік ұсыныс',
+    partnerOfferOpen: 'Ұсынысты ашу',
+    partnerOfferHotelTitle: 'Әуежай маңындағы қонақүйге жеңілдік',
+    partnerOfferHotelHint: 'Әуежай → қала бағыттарына арнайы тұру шарттары қолжетімді.',
+    partnerOfferFoodTitle: 'Орталықтағы мейрамханалар топтамасы',
+    partnerOfferFoodHint: 'Орталыққа бара жатсаңыз, келу нүктесі маңындағы үздік орындарды қараңыз.',
+    partnerOfferInsuranceTitle: 'Саяхат сақтандыруы',
+    partnerOfferInsuranceHint: 'Ұзақ сапарлар үшін қысқа сақтандыру полисін ұсынамыз.',
     summaryTotalSpent: 'Жалпы шығын',
     summaryAvgCheck: 'Орташа чек',
     summaryFavService: 'Таңдаулы қызмет',
@@ -649,6 +665,14 @@ const translations = {
     pricingFinalNote: 'Final amount is confirmed by the manager before the trip.',
     paymentMethodsTitle: 'Payment methods',
     paymentMethodsList: 'Kaspi, Halyk, cash, invoice for companies',
+    partnerOfferTitle: 'Partner offer',
+    partnerOfferOpen: 'Open offer',
+    partnerOfferHotelTitle: 'Hotel discount near the airport',
+    partnerOfferHotelHint: 'Special accommodation terms are available for airport-to-city routes.',
+    partnerOfferFoodTitle: 'Best restaurants in the city center',
+    partnerOfferFoodHint: 'If you are going downtown, check top places near your arrival point.',
+    partnerOfferInsuranceTitle: 'Travel insurance option',
+    partnerOfferInsuranceHint: 'For longer trips we recommend a short-term travel policy.',
     summaryTotalSpent: 'Total spent',
     summaryAvgCheck: 'Average check',
     summaryFavService: 'Favorite service',
@@ -1891,6 +1915,42 @@ function App() {
     { label: services[1]?.title || '', value: services[1]?.price || '' },
     { label: services[4]?.title || '', value: services[4]?.price || '' },
   ].filter((row) => row.label && row.value)), [services])
+  const partnerOffer = useMemo(() => {
+    const service = (formData.service || '').toLowerCase()
+    const address = (formData.address || '').toLowerCase()
+    const isAirportRoute = ['аэропорт', 'әуежай', 'airport'].some((k) => service.includes(k) || address.includes(k))
+    const isDowntownRoute = ['центр', 'орталық', 'center', 'downtown'].some((k) => address.includes(k))
+    const isIntercityRoute = ['межгород', 'қалааралық', 'intercity'].some((k) => service.includes(k))
+
+    if (isAirportRoute) {
+      return {
+        key: 'hotel',
+        title: t.partnerOfferHotelTitle,
+        hint: t.partnerOfferHotelHint,
+        href: 'https://www.booking.com/city/kz/astana.html',
+      }
+    }
+
+    if (isDowntownRoute) {
+      return {
+        key: 'food',
+        title: t.partnerOfferFoodTitle,
+        hint: t.partnerOfferFoodHint,
+        href: 'https://2gis.kz/astana/search/%D1%80%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%D1%8B',
+      }
+    }
+
+    if (isIntercityRoute) {
+      return {
+        key: 'insurance',
+        title: t.partnerOfferInsuranceTitle,
+        hint: t.partnerOfferInsuranceHint,
+        href: 'https://kaspi.kz/guide/insurance/',
+      }
+    }
+
+    return null
+  }, [formData.service, formData.address, t])
   const bookingOpens = Object.entries(ctaMetrics || {}).reduce((sum, [key, value]) => (
     key.startsWith('open_booking_') ? sum + Number(value || 0) : sum
   ), 0)
@@ -2513,6 +2573,12 @@ function App() {
       return
     }
     goToBooking(source)
+  }
+
+  const openPartnerOffer = () => {
+    if (!partnerOffer?.href) return
+    trackCtaClick(`partner_offer_${partnerOffer.key}`)
+    window.open(partnerOffer.href, '_blank', 'noopener,noreferrer')
   }
 
   const resetCtaMetrics = () => {
@@ -3383,6 +3449,16 @@ function App() {
                 </div>
               )}
 
+              {partnerOffer && (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
+                  <p className="font-semibold">{t.partnerOfferTitle}: {partnerOffer.title}</p>
+                  <p className="mt-1 text-emerald-100/80">{partnerOffer.hint}</p>
+                  <button type="button" onClick={openPartnerOffer} className="mt-2 rounded-md bg-emerald-400 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-300 transition">
+                    {t.partnerOfferOpen}
+                  </button>
+                </div>
+              )}
+
               {latestOrder && (
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/75">
                   <p className="text-white/60">{t.lastOrderTitle}</p>
@@ -4083,6 +4159,16 @@ function App() {
                     <p>{t.referralAfterOrder}</p>
                     <button type="button" onClick={copyReferralText} className="mt-2 rounded-md bg-emerald-500 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-400 transition">
                       {referralCopied ? t.referralCopied : t.referralShare}
+                    </button>
+                  </div>
+                )}
+
+                {partnerOffer && (
+                  <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-100">
+                    <p className="font-semibold">{t.partnerOfferTitle}: {partnerOffer.title}</p>
+                    <p className="mt-1 text-emerald-100/80">{partnerOffer.hint}</p>
+                    <button type="button" onClick={openPartnerOffer} className="mt-2 rounded-md bg-emerald-400 px-2 py-1 text-[11px] font-semibold text-black hover:bg-emerald-300 transition">
+                      {t.partnerOfferOpen}
                     </button>
                   </div>
                 )}
