@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2, Phone, User, CalendarDays, X, MessageCircle, Copy } from 'lucide-react'
+import { BriefcaseBusiness, Droplets, Baby, Crown, Plane, Building2, UserCheck, Sparkles, Battery, Award, HelpCircle, MapPin, Trash2, Phone, User, CalendarDays, X, MessageCircle, Copy, Mic } from 'lucide-react'
 import * as QRCode from 'qrcode'
 
 
@@ -221,6 +221,11 @@ const translations = {
     locationDenied: 'Доступ к геолокации запрещен',
     locationUnavailable: 'Геолокация недоступна в этом браузере',
     locationFailed: 'Не удалось определить адрес, проверьте интернет или разрешение',
+    voiceInputAddress: 'Сказать адрес',
+    voiceInputListening: 'Слушаем...',
+    voiceInputUnsupported: 'Голосовой ввод недоступен в этом браузере',
+    voiceInputNoSpeech: 'Речь не распознана, попробуйте еще раз',
+    voiceInputApplied: 'Адрес добавлен голосом',
     trustNoHiddenFees: 'Без скрытых доплат',
     trustNda: 'Конфиденциальность поездок и маршрутов',
     trustInsured: 'Страхование пассажиров и ответственности',
@@ -468,6 +473,11 @@ const translations = {
     locationDenied: 'Геолокацияға рұқсат берілмеді',
     locationUnavailable: 'Бұл браузерде геолокация қолжетімсіз',
     locationFailed: 'Мекенжайды анықтау мүмкін болмады, интернет пен рұқсатты тексеріңіз',
+    voiceInputAddress: 'Мекенжайды айту',
+    voiceInputListening: 'Тыңдап тұрмыз...',
+    voiceInputUnsupported: 'Дауыспен енгізу бұл браузерде қолжетімсіз',
+    voiceInputNoSpeech: 'Сөйлеу танылмады, қайта көріңіз',
+    voiceInputApplied: 'Мекенжай дауыспен қосылды',
     trustNoHiddenFees: 'Жасырын төлемдер жоқ',
     trustNda: 'Сапар мен маршрут құпиялығы',
     trustInsured: 'Жолаушы және жауапкершілік сақтандырылған',
@@ -715,6 +725,11 @@ const translations = {
     locationDenied: 'Location access was denied',
     locationUnavailable: 'Geolocation is not available in this browser',
     locationFailed: 'Could not resolve address, check internet or permission',
+    voiceInputAddress: 'Speak address',
+    voiceInputListening: 'Listening...',
+    voiceInputUnsupported: 'Voice input is not available in this browser',
+    voiceInputNoSpeech: 'No speech detected, try again',
+    voiceInputApplied: 'Address was added by voice',
     trustNoHiddenFees: 'No hidden fees',
     trustNda: 'Trip and route confidentiality',
     trustInsured: 'Passenger and liability insurance',
@@ -1488,6 +1503,9 @@ function App() {
   const [notificationHint, setNotificationHint] = useState('')
   const [locationLookupInProgress, setLocationLookupInProgress] = useState(false)
   const [locationNotice, setLocationNotice] = useState('')
+  const [voiceInputActive, setVoiceInputActive] = useState(false)
+  const [voiceInputNotice, setVoiceInputNotice] = useState('')
+  const speechRecognitionRef = useRef(null)
   
   // 🎯 НОВЫЕ СОСТОЯНИЯ ДЛЯ УЛУЧШЕНИЙ
   const [editingFavNoteId, setEditingFavNoteId] = useState(null)
@@ -2659,6 +2677,66 @@ function App() {
     }
   }
 
+  const startVoiceInputForAddress = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      setVoiceInputNotice(t.voiceInputUnsupported)
+      return
+    }
+
+    if (speechRecognitionRef.current) {
+      try {
+        speechRecognitionRef.current.stop()
+      } catch (error) {
+        // ignore stop errors
+      }
+    }
+
+    const recognition = new SpeechRecognition()
+    speechRecognitionRef.current = recognition
+    recognition.lang = language === 'kk' ? 'kk-KZ' : language === 'en' ? 'en-US' : 'ru-RU'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+
+    setVoiceInputActive(true)
+    setVoiceInputNotice('')
+    trackCtaClick('voice_input_address')
+
+    recognition.onresult = (event) => {
+      const transcript = event?.results?.[0]?.[0]?.transcript?.trim()
+      if (!transcript) {
+        setVoiceInputNotice(t.voiceInputNoSpeech)
+        return
+      }
+      setFormData((prev) => ({
+        ...prev,
+        address: prev.address ? `${prev.address} ${transcript}`.trim() : transcript,
+      }))
+      setVoiceInputNotice(t.voiceInputApplied)
+    }
+
+    recognition.onerror = () => {
+      setVoiceInputNotice(t.voiceInputNoSpeech)
+    }
+
+    recognition.onend = () => {
+      setVoiceInputActive(false)
+      speechRecognitionRef.current = null
+    }
+
+    recognition.start()
+  }
+
+  useEffect(() => () => {
+    if (speechRecognitionRef.current) {
+      try {
+        speechRecognitionRef.current.stop()
+      } catch (error) {
+        // ignore stop errors
+      }
+    }
+  }, [])
+
   const whatsappHref = useMemo(() => {
     const messageParts = [
       t.waMessageTitle,
@@ -3348,7 +3426,21 @@ function App() {
                       >
                         {locationLookupInProgress ? t.locating : t.detectLocation}
                       </button>
+                      <button
+                        type="button"
+                        onClick={startVoiceInputForAddress}
+                        disabled={voiceInputActive}
+                        className={`mt-2 w-full rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                          voiceInputActive ? 'bg-white/5 text-white/50 cursor-wait' : 'bg-white/10 text-white hover:bg-white/15'
+                        }`}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <Mic className="h-4 w-4" />
+                          {voiceInputActive ? t.voiceInputListening : t.voiceInputAddress}
+                        </span>
+                      </button>
                       {locationNotice && <p className="mt-2 text-[11px] text-white/60">{locationNotice}</p>}
+                      {voiceInputNotice && <p className="mt-2 text-[11px] text-white/60">{voiceInputNotice}</p>}
                       <button
                         type="button"
                         onClick={addFavorite}
@@ -3939,7 +4031,21 @@ function App() {
                         >
                           {locationLookupInProgress ? t.locating : t.detectLocation}
                         </button>
+                        <button
+                          type="button"
+                          onClick={startVoiceInputForAddress}
+                          disabled={voiceInputActive}
+                          className={`mt-2 w-full rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                            voiceInputActive ? 'bg-white/5 text-white/50 cursor-wait' : 'bg-white/10 text-white hover:bg-white/15'
+                          }`}
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <Mic className="h-4 w-4" />
+                            {voiceInputActive ? t.voiceInputListening : t.voiceInputAddress}
+                          </span>
+                        </button>
                         {locationNotice && <p className="mt-2 text-[11px] text-white/60">{locationNotice}</p>}
+                        {voiceInputNotice && <p className="mt-2 text-[11px] text-white/60">{voiceInputNotice}</p>}
                         <button
                           type="button"
                           onClick={addFavorite}
