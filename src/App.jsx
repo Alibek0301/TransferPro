@@ -118,6 +118,13 @@ const translations = {
     monthActive: 'активно',
     monthTopService: 'топ услуга',
     priceEstimateLabel: 'Ориентировочная стоимость',
+    pricingDetailsToggle: 'Как формируется цена и оплата',
+    pricingDetailsHide: 'Скрыть цену и оплату',
+    pricingDetailsTitle: 'Прозрачная цена',
+    pricingWeekendNote: 'Выходной день: +15% к базовой ставке',
+    pricingFinalNote: 'Финальную сумму подтверждает менеджер перед поездкой.',
+    paymentMethodsTitle: 'Способы оплаты',
+    paymentMethodsList: 'Kaspi, Halyk, наличные, счет для компаний',
     summaryTotalSpent: 'Потрачено всего',
     summaryAvgCheck: 'Средний чек',
     summaryFavService: 'Любимая услуга',
@@ -370,6 +377,13 @@ const translations = {
     monthActive: 'белсенді',
     monthTopService: 'топ қызмет',
     priceEstimateLabel: 'Шамаланған құны',
+    pricingDetailsToggle: 'Баға мен төлем қалай есептеледі',
+    pricingDetailsHide: 'Баға мен төлемді жасыру',
+    pricingDetailsTitle: 'Ашық баға',
+    pricingWeekendNote: 'Демалыс күні: базалық тарифке +15%',
+    pricingFinalNote: 'Соңғы соманы сапар алдында менеджер растайды.',
+    paymentMethodsTitle: 'Төлем тәсілдері',
+    paymentMethodsList: 'Kaspi, Halyk, қолма-қол, компанияларға шот',
     summaryTotalSpent: 'Жалпы шығын',
     summaryAvgCheck: 'Орташа чек',
     summaryFavService: 'Таңдаулы қызмет',
@@ -622,6 +636,13 @@ const translations = {
     monthActive: 'active',
     monthTopService: 'top service',
     priceEstimateLabel: 'Estimated price',
+    pricingDetailsToggle: 'How pricing and payment work',
+    pricingDetailsHide: 'Hide pricing and payment',
+    pricingDetailsTitle: 'Transparent pricing',
+    pricingWeekendNote: 'Weekend day: +15% to the base rate',
+    pricingFinalNote: 'Final amount is confirmed by the manager before the trip.',
+    paymentMethodsTitle: 'Payment methods',
+    paymentMethodsList: 'Kaspi, Halyk, cash, invoice for companies',
     summaryTotalSpent: 'Total spent',
     summaryAvgCheck: 'Average check',
     summaryFavService: 'Favorite service',
@@ -1499,6 +1520,7 @@ function App() {
   const [favorites, setFavorites] = useState(() => getScopedStoredValue('favorites', []))
   const [showMobileDetails, setShowMobileDetails] = useState(false)
   const [showDesktopDetails, setShowDesktopDetails] = useState(false)
+  const [showPricingDetails, setShowPricingDetails] = useState(false)
   const [notificationsAllowed, setNotificationsAllowed] = useState(() => (typeof Notification !== 'undefined' && Notification.permission === 'granted'))
   const [notificationHint, setNotificationHint] = useState('')
   const [locationLookupInProgress, setLocationLookupInProgress] = useState(false)
@@ -1852,6 +1874,14 @@ function App() {
     return Math.round(base * (1 + surcharge))
   }
   const estimatedPriceKzt = estimatePriceKzt(formData.service, formData.date)
+  const selectedTripDate = formData.date ? new Date(formData.date) : null
+  const isWeekendEstimate = Boolean(selectedTripDate && !Number.isNaN(selectedTripDate.getTime()) && (selectedTripDate.getDay() === 0 || selectedTripDate.getDay() === 6))
+  const pricingOverviewRows = useMemo(() => ([
+    { label: services[0]?.title || '', value: services[0]?.price || '' },
+    { label: services[2]?.title || '', value: services[2]?.price || '' },
+    { label: services[1]?.title || '', value: services[1]?.price || '' },
+    { label: services[4]?.title || '', value: services[4]?.price || '' },
+  ].filter((row) => row.label && row.value)), [services])
   const bookingOpens = Object.entries(ctaMetrics || {}).reduce((sum, [key, value]) => (
     key.startsWith('open_booking_') ? sum + Number(value || 0) : sum
   ), 0)
@@ -3381,6 +3411,36 @@ function App() {
                 <div>
                   <button
                     type="button"
+                    onClick={() => setShowPricingDetails((prev) => !prev)}
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
+                  >
+                    {showPricingDetails ? t.pricingDetailsHide : t.pricingDetailsToggle}
+                  </button>
+                </div>
+
+                {showPricingDetails && (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3 text-xs text-white/80">
+                    <p className="text-sm font-semibold text-accent">{t.pricingDetailsTitle}</p>
+                    <div className="space-y-2">
+                      {pricingOverviewRows.map((row) => (
+                        <div key={row.label} className="flex items-center justify-between gap-3 border-b border-white/10 pb-2 last:border-b-0 last:pb-0">
+                          <span className="text-white/70">{row.label}</span>
+                          <span className="text-accent font-semibold text-right">{row.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {isWeekendEstimate && <p className="text-[11px] text-amber-200">{t.pricingWeekendNote}</p>}
+                    <div className="border-t border-white/10 pt-3">
+                      <p className="text-sm font-semibold text-accent">{t.paymentMethodsTitle}</p>
+                      <p className="mt-1 text-white/70">{t.paymentMethodsList}</p>
+                    </div>
+                    <p className="text-[11px] text-white/55">{t.pricingFinalNote}</p>
+                  </div>
+                )}
+
+                <div>
+                  <button
+                    type="button"
                     onClick={() => setShowMobileDetails((prev) => !prev)}
                     className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
                   >
@@ -4001,6 +4061,36 @@ function App() {
                   <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-white/85">
                     {t.priceEstimateLabel}: <span className="text-accent font-semibold">{estimatedPriceKzt.toLocaleString()} ₸</span>
                   </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPricingDetails((prev) => !prev)}
+                      className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
+                    >
+                      {showPricingDetails ? t.pricingDetailsHide : t.pricingDetailsToggle}
+                    </button>
+                  </div>
+
+                  {showPricingDetails && (
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3 text-xs text-white/80">
+                      <p className="text-sm font-semibold text-accent">{t.pricingDetailsTitle}</p>
+                      <div className="space-y-2">
+                        {pricingOverviewRows.map((row) => (
+                          <div key={row.label} className="flex items-center justify-between gap-3 border-b border-white/10 pb-2 last:border-b-0 last:pb-0">
+                            <span className="text-white/70">{row.label}</span>
+                            <span className="text-accent font-semibold text-right">{row.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {isWeekendEstimate && <p className="text-[11px] text-amber-200">{t.pricingWeekendNote}</p>}
+                      <div className="border-t border-white/10 pt-3">
+                        <p className="text-sm font-semibold text-accent">{t.paymentMethodsTitle}</p>
+                        <p className="mt-1 text-white/70">{t.paymentMethodsList}</p>
+                      </div>
+                      <p className="text-[11px] text-white/55">{t.pricingFinalNote}</p>
+                    </div>
+                  )}
+
                   <div>
                     <button
                       type="button"
