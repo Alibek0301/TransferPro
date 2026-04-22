@@ -208,9 +208,12 @@ const translations = {
     preferWhatsapp: 'WhatsApp',
     primaryCtaCall: 'Позвонить сейчас',
     receiptEmailButton: 'Квитанция на email',
+    receiptPdfButton: 'Скачать PDF',
     receiptPrompt: 'Введите email для квитанции',
     receiptInvalid: 'Введите корректный email адрес',
     receiptOpened: 'Черновик письма с квитанцией открыт',
+    receiptPdfReady: 'PDF-квитанция скачивается',
+    receiptPdfFailed: 'Не удалось сформировать PDF-квитанцию',
     lastOrderTitle: 'Последняя заявка',
     lastOrderEmpty: 'У вас пока нет заявок',
     statusTimeline: 'Этапы',
@@ -467,9 +470,12 @@ const translations = {
     preferWhatsapp: 'WhatsApp',
     primaryCtaCall: 'Қазір қоңырау шалу',
     receiptEmailButton: 'Квитанцияны email-ға',
+    receiptPdfButton: 'PDF жүктеу',
     receiptPrompt: 'Квитанция үшін email енгізіңіз',
     receiptInvalid: 'Дұрыс email мекенжайын енгізіңіз',
     receiptOpened: 'Квитанция бар хат жобасы ашылды',
+    receiptPdfReady: 'PDF-квитанция жүктеліп жатыр',
+    receiptPdfFailed: 'PDF-квитанцияны жасау мүмкін болмады',
     lastOrderTitle: 'Соңғы өтінім',
     lastOrderEmpty: 'Өтінімдер әлі жоқ',
     statusTimeline: 'Кезеңдер',
@@ -726,9 +732,12 @@ const translations = {
     preferWhatsapp: 'WhatsApp',
     primaryCtaCall: 'Call now',
     receiptEmailButton: 'Email receipt',
+    receiptPdfButton: 'Download PDF',
     receiptPrompt: 'Enter email for receipt',
     receiptInvalid: 'Enter a valid email address',
     receiptOpened: 'Receipt email draft was opened',
+    receiptPdfReady: 'PDF receipt is downloading',
+    receiptPdfFailed: 'Could not generate PDF receipt',
     lastOrderTitle: 'Last request',
     lastOrderEmpty: 'No requests yet',
     statusTimeline: 'Steps',
@@ -2316,6 +2325,67 @@ function App() {
     setTimeout(() => setSubmitNotice(''), 2500)
   }
 
+  const downloadReceiptPdf = async (order) => {
+    const { default: html2pdf } = await import('html2pdf.js')
+    const orderPrice = Number(order.estimatedPriceKzt || 0) || estimatePriceKzt(order.service, order.date)
+    const wrapper = document.createElement('div')
+    wrapper.style.position = 'fixed'
+    wrapper.style.left = '-9999px'
+    wrapper.style.top = '0'
+    wrapper.style.width = '800px'
+    wrapper.style.background = '#ffffff'
+    wrapper.style.color = '#111827'
+    wrapper.style.padding = '32px'
+    wrapper.style.fontFamily = 'Arial, sans-serif'
+    wrapper.innerHTML = `
+      <div style="border:1px solid #e5e7eb; border-radius:16px; padding:24px;">
+        <h1 style="margin:0 0 8px; font-size:28px;">TransferPro</h1>
+        <p style="margin:0 0 24px; color:#6b7280; font-size:14px;">${t.receiptPdfButton}</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:14px;">
+          <div><strong>${t.waService}:</strong><br>${order.service || '-'}</div>
+          <div><strong>${t.orderStatus}:</strong><br>${getStatusLabel(order.status || 'new')}</div>
+          <div><strong>${t.waDate}:</strong><br>${order.date || '-'}</div>
+          <div><strong>${t.orderCreated}:</strong><br>${order.createdAt || '-'}</div>
+          <div><strong>${t.waName}:</strong><br>${order.name || '-'}</div>
+          <div><strong>${t.waPhone}:</strong><br>${order.phoneMasked || order.phone || '-'}</div>
+        </div>
+        <div style="margin-top:18px; font-size:14px;">
+          <strong>${t.waAddress}:</strong>
+          <div style="margin-top:6px; color:#374151;">${order.address || '-'}</div>
+        </div>
+        <div style="margin-top:18px; font-size:14px;">
+          <strong>${t.waComment}:</strong>
+          <div style="margin-top:6px; color:#374151;">${order.comment || '-'}</div>
+        </div>
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb; font-size:16px;">
+          <strong>${t.priceEstimateLabel}: ${Number(orderPrice).toLocaleString()} ₸</strong>
+        </div>
+      </div>
+    `
+
+    document.body.appendChild(wrapper)
+
+    try {
+      await html2pdf()
+        .set({
+          margin: 10,
+          filename: `transferpro-receipt-${order.id}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        })
+        .from(wrapper)
+        .save()
+      setSubmitNotice(t.receiptPdfReady)
+      setTimeout(() => setSubmitNotice(''), 2500)
+    } catch (error) {
+      setSubmitNotice(t.receiptPdfFailed)
+      setTimeout(() => setSubmitNotice(''), 2500)
+    } finally {
+      document.body.removeChild(wrapper)
+    }
+  }
+
   const addFavorite = () => {
     const normalizedAddress = formData.address.trim()
     if (!normalizedAddress) return
@@ -3318,9 +3388,14 @@ function App() {
                   <p className="text-white/60">{t.lastOrderTitle}</p>
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <p className="line-clamp-1">{latestOrder.service} · {latestOrder.date || '-'}</p>
-                    <button onClick={() => repeatOrder(latestOrder)} className="rounded-md bg-accent/20 px-2 py-1 text-accent hover:bg-accent/30 transition">
-                      {t.repeat}
-                    </button>
+                    <div className="flex gap-2">
+                      <button onClick={() => repeatOrder(latestOrder)} className="rounded-md bg-accent/20 px-2 py-1 text-accent hover:bg-accent/30 transition">
+                        {t.repeat}
+                      </button>
+                      <button onClick={() => downloadReceiptPdf(latestOrder)} className="rounded-md bg-white/10 px-2 py-1 text-white hover:bg-white/15 transition">
+                        {t.receiptPdfButton}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -3645,6 +3720,9 @@ function App() {
                               </button>
                               <button onClick={() => sendReceiptByEmail(order)} className="text-xs px-3 py-1 bg-white/10 text-white rounded hover:bg-white/15 transition">
                                 {t.receiptEmailButton}
+                              </button>
+                              <button onClick={() => downloadReceiptPdf(order)} className="text-xs px-3 py-1 bg-white/10 text-white rounded hover:bg-white/15 transition">
+                                {t.receiptPdfButton}
                               </button>
                             </div>
                             {order.receiptSentAt && (
@@ -4014,9 +4092,14 @@ function App() {
                     <p className="text-white/60">{t.lastOrderTitle}</p>
                     <div className="mt-1 flex items-center justify-between gap-2">
                       <p className="line-clamp-1">{latestOrder.service} · {latestOrder.date || '-'}</p>
-                      <button onClick={() => repeatOrder(latestOrder)} className="rounded-md bg-accent/20 px-2 py-1 text-accent hover:bg-accent/30 transition">
-                        {t.repeat}
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => repeatOrder(latestOrder)} className="rounded-md bg-accent/20 px-2 py-1 text-accent hover:bg-accent/30 transition">
+                          {t.repeat}
+                        </button>
+                        <button onClick={() => downloadReceiptPdf(latestOrder)} className="rounded-md bg-white/10 px-2 py-1 text-white hover:bg-white/15 transition">
+                          {t.receiptPdfButton}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
