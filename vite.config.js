@@ -17,5 +17,24 @@ export default defineConfig(({ mode }) => {
     // GitHub Pages project sites are served from /<repo>/.
     // VITE_BASE_PATH lets CI/forks inject the right repository path.
     base: mode === 'production' ? normalizeBase(configuredBase) : '/',
+    build: {
+      // PDF generation is loaded on demand and stays isolated in a separate chunk.
+      // Increase warning threshold to reduce noise for this optional feature bundle.
+      chunkSizeWarningLimit: 800,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return
+
+            if (id.includes('html2pdf.js')) return 'pdf-html2pdf'
+            if (id.includes('jspdf')) return 'pdf-jspdf'
+            if (id.includes('html2canvas')) return 'pdf-html2canvas'
+            if (id.includes('react') || id.includes('scheduler')) return 'vendor-react'
+            if (id.includes('framer-motion')) return 'vendor-motion'
+            if (id.includes('lucide-react')) return 'vendor-icons'
+          },
+        },
+      },
+    },
   }
 })
