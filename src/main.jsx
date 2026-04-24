@@ -5,6 +5,7 @@ import './index.css'
 
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID
 const YANDEX_METRIKA_ID = import.meta.env.VITE_YANDEX_METRIKA_ID
+const FACEBOOK_PIXEL_ID = import.meta.env.VITE_FB_PIXEL_ID
 
 const loadScript = (src) => {
   const script = document.createElement('script')
@@ -43,10 +44,23 @@ const initYandexMetrika = () => {
   })
 }
 
+const initFacebookPixel = () => {
+  if (!FACEBOOK_PIXEL_ID) return
+  if (window.fbq) return
+
+  loadScript('https://connect.facebook.net/en_US/fbevents.js')
+  window.fbq = function fbq() {
+    ;(window.fbq.q = window.fbq.q || []).push(arguments)
+  }
+  window.fbq('init', FACEBOOK_PIXEL_ID)
+  window.fbq('track', 'PageView')
+}
+
 const initAnalytics = () => {
   try {
     initGoogleAnalytics()
     initYandexMetrika()
+    initFacebookPixel()
   } catch {
     // ignore analytics initialization errors
   }
