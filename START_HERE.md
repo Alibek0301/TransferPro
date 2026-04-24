@@ -49,6 +49,17 @@ npm run build
 # Скопируйте содержимое /dist/ на ваш хостинг
 ```
 
+### Настройка ENV (рекомендуется)
+```bash
+cp .env.example .env.local
+```
+
+Переменные в `.env.local`:
+- `VITE_BASE_PATH` - путь для production-сборки (например `/TransferPro/` для GitHub Pages)
+- `VITE_GA_MEASUREMENT_ID` - Google Analytics 4 ID (опционально)
+- `VITE_YANDEX_METRIKA_ID` - Yandex Metrika ID (опционально)
+- `VITE_FB_PIXEL_ID` - Facebook Pixel ID (опционально)
+
 ---
 
 ## ⚠️ ПЕРЕД ДЕПЛОЕМ - ОБЯЗАТЕЛЬНО!
