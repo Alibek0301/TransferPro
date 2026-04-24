@@ -1284,48 +1284,6 @@ const normalizeBufferMinutes = (value) => {
   return Math.min(120, Math.max(0, Math.round(parsed)))
 }
 
-// 🎯 УЛУЧШЕНИЕ 5: Таймер срочного предложения
-const UrgentOfferTimer = ({ t = {} }) => {
-  const [timeLeft, setTimeLeft] = useState('')
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const now = new Date()
-      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0)
-      const diff = endOfDay - now
-
-      if (diff <= 0) {
-        setTimeLeft('Истекло')
-        return
-      }
-
-      const hours = Math.floor(diff / 3600000)
-      const minutes = Math.floor((diff % 3600000) / 60000)
-      setTimeLeft(`${hours}ч ${minutes}м`)
-    }
-
-    updateTimer()
-    const interval = setInterval(updateTimer, 60000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-950/40 border border-red-500/30 text-red-400 text-xs font-semibold">
-      ⏰ Спецпредложение: {timeLeft}
-    </div>
-  )
-}
-
-// 🎯 УЛУЧШЕНИЕ 4: Счетчик активных клиентов
-const ActiveClientsCounter = ({ count = 0 }) => {
-  if (count < 1) return null
-  return (
-    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-950/40 border border-green-500/30 text-green-400 text-xs font-semibold animate-pulse">
-      🟢 {count} клиент{count === 1 ? '' : count < 5 ? 'а' : 'ов'} сейчас используют TransferPro
-    </div>
-  )
-}
-
 const LoyaltyCard = ({ t, level, points, nextLevelOrders, progressPercent }) => {
   const levelColor = level.key === 'gold'
     ? 'from-amber-500/30 to-yellow-500/20 border-amber-400/40 text-amber-100'
@@ -1494,33 +1452,6 @@ const ExitIntentPopup = ({ isOpen, onClose, t }) => {
   )
 }
 
-// 🎯 УЛУЧШЕНИЕ 4: Счетчик активности
-const ActivityCounter = {
-  increment: () => {
-    try {
-      const count = parseInt(sessionStorage.getItem('activeClientsSession') || '0', 10)
-      sessionStorage.setItem('activeClientsSession', String(count + 1))
-      return count + 1
-    } catch (error) {
-      return 0
-    }
-  },
-  get: () => {
-    try {
-      return parseInt(sessionStorage.getItem('activeClientsSession') || Math.floor(Math.random() * 5 + 3), 10)
-    } catch (error) {
-      return Math.floor(Math.random() * 5 + 3)
-    }
-  },
-  reset: () => {
-    try {
-      sessionStorage.removeItem('activeClientsSession')
-    } catch (error) {
-      // no-op
-    }
-  },
-}
-
 function App() {
   const prefersReducedMotion = useReducedMotion()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -1570,7 +1501,6 @@ function App() {
   const [reactivationCopied, setReactivationCopied] = useState(false)
   const [showQRModal, setShowQRModal] = useState(false)
   const [showExitIntent, setShowExitIntent] = useState(false)
-  const [activeClientsCount, setActiveClientsCount] = useState(() => ActivityCounter.get())
   const [exitIntentShownInSession, setExitIntentShownInSession] = useState(false)
   const [promoCopied, setPromoCopied] = useState(false)
   const [birthdayBonusYear, setBirthdayBonusYear] = useState(() => getStoredValue('birthdayBonusYear', ''))
@@ -1587,11 +1517,9 @@ function App() {
   })
   const [ctaVariant, setCtaVariant] = useState(() => getStoredValue('ctaVariant', ''))
   const [ctaMetrics, setCtaMetrics] = useState(() => getStoredValue('ctaMetrics', {}))
-  const [funnelMetrics, setFunnelMetrics] = useState(() => getStoredValue('formFunnelMetrics', { step1: 0, step2: 0, step3: 0, submit: 0 }))
   const [ctaVariantAssignedAt, setCtaVariantAssignedAt] = useState(() => getStoredValue('ctaVariantAssignedAt', ''))
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null)
   const [showInstallBanner, setShowInstallBanner] = useState(() => shouldShowInstallPromptBanner())
-  const funnelTrackedRef = useRef({ step1: false, step2: false, step3: false })
   
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const t = translations[language]
@@ -1772,12 +1700,6 @@ function App() {
     return () => document.removeEventListener('mouseleave', handleMouseLeave)
   }, [exitIntentShownInSession])
 
-  // 🎯 УЛУЧШЕНИЕ 4: Increment Active Clients Counter при загрузке
-  useEffect(() => {
-    const count = ActivityCounter.increment()
-    setActiveClientsCount(count)
-  }, [])
-
   // 🎯 Автоочистка истории старше 90 дней
   useEffect(() => {
     const ninety = 90 * 24 * 60 * 60 * 1000
@@ -1951,39 +1873,6 @@ function App() {
 
     return null
   }, [formData.service, formData.address, t])
-  const bookingOpens = Object.entries(ctaMetrics || {}).reduce((sum, [key, value]) => (
-    key.startsWith('open_booking_') ? sum + Number(value || 0) : sum
-  ), 0)
-  const submittedOrders = Number(ctaMetrics?.submit_order || 0)
-  const ctaConversion = bookingOpens > 0 ? Math.round((submittedOrders / bookingOpens) * 100) : 0
-  const bookingOpenSources = Object.entries(ctaMetrics || {})
-    .filter(([key]) => key.startsWith('open_booking_'))
-    .map(([key, value]) => ({ source: key.replace('open_booking_', ''), count: Number(value || 0) }))
-    .sort((a, b) => b.count - a.count)
-  const topBookingSource = bookingOpenSources[0]?.source || '-'
-  const hasEnoughAnalyticsData = bookingOpens >= 8
-  const funnelStep1Count = Number(funnelMetrics?.step1 || 0)
-  const funnelStep2Count = Number(funnelMetrics?.step2 || 0)
-  const funnelStep3Count = Number(funnelMetrics?.step3 || 0)
-  const funnelSubmitCount = Number(funnelMetrics?.submit || 0)
-  const funnelConversionPercent = funnelStep1Count > 0 ? Math.round((funnelSubmitCount / funnelStep1Count) * 100) : 0
-
-  useEffect(() => {
-    if (primaryStepComplete && !funnelTrackedRef.current.step1) {
-      funnelTrackedRef.current.step1 = true
-      trackFunnelMetric('step1')
-    }
-    if (secondStepComplete && !funnelTrackedRef.current.step2) {
-      funnelTrackedRef.current.step2 = true
-      trackFunnelMetric('step2')
-    }
-    if (thirdStepComplete && !funnelTrackedRef.current.step3) {
-      funnelTrackedRef.current.step3 = true
-      trackFunnelMetric('step3')
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryStepComplete, secondStepComplete, thirdStepComplete])
-
   const maskPhone = (phone) => {
     const digits = (phone || '').replace(/\D/g, '')
     if (digits.length < 4) return ''
@@ -2536,19 +2425,6 @@ function App() {
     })
   }
 
-  const trackFunnelMetric = (key) => {
-    setFunnelMetrics((prev) => {
-      const safePrev = (prev && typeof prev === 'object') ? prev : { step1: 0, step2: 0, step3: 0, submit: 0 }
-      const next = { ...safePrev, [key]: Number(safePrev[key] || 0) + 1 }
-      try {
-        localStorage.setItem('formFunnelMetrics', JSON.stringify(next))
-      } catch (error) {
-        // ignore storage errors
-      }
-      return next
-    })
-  }
-
   const goToBooking = (source = 'unknown') => {
     trackCtaClick(`open_booking_${source}`)
     setMobileTab('booking')
@@ -2579,26 +2455,6 @@ function App() {
     if (!partnerOffer?.href) return
     trackCtaClick(`partner_offer_${partnerOffer.key}`)
     window.open(partnerOffer.href, '_blank', 'noopener,noreferrer')
-  }
-
-  const resetCtaMetrics = () => {
-    setCtaMetrics({})
-    try {
-      localStorage.removeItem('ctaMetrics')
-    } catch (error) {
-      // ignore storage errors
-    }
-  }
-
-  const resetFunnelMetrics = () => {
-    const resetValue = { step1: 0, step2: 0, step3: 0, submit: 0 }
-    setFunnelMetrics(resetValue)
-    funnelTrackedRef.current = { step1: false, step2: false, step3: false }
-    try {
-      localStorage.setItem('formFunnelMetrics', JSON.stringify(resetValue))
-    } catch (error) {
-      // ignore storage errors
-    }
   }
 
   const dismissInstallBanner = () => {
@@ -2928,7 +2784,6 @@ function App() {
     }
     if (!canSubmit) return
     trackCtaClick('submit_order')
-    trackFunnelMetric('submit')
     addToHistory()
     const popup = window.open(whatsappHref, '_blank', 'noopener,noreferrer')
     if (!popup) {
@@ -3254,11 +3109,6 @@ function App() {
             <motion.div className="w-full space-y-5 sm:space-y-6 bg-gradient-to-b from-black/70 via-amber-950/20 to-black/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl" {...sectionMotionProps}>
               <div className="border-l-2 border-accent pl-4 sm:pl-5">
                 <p className="text-accent text-sm sm:text-base font-bold tracking-wide">{t.heroBadge}</p>
-              </div>
-              
-              <div className="flex flex-col gap-3">
-                <UrgentOfferTimer t={t} />
-                <ActiveClientsCounter count={activeClientsCount} />
               </div>
               
               <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight text-white">{t.heroTitle}</h1>
@@ -3903,11 +3753,6 @@ function App() {
                   <p className="text-accent text-sm font-semibold">{t.heroBadge}</p>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <UrgentOfferTimer t={t} />
-                  <ActiveClientsCounter count={activeClientsCount} />
-                </div>
-
                 <LoyaltyCard
                   t={t}
                   level={loyaltyStats.level}
@@ -3938,35 +3783,6 @@ function App() {
                   </div>
                 </div>
 
-                <div className="max-w-3xl rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-cyan-100 font-semibold">{t.analyticsTitle}</p>
-                    <button type="button" onClick={resetCtaMetrics} className="rounded-md bg-cyan-400 px-2 py-1 text-[11px] font-semibold text-black hover:bg-cyan-300 transition">{t.analyticsReset}</button>
-                  </div>
-                  <div className="mt-2 grid grid-cols-4 gap-3 text-xs text-cyan-100/90">
-                    <p>{t.analyticsVariant}: {ctaVariant || 'A'}</p>
-                    <p>{t.analyticsOpens}: {bookingOpens}</p>
-                    <p>{t.analyticsSubmits}: {submittedOrders}</p>
-                    <p>{t.analyticsConversion}: {ctaConversion}%</p>
-                  </div>
-                  <p className="mt-2 text-xs text-cyan-100/85">{t.analyticsTopSource}: {topBookingSource}</p>
-                  {!hasEnoughAnalyticsData && <p className="mt-1 text-[11px] text-cyan-100/65">{t.analyticsInsufficient}</p>}
-                </div>
-
-                <div className="max-w-3xl rounded-xl border border-sky-500/30 bg-sky-500/10 p-4">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-sky-100 font-semibold">{t.funnelTitle}</p>
-                    <button type="button" onClick={resetFunnelMetrics} className="rounded-md bg-sky-400 px-2 py-1 text-[11px] font-semibold text-black hover:bg-sky-300 transition">{t.funnelReset}</button>
-                  </div>
-                  <div className="mt-2 grid grid-cols-5 gap-3 text-xs text-sky-100/90">
-                    <p>{t.funnelStep1}: {funnelStep1Count}</p>
-                    <p>{t.funnelStep2}: {funnelStep2Count}</p>
-                    <p>{t.funnelStep3}: {funnelStep3Count}</p>
-                    <p>{t.funnelSubmit}: {funnelSubmitCount}</p>
-                    <p>{t.funnelConversion}: {funnelConversionPercent}%</p>
-                  </div>
-                </div>
-                
                 <h1 className="font-serif text-5xl leading-tight text-white max-w-3xl">{t.heroTitle}</h1>
                 
                 <motion.div
